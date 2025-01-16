@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import QRCode from 'qrcode.react';
 
@@ -10,7 +11,7 @@ interface CryptoPrice {
   USDT: number;
 }
 
-export default function CryptoPaymentPage() {
+function CryptoPaymentContent() {
   const searchParams = useSearchParams();
   const type = searchParams.get('type');
   const amount = Number(searchParams.get('amount'));
@@ -240,5 +241,20 @@ export default function CryptoPaymentPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CryptoPaymentPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-[#ffc62d] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading payment details...</p>
+        </div>
+      </div>
+    }>
+      <CryptoPaymentContent />
+    </Suspense>
   );
 } 
