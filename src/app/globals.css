@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --accent-color: #ffc62d;
+}
+
+body {
+  @apply bg-black text-white;
+}
+
+.accent-color {
+  color: var(--accent-color);
+}
+
+.accent-border {
+  border-color: var(--accent-color);
+}
+
+.accent-bg {
+  background-color: var(--accent-color);
+} 
