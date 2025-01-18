@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import QRCode from 'qrcode.react';
@@ -200,5 +201,18 @@ function CryptoPaymentContent() {
 }
 
 export default function CryptoPaymentPage() {
-  return <CryptoPaymentContent />;
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-black text-white flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-[#ffc62d] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-400">Loading payment details...</p>
+          </div>
+        </div>
+      }
+    >
+      <CryptoPaymentContent />
+    </Suspense>
+  );
 } 
