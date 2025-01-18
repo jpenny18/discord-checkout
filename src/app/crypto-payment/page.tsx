@@ -37,22 +37,33 @@ function CryptoPaymentContent() {
     // Create order and start monitoring when page loads
     const createOrder = async () => {
       try {
-        const response = await fetch('/api/create-crypto-order', {
+        // Check if we already have an orderId in the URL
+        const existingOrderId = searchParams.get('orderId');
+        if (existingOrderId) {
+          setOrderId(existingOrderId);
+          startMonitoring(existingOrderId);
+          return;
+        }
+
+        const response = await fetch('/api/create-crypto-payment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             amount,
-            type,
-            plan,
-            firstName,
-            lastName,
-            email,
-            discordUsername,
-            status: 'pending',
-            timestamp: new Date(),
-            paymentMethod: 'crypto'
+            userData: {
+              firstName,
+              lastName,
+              email,
+              discordUsername,
+              selectedPlan: {
+                id: plan,
+                name: plan,
+                duration: plan === 'cadet' ? 'month' : plan === 'challenger' ? '4 months' : 'year'
+              }
+            },
+            cryptoType: type,
           }),
         });
 
@@ -66,10 +77,10 @@ function CryptoPaymentContent() {
       }
     };
 
-    if (type && amount && plan) {
+    if (type && amount && plan && firstName && lastName && email && discordUsername) {
       createOrder();
     }
-  }, [type, amount, plan]);
+  }, [type, amount, plan, firstName, lastName, email, discordUsername]);
 
   const startMonitoring = async (newOrderId: string) => {
     try {

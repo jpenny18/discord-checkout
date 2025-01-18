@@ -27,6 +27,7 @@ export default function CheckoutPage() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [recurringBillingAccepted, setRecurringBillingAccepted] = useState(false);
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   // Add loading effect on initial render
   useEffect(() => {
@@ -168,7 +169,7 @@ export default function CheckoutPage() {
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-[#ffc62d] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading checkout...</p>
+          <p className="text-gray-400">Loading</p>
         </div>
       </div>
     );
@@ -200,61 +201,65 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {plans.map((plan) => (
-            <div
-              key={plan.id}
-              onClick={() => handlePlanSelect(plan)}
-              className={`w-[300px] mx-auto md:w-full p-6 rounded-xl bg-[#111111] border cursor-pointer transition-all hover:scale-105 ${
-                selectedPlan?.id === plan.id
-                  ? 'border-[#ffc62d] scale-105'
-                  : 'border-gray-700'
-              }`}
-              style={{ transform: selectedPlan?.id === plan.id ? 'scale(1.05)' : 'scale(1)' }}
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-xl font-bold">{plan.name}</h3>
-                  <p className="text-3xl font-bold mt-2">
-                    ${plan.price}
-                    <span className="text-sm text-gray-400">/{plan.duration}</span>
-                  </p>
+        <div className="relative mb-8 -mx-4 px-4 md:mx-0 md:px-0 plans-section">
+          <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto pt-8 pb-8 px-4 md:px-0 md:overflow-visible md:pb-0 snap-x snap-mandatory">
+            {plans.map((plan) => (
+              <div
+                key={plan.id}
+                onClick={() => handlePlanSelect(plan)}
+                className={`flex-none w-[300px] md:w-full p-6 rounded-xl bg-[#111111] border cursor-pointer transition-all hover:scale-105 snap-center ${
+                  selectedPlan?.id === plan.id
+                    ? 'border-[#ffc62d] scale-105'
+                    : 'border-gray-700'
+                }`}
+                style={{ transform: selectedPlan?.id === plan.id ? 'scale(1.05)' : 'scale(1)' }}
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold">{plan.name}</h3>
+                    <p className="text-3xl font-bold mt-2">
+                      ${plan.price}
+                      <span className="text-sm text-gray-400">/{plan.duration}</span>
+                    </p>
+                  </div>
+                  {plan.popular && (
+                    <span className="bg-[#ffc62d] text-black text-xs px-2 py-1 rounded">
+                      MOST POPULAR
+                    </span>
+                  )}
                 </div>
-                {plan.popular && (
-                  <span className="bg-[#ffc62d] text-black text-xs px-2 py-1 rounded">
-                    MOST POPULAR
-                  </span>
-                )}
+                <ul className="space-y-3">
+                  {plan.features.map((feature, index) => (
+                    <li key={index} className="flex items-center text-sm">
+                      <svg
+                        className="w-4 h-4 text-[#ffc62d] mr-2 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      <span className="text-gray-300">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-3">
-                {plan.features.map((feature, index) => (
-                  <li key={index} className="flex items-center text-sm">
-                    <svg
-                      className="w-4 h-4 text-[#ffc62d] mr-2 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span className="text-gray-300">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {showGuarantee && (
           <div className="text-center mb-12">
             <p className="text-[#ffc62d] text-sm font-bold">
-              200% Guarantee: If our trades don't double your subscription fee by the end of your paid period, 
-              we'll refund your subscription plus an additional 100%
+              <span className="text-base md:text-sm">
+                200% Guarantee: If our trades don't double your subscription fee by the end of your paid period, 
+                we'll refund your subscription plus an additional 100%
+              </span>
             </p>
           </div>
         )}
@@ -344,9 +349,9 @@ export default function CheckoutPage() {
               />
               <span className="text-sm">
                 I accept the{' '}
-                <a href="#" className="underline">Terms and Conditions</a>,{' '}
-                <a href="#" className="underline">Privacy Policy</a>, and{' '}
-                <a href="#" className="underline">Refund/Dispute Policy</a>
+                <Link href="/terms" className="underline text-[#ffc62d] hover:text-[#e5b228]">Terms and Conditions</Link>,{' '}
+                <Link href="/privacy" className="underline text-[#ffc62d] hover:text-[#e5b228]">Privacy Policy</Link>, and{' '}
+                <Link href="/refund" className="underline text-[#ffc62d] hover:text-[#e5b228]">Refund/Dispute Policy</Link>
               </span>
             </label>
             {formErrors.terms && (
@@ -473,7 +478,7 @@ export default function CheckoutPage() {
                 {isCryptoExpanded && (
                   <div className="border border-t-0 border-[#ffc62d] rounded-b-lg bg-[#111111] p-4 space-y-4">
                     <form 
-                      onSubmit={(e) => {
+                      onSubmit={async (e) => {
                         e.preventDefault();
                         if (!isFormValid()) {
                           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -481,7 +486,37 @@ export default function CheckoutPage() {
                         }
                         const form = e.target as HTMLFormElement;
                         const cryptoType = form.cryptoType.value;
-                        window.location.href = `/crypto-payment?type=${cryptoType}&amount=${finalPrice}&plan=${selectedPlan?.id}&firstName=${userData.firstName}&lastName=${userData.lastName}&email=${userData.email}&discordUsername=${userData.discordUsername}`;
+
+                        try {
+                          const response = await fetch('/api/create-crypto-payment', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                              amount: finalPrice,
+                              userData: {
+                                firstName: userData.firstName,
+                                lastName: userData.lastName,
+                                email: userData.email,
+                                discordUsername: userData.discordUsername,
+                                selectedPlan: {
+                                  id: selectedPlan?.id,
+                                  name: selectedPlan?.name,
+                                  duration: selectedPlan?.duration
+                                }
+                              },
+                              cryptoType,
+                            }),
+                          });
+
+                          const data = await response.json();
+                          if (data.success) {
+                            window.location.href = `/crypto-payment?type=${cryptoType}&amount=${finalPrice}&plan=${selectedPlan?.id}&firstName=${userData.firstName}&lastName=${userData.lastName}&email=${userData.email}&discordUsername=${userData.discordUsername}&orderId=${data.orderId}`;
+                          }
+                        } catch (error) {
+                          console.error('Error creating crypto order:', error);
+                        }
                       }}
                       className="space-y-4"
                     >
@@ -508,6 +543,248 @@ export default function CheckoutPage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className="max-w-7xl mx-auto mt-24 md:mt-32">
+          <h2 className="text-xl md:text-3xl font-bold mb-8 text-center">See what other people are saying</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {/* Review 1 */}
+            <div className="bg-[#111111] rounded-lg p-4 md:p-6 hover:scale-[1.02] transition-transform">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-[#ffc62d] rounded-full flex items-center justify-center text-black font-bold text-lg md:text-xl">
+                  M
+                </div>
+                <div>
+                  <div className="font-medium">Michael Chen</div>
+                  <div className="flex text-[#ffc62d]">
+                    {"★".repeat(5)}
+                  </div>
+                </div>
+              </div>
+              <p className="text-gray-300 mb-3 text-sm md:text-base">
+                Started with zero trading knowledge. Within 3 months, I've learned more than I did in a year of trying to figure it out alone. The mentorship and community support are invaluable.
+              </p>
+              <p className="text-gray-500 text-xs md:text-sm">Written Jan 10, 2025, 2 months after purchase</p>
+            </div>
+
+            {/* Review 2 */}
+            <div className="bg-[#111111] rounded-lg p-4 md:p-6 hover:scale-[1.02] transition-transform">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg md:text-xl">
+                  S
+                </div>
+                <div>
+                  <div className="font-medium">Sarah Williams</div>
+                  <div className="flex text-[#ffc62d]">
+                    {"★".repeat(5)}
+                  </div>
+                </div>
+              </div>
+              <p className="text-gray-300 mb-3 text-sm md:text-base">
+                The 200% guarantee caught my attention, but the quality of education kept me here. Already doubled my initial investment following their strategy.
+              </p>
+              <p className="text-gray-500 text-xs md:text-sm">Written Dec 28, 2024, 3 months after purchase</p>
+            </div>
+
+            {/* Review 3 */}
+            <div className="bg-[#111111] rounded-lg p-4 md:p-6 hover:scale-[1.02] transition-transform">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-lg md:text-xl">
+                  R
+                </div>
+                <div>
+                  <div className="font-medium">Robert Martinez</div>
+                  <div className="flex text-[#ffc62d]">
+                    {"★".repeat(5)}
+                  </div>
+                </div>
+              </div>
+              <p className="text-gray-300 mb-3 text-sm md:text-base">
+                Finally found a trading community that delivers real value. Their risk management strategies and market analysis are top-notch.
+              </p>
+              <p className="text-gray-500 text-xs md:text-sm">Written Jan 15, 2025, 1 month after purchase</p>
+            </div>
+
+            {/* Review 4 */}
+            <div className="bg-[#111111] rounded-lg p-4 md:p-6 hover:scale-[1.02] transition-transform lg:col-span-2">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg md:text-xl">
+                  A
+                </div>
+                <div>
+                  <div className="font-medium">Alex Thompson</div>
+                  <div className="flex text-[#ffc62d]">
+                    {"★".repeat(5)}
+                  </div>
+                </div>
+              </div>
+              <p className="text-gray-300 mb-3 text-sm md:text-base">
+                The educational content alone is worth the price. But what really sets them apart is their commitment to each member's success. The mentors are always available to answer questions and guide you through trades.
+              </p>
+              <p className="text-gray-500 text-xs md:text-sm">Written Jan 5, 2025, 2 months after purchase</p>
+            </div>
+
+            {/* Review 5 */}
+            <div className="bg-[#111111] rounded-lg p-4 md:p-6 hover:scale-[1.02] transition-transform lg:col-span-1">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-lg md:text-xl">
+                  J
+                </div>
+                <div>
+                  <div className="font-medium">Jessica Lee</div>
+                  <div className="flex text-[#ffc62d]">
+                    {"★".repeat(5)}
+                  </div>
+                </div>
+              </div>
+              <p className="text-gray-300 mb-3 text-sm md:text-base">
+                Skeptical at first, but their track record speaks for itself. The live trading sessions and real-time alerts have transformed my trading approach.
+              </p>
+              <p className="text-gray-500 text-xs md:text-sm">Written Dec 20, 2024, 3 months after purchase</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Who this is for & FAQ Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto mt-24 md:mt-32">
+          {/* Who this is for */}
+          <div className="order-2 md:order-1">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center md:text-left">Who this is for</h2>
+            <div className="space-y-4">
+              <div className="bg-[#111111] rounded-lg p-6 hover:scale-[1.02] transition-transform">
+                <h3 className="text-lg md:text-xl font-bold mb-3 text-center">Inconsistent Traders</h3>
+                <p className="text-gray-400 text-center text-sm md:text-base">
+                  There are other traders in this community who have been trading for a few months or even years but still aren't profitable.
+                </p>
+              </div>
+
+              <div className="bg-[#111111] rounded-lg p-6 hover:scale-[1.02] transition-transform">
+                <h3 className="text-lg md:text-xl font-bold mb-3 text-center">Semi-Advanced Traders</h3>
+                <p className="text-gray-400 text-center text-sm md:text-base">
+                  We have other traders who make low four figures per month but are looking to scale their trading to five figures per month.
+                </p>
+              </div>
+
+              <div className="bg-[#111111] rounded-lg p-6 hover:scale-[1.02] transition-transform">
+                <h3 className="text-lg md:text-xl font-bold mb-3 text-center">Veteran Traders</h3>
+                <p className="text-gray-400 text-center text-sm md:text-base">
+                  We also have some traders making 7 figures per year who are just here to have a good time and teach others.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* FAQ Section */}
+          <div className="order-1 md:order-2">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 text-center md:text-left">Frequently asked questions</h2>
+            <div className="space-y-4">
+              <div className="bg-[#111111] rounded-lg hover:scale-[1.02] transition-transform">
+                <button 
+                  className="w-full p-4 md:p-6 text-left flex justify-between items-center"
+                  onClick={() => setOpenFaq(openFaq === 0 ? null : 0)}
+                >
+                  <span className="text-base md:text-lg font-medium">Can I cancel my subscription anytime?</span>
+                  <svg 
+                    className={`w-5 h-5 md:w-6 md:h-6 transform transition-transform ${openFaq === 0 ? 'rotate-180' : ''}`}
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {openFaq === 0 && (
+                  <div className="px-4 md:px-6 pb-4 md:pb-6">
+                    <p className="text-gray-400 text-sm md:text-base">Yes, you can cancel your subscription at any time. The cancellation will take effect at the end of your current billing period.</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-[#111111] rounded-lg hover:scale-[1.02] transition-transform">
+                <button 
+                  className="w-full p-4 md:p-6 text-left flex justify-between items-center"
+                  onClick={() => setOpenFaq(openFaq === 1 ? null : 1)}
+                >
+                  <span className="text-base md:text-lg font-medium">How does the 200% guarantee work?</span>
+                  <svg 
+                    className={`w-5 h-5 md:w-6 md:h-6 transform transition-transform ${openFaq === 1 ? 'rotate-180' : ''}`}
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {openFaq === 1 && (
+                  <div className="px-4 md:px-6 pb-4 md:pb-6">
+                    <p className="text-gray-400 text-sm md:text-base">If our trades don't double your subscription fee by the end of your paid period, we'll refund your subscription plus an additional 100%. This applies to all trades shared, whether you took them or not.</p>
+                  </div>
+                )}
+              </div>
+
+            
+
+              <div className="bg-[#111111] rounded-lg hover:scale-[1.02] transition-transform">
+                <button 
+                  className="w-full p-4 md:p-6 text-left flex justify-between items-center"
+                  onClick={() => setOpenFaq(openFaq === 3 ? null : 3)}
+                >
+                  <span className="text-base md:text-lg font-medium">How long until I see results?</span>
+                  <svg 
+                    className={`w-5 h-5 md:w-6 md:h-6 transform transition-transform ${openFaq === 3 ? 'rotate-180' : ''}`}
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {openFaq === 3 && (
+                  <div className="px-4 md:px-6 pb-4 md:pb-6">
+                    <p className="text-gray-400 text-sm md:text-base">Results vary by individual, but most members start seeing improvements in their trading within the first month. Our focus is on sustainable, long-term success through proper education and risk management.</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-[#111111] rounded-lg hover:scale-[1.02] transition-transform">
+                <button 
+                  className="w-full p-4 md:p-6 text-left flex justify-between items-center"
+                  onClick={() => setOpenFaq(openFaq === 4 ? null : 4)}
+                >
+                  <span className="text-base md:text-lg font-medium">What if I'm completely new to trading?</span>
+                  <svg 
+                    className={`w-5 h-5 md:w-6 md:h-6 transform transition-transform ${openFaq === 4 ? 'rotate-180' : ''}`}
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {openFaq === 4 && (
+                  <div className="px-4 md:px-6 pb-4 md:pb-6">
+                    <p className="text-gray-400 text-sm md:text-base">We welcome beginners! Our educational content starts from the basics and progressively builds up. You'll have access to our comprehensive learning materials and supportive community to guide you through your journey.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Back to Plans Button */}
+        <div className="max-w-xl mx-auto mt-16 md:mt-24 text-center">
+          <button
+            onClick={() => {
+              const plansSection = document.querySelector('.plans-section');
+              if (plansSection) {
+                plansSection.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+            className="bg-[#ffc62d] text-black px-8 py-4 rounded-lg font-bold hover:bg-[#e5b228] transition-colors hover:scale-[1.02]"
+          >
+            JOIN NOW
+          </button>
         </div>
       </div>
     </div>

@@ -3,47 +3,49 @@ import { Plan } from '../types';
 export const plans: Plan[] = [
   {
     id: 'cadet',
-    name: 'Cadet',
+    name: 'Ascendant Trader',
     price: 99,
     duration: 'monthly',
     features: [
-      'Access to all TRW Campuses',
-      'Daily live broadcasts',
-      'Daily course updates',
-      'Basic support access',
-      'Community forum access',
-      'Monthly Q&A sessions'
+      '🎥 LIVE Trading Room Access with Penny Pips Monday - Friday every morning',
+      '🔴 300+ hours of education, trade recaps, and technical and psychology training',
+      '🚨 Recieve trading signals/ideas everyday',
+      '📝 Weekly educational sessions, recaps/outlooks, and Q&A every Sunday',
+      '⭐️ Monthly Rewards/Giveaways',
+      '🎁 Free $50,000 Challenge Account'
     ],
     allowedPaymentMethods: ['card'],
   },
   {
     id: 'challenger',
-    name: 'Challenger',
+    name: 'Ascendant Challenger',
     price: 399,
     duration: '4 months',
     features: [
-      'All Cadet features',
+      'All Ascendant Trader features',
       'Priority support access',
-      'Advanced training modules',
+      'Intermediate training modules',
       'Weekly mentorship calls',
       'Private Discord channels',
-      'Trading signals access'
+      '200% guarantee',
+      '🎁 Free $100,000 Challenge Account'
     ],
     allowedPaymentMethods: ['card', 'crypto'],
     popular: true,
   },
   {
     id: 'hero',
-    name: 'Hero',
+    name: 'Ascendant Hero',
     price: 499,
     duration: '1 year',
     features: [
       'All Challenger features',
-      'VIP Discord access',
+      'VIP Discord channels',
       'One-on-one mentoring',
       'Early access to new content',
-      'Exclusive investment opportunities',
-      'Direct line to founders'
+      'Advanced training modules',
+      '200% guarantee',
+      '🎁 Free $500,000 Challenge Account'
     ],
     allowedPaymentMethods: ['crypto'],
   },
