@@ -1,10 +1,10 @@
 'use client';
 
-import { Suspense } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import QRCode from 'qrcode.react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 interface CryptoPrice {
   BTC: number;
@@ -13,151 +13,91 @@ interface CryptoPrice {
 
 function CryptoPaymentContent() {
   const searchParams = useSearchParams();
-  const type = searchParams.get('type');
-  const amount = Number(searchParams.get('amount'));
-  const plan = searchParams.get('plan');
-  const firstName = searchParams.get('firstName');
-  const lastName = searchParams.get('lastName');
-  const email = searchParams.get('email');
-  const discordUsername = searchParams.get('discordUsername');
+  const type = searchParams?.get('type') || '';
+  const amount = Number(searchParams?.get('amount')) || 0;
+  const plan = searchParams?.get('plan') || '';
+  const firstName = searchParams?.get('firstName') || '';
+  const lastName = searchParams?.get('lastName') || '';
+  const email = searchParams?.get('email') || '';
+  const discordUsername = searchParams?.get('discordUsername') || '';
+  const orderId = searchParams?.get('orderId') || '';
 
   const [cryptoPrices, setCryptoPrices] = useState<CryptoPrice>({ BTC: 0, USDT: 1 });
-  const [cryptoAmount, setCryptoAmount] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState(true);
   const [isPriceUpdating, setIsPriceUpdating] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
-  const [orderId, setOrderId] = useState<string | null>(null);
 
   const walletAddresses = {
-    BTC: process.env.NEXT_PUBLIC_WALLET_BTC,
-    USDT: process.env.NEXT_PUBLIC_WALLET_ADDRESS
+    BTC: process.env.NEXT_PUBLIC_WALLET_BTC || '',
+    USDT: process.env.NEXT_PUBLIC_WALLET_ADDRESS || ''
   };
 
   useEffect(() => {
-    // Create order and start monitoring when page loads
-    const createOrder = async () => {
+    const fetchCryptoPrices = async () => {
+      setIsPriceUpdating(true);
       try {
-        // Check if we already have an orderId in the URL
-        const existingOrderId = searchParams.get('orderId');
-        if (existingOrderId) {
-          setOrderId(existingOrderId);
-          startMonitoring(existingOrderId);
-          return;
-        }
-
-        const response = await fetch('/api/create-crypto-payment', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            amount,
-            userData: {
-              firstName,
-              lastName,
-              email,
-              discordUsername,
-              selectedPlan: {
-                id: plan,
-                name: plan,
-                duration: plan === 'cadet' ? 'month' : plan === 'challenger' ? '4 months' : 'year'
-              }
-            },
-            cryptoType: type,
-          }),
-        });
-
+        const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether&vs_currencies=usd&x_cg_demo_api_key=${process.env.NEXT_PUBLIC_CRYPTO_API_KEY}`);
         const data = await response.json();
-        if (data.success) {
-          setOrderId(data.orderId);
-          startMonitoring(data.orderId);
-        }
+        setCryptoPrices({
+          BTC: data.bitcoin.usd,
+          USDT: data.tether.usd
+        });
       } catch (error) {
-        console.error('Error creating order:', error);
+        console.error('Error fetching crypto prices:', error);
       }
+      setIsPriceUpdating(false);
     };
 
-    if (type && amount && plan && firstName && lastName && email && discordUsername) {
-      createOrder();
-    }
-  }, [type, amount, plan, firstName, lastName, email, discordUsername]);
-
-  const startMonitoring = async (newOrderId: string) => {
-    try {
-      const response = await fetch('/api/monitor-crypto', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type,
-          amount: cryptoAmount,
-          walletAddress: walletAddresses[type as keyof typeof walletAddresses],
-          orderId: newOrderId,
-        }),
-      });
-
-      const data = await response.json();
-      if (data.success && data.redirect) {
-        window.location.href = data.redirect;
-      }
-    } catch (error) {
-      console.error('Error monitoring payment:', error);
-    }
-  };
-
-  useEffect(() => {
-    // Fetch initial crypto prices
-    fetchCryptoPrices(true);
-
-    // Set up interval to fetch prices every 30 seconds
-    const interval = setInterval(() => fetchCryptoPrices(false), 30000);
-
+    fetchCryptoPrices();
+    const interval = setInterval(fetchCryptoPrices, 60000); // Update every minute
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    // Calculate crypto amount whenever prices update
-    if (type && amount) {
-      const price = cryptoPrices[type as keyof CryptoPrice];
-      if (price) {
-        setCryptoAmount(amount / price);
-      }
-    }
-  }, [cryptoPrices, type, amount]);
+    if (orderId) {
+      const checkPayment = async () => {
+        try {
+          const response = await fetch('/api/monitor-crypto', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              orderId,
+              type,
+              amount: cryptoAmount,
+              walletAddress: walletAddresses[type as keyof typeof walletAddresses],
+            }),
+          });
 
-  const fetchCryptoPrices = async (isInitial: boolean) => {
-    try {
-      if (!isInitial) setIsPriceUpdating(true);
-      const response = await fetch(
-        `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether&vs_currencies=usd&api_key=${process.env.NEXT_PUBLIC_CRYPTO_API_KEY}`
-      );
-      const data = await response.json();
-      setCryptoPrices({
-        BTC: data.bitcoin.usd,
-        USDT: data.tether.usd
-      });
-    } catch (error) {
-      console.error('Error fetching crypto prices:', error);
-    } finally {
-      if (isInitial) setIsLoading(false);
-      if (!isInitial) setIsPriceUpdating(false);
-    }
-  };
+          const data = await response.json();
+          if (data.confirmed) {
+            setPaymentConfirmed(true);
+            window.location.href = '/success';
+          }
+        } catch (error) {
+          console.error('Error checking payment:', error);
+        }
+      };
 
-  const walletAddress = type ? walletAddresses[type as keyof typeof walletAddresses] || '' : '';
-  
-  // Create QR code value with amount
+      const interval = setInterval(checkPayment, 10000); // Check every 10 seconds
+      return () => clearInterval(interval);
+    }
+  }, [orderId, type, walletAddresses]);
+
+  const cryptoAmount = type === 'BTC' 
+    ? amount / cryptoPrices.BTC 
+    : amount;
+
   const qrValue = type === 'BTC' 
-    ? `bitcoin:${walletAddress}?amount=${cryptoAmount.toFixed(8)}`
-    : `tron:${walletAddress}?token=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t&amount=${cryptoAmount.toFixed(2)}`;
+    ? `bitcoin:${walletAddresses.BTC}?amount=${cryptoAmount}`
+    : walletAddresses.USDT;
 
-  if (isLoading) {
+  if (paymentConfirmed) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-[#ffc62d] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading payment details...</p>
+          <p className="text-gray-400">Payment confirmed! Redirecting...</p>
         </div>
       </div>
     );
@@ -187,7 +127,7 @@ function CryptoPaymentContent() {
 
           <div className="space-y-6">
             <div className="flex justify-center">
-              {walletAddress && (
+              {walletAddresses[type as keyof typeof walletAddresses] && (
                 <div className="bg-white p-4 rounded">
                   <QRCode
                     value={qrValue}
@@ -233,9 +173,9 @@ function CryptoPaymentContent() {
                 </div>
                 <p className="text-sm text-gray-400 mt-4 mb-2">To address:</p>
                 <div className="flex items-center justify-between gap-2 bg-[#111111] p-3 rounded">
-                  <span className="font-mono text-sm break-all">{walletAddress}</span>
+                  <span className="font-mono text-sm break-all">{walletAddresses[type as keyof typeof walletAddresses]}</span>
                   <button
-                    onClick={() => navigator.clipboard.writeText(walletAddress || '')}
+                    onClick={() => navigator.clipboard.writeText(walletAddresses[type as keyof typeof walletAddresses])}
                     className="text-[#ffc62d] hover:text-[#e5b228] transition-colors"
                   >
                     Copy
@@ -243,12 +183,16 @@ function CryptoPaymentContent() {
                 </div>
               </div>
             </div>
-
-            <div className="text-center text-sm text-gray-400">
-              <p>Please note that the {type} amount may change due to price fluctuations.</p>
-              <p>The payment will be confirmed automatically once received.</p>
-            </div>
           </div>
+        </div>
+
+        <div className="text-center">
+          <Link 
+            href="/checkout"
+            className="text-[#ffc62d] hover:text-[#e5b228] transition-colors"
+          >
+            ← Back to Checkout
+          </Link>
         </div>
       </div>
     </div>
@@ -256,16 +200,5 @@ function CryptoPaymentContent() {
 }
 
 export default function CryptoPaymentPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#ffc62d] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading payment details...</p>
-        </div>
-      </div>
-    }>
-      <CryptoPaymentContent />
-    </Suspense>
-  );
+  return <CryptoPaymentContent />;
 } 
