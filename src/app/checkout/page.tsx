@@ -195,9 +195,16 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <div className="mb-12 h-[300px] md:h-[400px] bg-gray-900 rounded-lg">
-          <div className="w-full h-full flex items-center justify-center">
-            <p className="text-gray-500">Video Sales Letter</p>
+        <div className="flex justify-center mb-12">
+          <div className="w-full max-w-[600px] aspect-video relative">
+            <iframe
+              className="absolute top-0 left-0 w-full h-full rounded-lg"
+              src="https://www.youtube.com/embed/WH0lkXUojOA?autoplay=1&mute=1&controls=1&rel=0&showinfo=0&modestbranding=1&loop=1&playlist=WH0lkXUojOA&playsinline=1&iv_load_policy=3"
+              title="Join Now"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
           </div>
         </div>
 
