@@ -1,16 +1,14 @@
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { db } from '@/lib/firebase';
+import { adminDb } from '@/lib/firebase-admin';
 import { sendEmail } from '@/lib/email';
-import { getFirestore } from 'firebase-admin/firestore';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
 });
 
 const endpointSecret = process.env.STRIPE_CHALLENGE_WEBHOOK_SECRET;
-const firestore = getFirestore();
 
 export async function POST(request: Request) {
   try {
@@ -34,7 +32,7 @@ export async function POST(request: Request) {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         
         // Update order status
-        const orders = await firestore.collection('challengeOrders')
+        const orders = await adminDb.collection('challengeOrders')
           .where('paymentIntentId', '==', paymentIntent.id)
           .get();
 
@@ -66,7 +64,7 @@ export async function POST(request: Request) {
         const failedPayment = event.data.object as Stripe.PaymentIntent;
         
         // Update order status
-        const failedOrders = await firestore.collection('challengeOrders')
+        const failedOrders = await adminDb.collection('challengeOrders')
           .where('paymentIntentId', '==', failedPayment.id)
           .get();
 
