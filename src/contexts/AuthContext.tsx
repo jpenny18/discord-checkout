@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
-import { getCurrentUser, getUserProfile, UserProfile } from '@/lib/auth';
+import { getCurrentUser, getUserProfile } from '@/lib/auth';
+import { UserProfile } from '@/types/user';
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
