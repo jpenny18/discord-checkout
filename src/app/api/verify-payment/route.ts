@@ -1,9 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import stripe from '@/lib/stripe';
 import { adminDb } from '@/lib/firebase-admin';
 import type { Stripe } from 'stripe';
 
-export async function POST(request: Request) {
+export const dynamic = 'force-dynamic';
+
+export async function POST(request: NextRequest) {
   try {
     const { paymentIntentId, subscriptionId } = await request.json();
 

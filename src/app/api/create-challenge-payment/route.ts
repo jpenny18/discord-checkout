@@ -1,14 +1,14 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { getFirestore } from 'firebase-admin/firestore';
+import { adminDb } from '@/lib/firebase-admin';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
 });
 
-const firestore = getFirestore();
+export const dynamic = 'force-dynamic';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { paymentMethodId, amount, metadata } = await request.json();
 
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
     });
 
     // Store the challenge order in Firestore with the correct status
-    await firestore.collection('challengeOrders').add({
+    await adminDb.collection('challengeOrders').add({
       paymentIntentId: paymentIntent.id,
       amount,
       status: paymentIntent.status === 'succeeded' ? 'completed' : 'pending',

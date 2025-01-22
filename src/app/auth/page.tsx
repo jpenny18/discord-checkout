@@ -1,13 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn, signUp } from '@/lib/auth';
 import RegisterForm from '@/components/RegisterForm';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
-export default function AuthPage() {
+function LoadingSpinner() {
+  return (
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#ffc62d] border-t-transparent" />
+    </div>
+  );
+}
+
+function AuthContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialTab = searchParams?.get('tab') === 'register' ? 'register' : 'signin';
@@ -238,5 +246,13 @@ export default function AuthPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <AuthContent />
+    </Suspense>
   );
 } 

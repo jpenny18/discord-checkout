@@ -1,10 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase-admin';
 
 const TRON_API_KEY = process.env.NEXT_PUBLIC_TRONGRID_API_KEY;
 const TRON_API_URL = 'https://api.trongrid.io';
 
-export async function POST(request: Request) {
+export const dynamic = 'force-dynamic';
+
+export async function POST(request: NextRequest) {
   try {
     const { type, amount, walletAddress, orderId } = await request.json();
 

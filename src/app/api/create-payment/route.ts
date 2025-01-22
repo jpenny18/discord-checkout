@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import stripe from '@/lib/stripe';
 import { adminDb } from '@/lib/firebase-admin';
 
@@ -22,7 +22,9 @@ const PLAN_CONFIGS = {
 
 type PlanId = keyof typeof PLAN_CONFIGS;
 
-export async function POST(request: Request) {
+export const dynamic = 'force-dynamic';
+
+export async function POST(request: NextRequest) {
   try {
     const { paymentMethodId, amount, userData } = await request.json();
 
