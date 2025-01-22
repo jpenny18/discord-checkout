@@ -266,7 +266,9 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                 quiz={currentLesson.quiz}
                 isCompleted={Boolean(
                   currentLesson.quiz &&
-                  progress?.quizScores?.[currentLesson.id]?.score >= currentLesson.quiz.passingScore
+                  progress?.quizScores?.[currentLesson.id]?.score &&
+                  currentLesson.quiz.passingScore &&
+                  progress.quizScores[currentLesson.id].score >= currentLesson.quiz.passingScore
                 )}
                 onComplete={async (score) => {
                   if (!user || !course || !progress) return;
