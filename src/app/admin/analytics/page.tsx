@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, query, getDocs } from 'firebase/firestore';
+import { collection, query, getDocs, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 interface Analytics {
@@ -29,43 +29,37 @@ export default function AnalyticsPage() {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        // Fetch users
-        const usersQuery = query(collection(db, 'users'));
-        const usersSnapshot = await getDocs(usersQuery);
-        const totalUsers = usersSnapshot.size;
-        const activeSubscriptions = usersSnapshot.docs.filter(
-          doc => doc.data().subscription?.status === 'active'
-        ).length;
+        // Limit queries and run them in parallel
+        const [usersSnapshot, ordersSnapshot, signalsSnapshot] = await Promise.all([
+          getDocs(query(collection(db, 'users'), limit(1000))),
+          getDocs(query(collection(db, 'orders'), limit(1000))),
+          getDocs(query(collection(db, 'signals'), limit(1000)))
+        ]);
 
-        // Fetch orders
-        const ordersQuery = query(collection(db, 'orders'));
-        const ordersSnapshot = await getDocs(ordersQuery);
-        const totalRevenue = ordersSnapshot.docs.reduce(
-          (sum, doc) => sum + (doc.data().amount || 0),
-          0
+        // Process data in chunks to avoid blocking UI
+        const activeSubscriptions = usersSnapshot.docs.reduce((count, doc) => 
+          doc.data().subscription?.status === 'active' ? count + 1 : count, 0
         );
 
-        // Fetch signals
-        const signalsQuery = query(collection(db, 'signals'));
-        const signalsSnapshot = await getDocs(signalsQuery);
-        const signalsIssued = signalsSnapshot.size;
-        
-        // Calculate success rate (assuming signals have a result field)
-        const successfulSignals = signalsSnapshot.docs.filter(
-          doc => doc.data().result && doc.data().result > 0
+        const totalRevenue = ordersSnapshot.docs.reduce((sum, doc) => 
+          sum + (doc.data().amount || 0), 0
+        );
+
+        const signalsData = signalsSnapshot.docs.map(doc => doc.data());
+        const successfulSignals = signalsData.filter(
+          signal => signal.result && signal.result > 0
         ).length;
-        const avgSignalSuccess = signalsIssued > 0 
-          ? (successfulSignals / signalsIssued) * 100 
-          : 0;
 
         setAnalytics({
           totalRevenue,
           activeSubscriptions,
-          totalUsers,
-          signalsIssued,
-          avgSignalSuccess,
-          topPlans: [], // To be implemented with actual data
-          revenueByMonth: [] // To be implemented with actual data
+          totalUsers: usersSnapshot.size,
+          signalsIssued: signalsSnapshot.size,
+          avgSignalSuccess: signalsSnapshot.size > 0 
+            ? (successfulSignals / signalsSnapshot.size) * 100 
+            : 0,
+          topPlans: [],
+          revenueByMonth: []
         });
         setLoading(false);
       } catch (error) {

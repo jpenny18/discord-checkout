@@ -28,6 +28,7 @@ export default function SignalsPage() {
     status: 'active'
   });
   const [editingSignal, setEditingSignal] = useState<string | null>(null);
+  const [deletingSignals, setDeletingSignals] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const signalsQuery = query(
@@ -71,12 +72,17 @@ export default function SignalsPage() {
   };
 
   const handleDelete = async (signalId: string) => {
-    if (window.confirm('Are you sure you want to delete this signal?')) {
-      try {
-        await deleteDoc(doc(db, 'signals', signalId));
-      } catch (error) {
-        console.error('Error deleting signal:', error);
-      }
+    try {
+      setDeletingSignals(prev => new Set(Array.from(prev).concat(signalId)));
+      await deleteDoc(doc(db, 'signals', signalId));
+    } catch (error) {
+      console.error('Error deleting signal:', error);
+    } finally {
+      setDeletingSignals(prev => {
+        const newSet = new Set(Array.from(prev));
+        newSet.delete(signalId);
+        return newSet;
+      });
     }
   };
 
@@ -299,9 +305,14 @@ export default function SignalsPage() {
                   </button>
                   <button
                     onClick={() => handleDelete(signal.id)}
-                    className="px-2 py-1 rounded text-xs font-medium bg-red-900 text-red-200 hover:bg-red-800"
+                    disabled={deletingSignals.has(signal.id)}
+                    className={`px-2 py-1 rounded text-xs font-medium ${
+                      deletingSignals.has(signal.id)
+                        ? 'bg-gray-700 text-gray-300 cursor-not-allowed'
+                        : 'bg-red-900 text-red-200 hover:bg-red-800'
+                    }`}
                   >
-                    Delete
+                    {deletingSignals.has(signal.id) ? 'Deleting...' : 'Delete'}
                   </button>
                 </div>
               </div>
