@@ -28,6 +28,18 @@ export default function CheckoutPage() {
   const [recurringBillingAccepted, setRecurringBillingAccepted] = useState(false);
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  // Add payment processing overlay
+  const PaymentProcessingOverlay = () => (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-[#1a1a1a] p-8 rounded-lg max-w-md w-full mx-4 text-center">
+        <div className="w-16 h-16 border-4 border-[#ffc62d] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <h3 className="text-xl font-semibold mb-2">Processing Payment</h3>
+        <p className="text-gray-400">Please do not close this window. Your payment is being processed...</p>
+      </div>
+    </div>
+  );
 
   // Add loading effect on initial render
   useEffect(() => {
@@ -115,6 +127,7 @@ export default function CheckoutPage() {
     }
 
     try {
+      setIsProcessingPayment(true);
       const response = await fetch('/api/create-payment', {
         method: 'POST',
         headers: {
@@ -134,23 +147,51 @@ export default function CheckoutPage() {
       });
 
       const data = await response.json();
-      if (data.success) {
-        window.location.href = '/success';
-      } else if (data.requires_action) {
-        // Handle 3D Secure if needed
-        setFormErrors(prev => ({
-          ...prev,
-          payment: 'Additional authentication required. Please try again.'
-        }));
+      
+      if (data.requires_action) {
+        // Handle 3D Secure authentication
+        const stripe = await stripePromise;
+        if (!stripe) throw new Error('Stripe not initialized');
+
+        const { error, paymentIntent } = await stripe.confirmCardPayment(
+          data.payment_intent_client_secret
+        );
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        // Verify the payment was successful
+        const verifyResponse = await fetch('/api/verify-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            paymentIntentId: data.payment_intent_id,
+            subscriptionId: data.subscription_id
+          }),
+        });
+
+        const verifyData = await verifyResponse.json();
+        if (verifyData.success) {
+          window.location.href = verifyData.redirectUrl;
+        } else {
+          throw new Error(verifyData.error || 'Payment verification failed');
+        }
+      } else if (data.success) {
+        window.location.href = data.redirectUrl;
       } else {
-        throw new Error(data.error);
+        throw new Error(data.error || 'Payment failed');
       }
     } catch (error) {
       console.error('Payment error:', error);
       setFormErrors(prev => ({
         ...prev,
-        payment: 'Payment failed. Please try again.'
+        payment: error instanceof Error ? error.message : 'Payment failed. Please try again.'
       }));
+    } finally {
+      setIsProcessingPayment(false);
     }
   };
 
@@ -177,6 +218,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      {isProcessingPayment && <PaymentProcessingOverlay />}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col items-center text-center mb-12">
           <div className="mb-4">

@@ -88,6 +88,7 @@ export async function POST(request: Request) {
         payment_method_types: ['card'],
         save_default_payment_method: 'on_subscription'
       },
+      off_session: true,
       metadata: {
         plan: userData.selectedPlan.name || 'Unknown Plan',
         duration: userData.selectedPlan.duration || 'N/A',
@@ -102,21 +103,27 @@ export async function POST(request: Request) {
     const invoice = subscription.latest_invoice as any;
     const paymentIntent = invoice.payment_intent;
 
-    if (paymentIntent.status === 'requires_payment_method') {
-      throw new Error('Payment method failed. Please try another card.');
+    if (!paymentIntent) {
+      throw new Error('No payment intent found');
     }
 
-    if (paymentIntent.status === 'requires_confirmation' || paymentIntent.status === 'requires_action') {
+    // Confirm the payment intent immediately
+    const confirmedPaymentIntent = await stripe.paymentIntents.confirm(paymentIntent.id, {
+      payment_method: paymentMethodId,
+      return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success`,
+    });
+
+    if (confirmedPaymentIntent.status === 'requires_action') {
       return NextResponse.json({
         success: false,
         requires_action: true,
-        payment_intent_client_secret: paymentIntent.client_secret,
-        payment_intent_id: paymentIntent.id,
+        payment_intent_client_secret: confirmedPaymentIntent.client_secret,
+        payment_intent_id: confirmedPaymentIntent.id,
         subscription_id: subscription.id
       });
     }
 
-    if (paymentIntent.status === 'succeeded') {
+    if (confirmedPaymentIntent.status === 'succeeded') {
       // Create order in Firestore
       const orderRef = await adminDb.collection('orders').add({
         ...userData,
@@ -124,7 +131,7 @@ export async function POST(request: Request) {
         paymentMethod: 'card',
         stripeCustomerId: customer.id,
         stripeSubscriptionId: subscription.id,
-        stripePaymentIntentId: paymentIntent.id,
+        stripePaymentIntentId: confirmedPaymentIntent.id,
         status: 'completed',
         timestamp: new Date(),
         plan: userData.selectedPlan.name || 'Unknown Plan',
@@ -167,7 +174,7 @@ export async function POST(request: Request) {
       });
     }
 
-    throw new Error(`Payment failed with status: ${paymentIntent.status}`);
+    throw new Error(`Payment failed with status: ${confirmedPaymentIntent.status}`);
 
   } catch (error: any) {
     console.error('Payment error:', error);

@@ -72,67 +72,11 @@ export default function CardPaymentForm({ onPaymentComplete, amount, userData, s
         throw new Error('Payment method creation failed');
       }
 
-      // Call the backend to process payment
-      const response = await fetch('/api/create-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          paymentMethodId: paymentMethod.id,
-          amount,
-          userData: {
-            ...userData,
-            selectedPlan,
-          },
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!result.success) {
-        if (result.requires_action && result.payment_intent_client_secret) {
-          const { error: confirmError } = await stripe.confirmCardPayment(
-            result.payment_intent_client_secret
-          );
-
-          if (confirmError) {
-            throw new Error(confirmError.message);
-          }
-
-          // After confirmation is complete, verify the payment
-          const verifyResponse = await fetch('/api/verify-payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              paymentIntentId: result.payment_intent_id,
-              subscriptionId: result.subscription_id,
-            }),
-          });
-
-          const verifyResult = await verifyResponse.json();
-          if (!verifyResult.success) {
-            throw new Error(verifyResult.error || 'Payment verification failed');
-          }
-
-          // Payment successful after verification
-          if (verifyResult.redirectUrl) {
-            window.location.href = verifyResult.redirectUrl;
-            return;
-          }
-        } else {
-          throw new Error(result.error || 'Payment failed');
-        }
-      }
-
-      // Payment successful
-      if (result.redirectUrl) {
-        window.location.href = result.redirectUrl;
-      }
-
-      setProcessing(false);
+      // Call onPaymentComplete with the payment method ID
+      await onPaymentComplete(paymentMethod.id);
     } catch (err) {
       console.error('Payment error:', err);
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
-      setProcessing(false);
       
       // Reset the card elements
       const cardNumber = elements.getElement(CardNumberElement);
@@ -141,6 +85,8 @@ export default function CardPaymentForm({ onPaymentComplete, amount, userData, s
       if (cardNumber) cardNumber.clear();
       if (cardExpiry) cardExpiry.clear();
       if (cardCvc) cardCvc.clear();
+    } finally {
+      setProcessing(false);
     }
   };
 

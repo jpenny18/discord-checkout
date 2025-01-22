@@ -8,7 +8,6 @@ export interface UserData {
   discordUsername: string;
   selectedPlan?: Plan;
   paymentMethod?: PaymentMethod;
-  timestamp?: Date;
   status?: 'pending' | 'completed' | 'failed';
 }
 
@@ -22,13 +21,30 @@ export interface Plan {
   allowedPaymentMethods: PaymentMethod[];
 }
 
-export interface Order extends UserData {
+export interface Order extends Omit<UserData, 'timestamp'> {
   id: string;
   amount: number;
+  plan?: string;
+  duration?: string;
   stripePaymentIntentId?: string;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
   cryptoType?: CryptoType;
   walletAddress?: string;
   transactionHash?: string;
+  timestamp?: {
+    toDate: () => Date;
+  };
+  createdAt?: string;
+  status: 'pending' | 'completed' | 'failed';
+  paymentMethod: PaymentMethod;
+  isRecurring?: boolean;
+  billingInterval?: string;
+  billingIntervalCount?: number;
+  // Challenge-specific fields
+  challengeType?: string;
+  challengeAmount?: string;
+  platform?: string;
 }
 
 export interface CryptoPayment {
