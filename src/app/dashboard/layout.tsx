@@ -56,12 +56,12 @@ export default function DashboardLayout({
             <Image
               src="/images/logo.png"
               alt="Ascendant Academy Logo"
-              width={40}
-              height={40}
+              width={50}
+              height={50}
               className="rounded-full"
             />
             <span className="ml-2 text-lg font-bold text-white">
-              Ascendant Academy
+              
             </span>
           </div>
 

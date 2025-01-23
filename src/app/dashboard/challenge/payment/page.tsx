@@ -141,7 +141,7 @@ export default function PaymentPage() {
       </div>
 
       {/* Payment Methods */}
-      <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto">
         <h2 className="text-xl font-semibold mb-4">Select Payment Method</h2>
         
         {/* Card Payment Button */}
@@ -187,8 +187,8 @@ export default function PaymentPage() {
 
             {isCardExpanded && (
               <div className="border border-t-0 border-[#ffc62d] rounded-b-lg bg-[#111111] p-4">
-                <Elements stripe={stripePromise}>
-                  <CardPaymentForm
+          <Elements stripe={stripePromise}>
+            <CardPaymentForm
                     onPaymentComplete={async (paymentMethodId: string) => {
                       try {
                         setIsProcessingPayment(true);
@@ -205,9 +205,9 @@ export default function PaymentPage() {
                             amount: Number(challengeData.price),
                             metadata: {
                               type: 'challenge',
-                              challengeType: challengeData.type,
-                              challengeAmount: challengeData.amount,
-                              platform: challengeData.platform,
+                challengeType: challengeData.type,
+                challengeAmount: challengeData.amount,
+                platform: challengeData.platform,
                               ...challengeData.formData,
                               paymentMethod: 'card'
                             }
@@ -291,15 +291,15 @@ export default function PaymentPage() {
                       features: [],
                       popular: false,
                       allowedPaymentMethods: ['card', 'crypto']
-                    }}
-                  />
-                </Elements>
+              }}
+            />
+          </Elements>
 
                 {formErrors.payment && (
                   <div className="mt-4 p-4 bg-red-500/10 border border-red-500 rounded-lg">
                     <p className="text-red-500 text-sm">{formErrors.payment}</p>
-                  </div>
-                )}
+        </div>
+      )}
 
                 <div className="mt-4 p-4 border border-gray-700 rounded-lg bg-black">
                   <div className="flex justify-between items-center">
@@ -349,18 +349,18 @@ export default function PaymentPage() {
 
             {isCryptoExpanded && (
               <div className="border border-t-0 border-[#ffc62d] rounded-b-lg bg-[#111111] p-4">
-                <ChallengeCryptoPayment
-                  amount={getCryptoPrice()}
+          <ChallengeCryptoPayment
+            amount={getCryptoPrice()}
                   onClose={() => setIsCryptoExpanded(false)}
-                  metadata={{
-                    challengeType: challengeData.type,
-                    challengeAmount: challengeData.amount,
-                    platform: challengeData.platform,
+            metadata={{
+              challengeType: challengeData.type,
+              challengeAmount: challengeData.amount,
+              platform: challengeData.platform,
                     ...challengeData.formData
-                  }}
-                />
-              </div>
-            )}
+            }}
+          />
+        </div>
+      )}
           </div>
         </div>
       </div>
