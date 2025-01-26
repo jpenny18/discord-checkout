@@ -151,11 +151,11 @@ export default function GauntletChallengePage() {
           <ParallaxBanner />
           <div className="container mx-auto px-4">
             {/* Main Headers - Centered */}
-            <div className="text-center mb-20">
+            <div className="text-center mb-8 md:mb-20">
               <motion.h1 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4"
+                className="text-3xl sm:text-5xl md:text-7xl font-bold mb-4 whitespace-nowrap"
               >
                 GAUNTLET <span className="text-yellow-500 drop-shadow-[0_0_25px_rgba(234,179,8,0.3)]">PROGRAM</span>
               </motion.h1>
@@ -163,23 +163,51 @@ export default function GauntletChallengePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-lg sm:text-xl md:text-2xl text-gray-400"
+                className="text-sm sm:text-xl md:text-2xl text-gray-400"
               >
                 PROVE YOU CAN TRADE FIRST, PAY THE REST AFTER PASSING
               </motion.h2>
             </div>
 
-            {/* Two Column Layout for Text and Image */}
+            {/* Mobile-specific layout */}
             <div className="flex flex-col md:flex-row items-center justify-between max-w-6xl mx-auto">
-              {/* Left Column - Benefits */}
+              {/* Image for mobile comes after headers */}
+              <motion.div
+                initial={{ scale: 0.9 }}
+                animate={{ 
+                  y: [0, -20, 0],
+                  scale: 1,
+                }}
+                transition={{ 
+                  y: {
+                    duration: 6,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  },
+                  scale: {
+                    duration: 1
+                  }
+                }}
+                className="order-2 md:order-last relative w-60 h-60 md:w-80 md:h-80 mb-8 md:mb-0"
+              >
+                <Image
+                  src="/images/gauntlet.png"
+                  alt="Gauntlet Challenge"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </motion.div>
+
+              {/* Benefits text comes last on mobile */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
-                className="md:w-1/2 mb-8 md:mb-0"
+                className="order-3 md:order-first md:w-1/2"
               >
-                <h3 className="text-2xl font-bold mb-6">GAUNTLET BENEFITS</h3>
-                <ul className="space-y-4">
+                <h3 className="text-xl font-bold mb-4 md:mb-6">GAUNTLET BENEFITS</h3>
+                <ul className="space-y-2 md:space-y-4 text-sm md:text-base">
                   <li className="flex items-center gap-2">
                     <span>• </span>
                     <span>The best funding program for your buck</span>
@@ -206,100 +234,69 @@ export default function GauntletChallengePage() {
                   </li>
                 </ul>
               </motion.div>
-
-              {/* Right Column - Image */}
-              <motion.div
-                initial={{ scale: 0.9 }}
-                animate={{ 
-                  y: [0, -20, 0],
-                  scale: 1,
-                }}
-                transition={{ 
-                  y: {
-                    duration: 6,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  },
-                  scale: {
-                    duration: 1
-                  }
-                }}
-                className="relative w-60 h-60 md:w-80 md:h-80"
-              >
-                <Image
-                  src="/images/gauntlet.png"
-                  alt="Gauntlet Challenge"
-                  fill
-                  className="object-contain"
-                  priority
-                />
-              </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Rest of the sections with parallax effects */}
-        <section className="py-12 bg-black/50 relative z-10">
-          <div className="parallax-content" style={{ transform: 'translateZ(-10px)' }}>
-            {/* Metrics Section Content */}
-            <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-center mb-8">CHALLENGE METRICS</h2>
-              
-              {/* Account Size Selector */}
-              <div className="flex justify-center gap-4 mb-8">
-                {accountSizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`px-6 py-2 rounded-lg transition-all ${
-                      selectedSize === size
-                        ? 'bg-yellow-500 text-black font-semibold'
-                        : 'bg-zinc-800 text-white hover:bg-zinc-700'
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-
-              {/* Metrics Display */}
-              <div className="bg-[#111111] rounded-lg p-6 max-w-4xl mx-auto">
-                <ChallengeMetrics type="Gauntlet" amount={selectedSize} />
-              </div>
-
-              {/* CTA Button */}
-              <div className="text-center mt-8">
-                <Link
-                  href="/dashboard/challenge"
-                  className="inline-block bg-yellow-500 text-black px-8 py-4 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+        {/* Challenge Metrics Section - Scaled down for mobile */}
+        <section className="py-8 md:py-12 bg-black/50 relative z-10">
+          <div className="container mx-auto px-2 md:px-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8">CHALLENGE METRICS</h2>
+            
+            {/* Account Size Selector */}
+            <div className="flex justify-center gap-2 md:gap-4 mb-6 md:mb-8">
+              {accountSizes.map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSize(size)}
+                  className={`px-3 md:px-6 py-1 md:py-2 rounded-lg text-sm md:text-base transition-all ${
+                    selectedSize === size
+                      ? 'bg-yellow-500 text-black font-semibold'
+                      : 'bg-zinc-800 text-white hover:bg-zinc-700'
+                  }`}
                 >
-                  START GAUNTLET
-                </Link>
-              </div>
+                  {size}
+                </button>
+              ))}
+            </div>
+
+            {/* Metrics Display - Scaled for mobile */}
+            <div className="bg-[#111111] rounded-lg p-3 md:p-6 max-w-4xl mx-auto text-sm md:text-base">
+              <ChallengeMetrics type="Gauntlet" amount={selectedSize} />
+            </div>
+
+            {/* CTA Button */}
+            <div className="text-center mt-8">
+              <Link
+                href="/dashboard/challenge"
+                className="inline-block bg-yellow-500 text-black px-8 py-4 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+              >
+                START GAUNTLET
+              </Link>
             </div>
           </div>
         </section>
 
-        {/* Rules Section with Parallax */}
+        {/* Rules Section with Parallax - Smaller cards on mobile */}
         <section className="py-12 bg-black relative z-10">
           <div className="parallax-content" style={{ transform: 'translateZ(-5px)' }}>
             <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-center mb-12">CHALLENGE RULES</h2>
-              <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">CHALLENGE RULES</h2>
+              <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
                 {rules.map((rule, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-start gap-3 bg-[#111111] p-4 rounded-lg h-[160px]"
+                    className="flex items-start gap-2 md:gap-3 bg-[#111111] p-3 md:p-4 rounded-lg h-[120px] md:h-[160px]"
                   >
                     <div className="text-yellow-500 flex-shrink-0">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
-                    <p className="text-gray-300 text-xs leading-relaxed">{rule}</p>
+                    <p className="text-[10px] md:text-xs leading-relaxed text-gray-300">{rule}</p>
                   </motion.div>
                 ))}
               </div>
@@ -307,42 +304,43 @@ export default function GauntletChallengePage() {
           </div>
         </section>
 
-        {/* Scaling Plan Section with Parallax */}
-        <section className="py-12 bg-black/50 relative z-10">
-          <div className="parallax-content" style={{ transform: 'translateZ(-8px)' }}>
-            <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-center mb-12">SCALING PLAN</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
+        {/* Scaling Plan Section - Scaled down for mobile */}
+        <section className="py-8 md:py-12 bg-black/50 relative z-10">
+          <div className="container mx-auto px-2 md:px-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-12">SCALING PLAN</h2>
+            <div className="overflow-x-auto">
+              <div className="inline-block min-w-full">
+                <table className="w-full text-left text-[10px] md:text-base">
                   <thead>
                     <tr>
-                      <th className="py-4 px-6 bg-yellow-500/10 text-yellow-500">Account Balance</th>
-                      <th className="py-4 px-6 bg-yellow-500/10 text-yellow-500">Max Loss (6%)</th>
-                      <th className="py-4 px-6 bg-yellow-500/10 text-yellow-500">Profit Target (6%)</th>
-                      <th className="py-4 px-6 bg-yellow-500/10 text-yellow-500">Profit Split</th>
+                      <th className="py-2 md:py-4 px-2 md:px-6 bg-yellow-500/10 text-yellow-500">Account Balance</th>
+                      <th className="py-2 md:py-4 px-2 md:px-6 bg-yellow-500/10 text-yellow-500">Max Loss (6%)</th>
+                      <th className="py-2 md:py-4 px-2 md:px-6 bg-yellow-500/10 text-yellow-500">Profit Target (6%)</th>
+                      <th className="py-2 md:py-4 px-2 md:px-6 bg-yellow-500/10 text-yellow-500">Profit Split</th>
                     </tr>
                   </thead>
                   <tbody>
                     {scalingPlan.map((level, index) => (
                       <tr key={index} className="border-b border-zinc-800/50 hover:border-yellow-500/50 transition-colors">
-                        <td className="py-4 px-6">{level.balance}</td>
-                        <td className="py-4 px-6">{level.maxLoss}</td>
-                        <td className="py-4 px-6">{level.target}</td>
-                        <td className="py-4 px-6">{level.split}</td>
+                        <td className="py-2 md:py-4 px-2 md:px-6 whitespace-nowrap">{level.balance}</td>
+                        <td className="py-2 md:py-4 px-2 md:px-6 whitespace-nowrap">{level.maxLoss}</td>
+                        <td className="py-2 md:py-4 px-2 md:px-6 whitespace-nowrap">{level.target}</td>
+                        <td className="py-2 md:py-4 px-2 md:px-6 whitespace-nowrap">{level.split}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-                {/* Add CTA Button below scaling plan table */}
-                <div className="text-center mt-12">
-                  <Link
-                    href="/dashboard/challenge"
-                    className="inline-block bg-yellow-500 text-black px-8 py-4 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
-                  >
-                    START GAUNTLET
-                  </Link>
-                </div>
               </div>
+            </div>
+
+            {/* CTA Button */}
+            <div className="text-center mt-8">
+              <Link
+                href="/dashboard/challenge"
+                className="inline-block bg-yellow-500 text-black px-8 py-4 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+              >
+                START GAUNTLET
+              </Link>
             </div>
           </div>
         </section>

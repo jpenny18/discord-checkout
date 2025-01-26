@@ -190,11 +190,11 @@ export default function AscendantChallengePage() {
           <ParallaxBanner />
           <div className="container mx-auto px-4">
             {/* Main Headers - Centered */}
-            <div className="text-center mb-20">
+            <div className="text-center mb-8 md:mb-20">
               <motion.h1 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4"
+                className="text-3xl sm:text-5xl md:text-7xl font-bold mb-4 whitespace-nowrap"
               >
                 ASCENDANT <span className="text-yellow-500 drop-shadow-[0_0_25px_rgba(234,179,8,0.3)]">PROGRAM</span>
               </motion.h1>
@@ -202,7 +202,7 @@ export default function AscendantChallengePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-yellow-500 drop-shadow-[0_0_25px_rgba(234,179,8,0.3)]"
+                className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 text-yellow-500 drop-shadow-[0_0_25px_rgba(234,179,8,0.3)] whitespace-nowrap"
               >
                 INSTANT FUNDING PROGRAM
               </motion.h2>
@@ -210,27 +210,15 @@ export default function AscendantChallengePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="text-xl sm:text-2xl md:text-3xl text-gray-400"
+                className="text-sm sm:text-2xl md:text-3xl text-gray-400"
               >
                 ONE STEP CHALLENGE
               </motion.h3>
             </div>
 
-            {/* Two Column Layout for Text and Image */}
+            {/* Mobile-specific layout */}
             <div className="flex flex-col md:flex-row items-center justify-between max-w-6xl mx-auto">
-              {/* Left Column - Text */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-                className="md:w-1/2 mb-8 md:mb-0"
-              >
-                <p className="text-lg sm:text-xl text-gray-300">
-                  Trade our one step program with no time limits and double your account every milestone to grow your account up to <span className="text-yellow-500">$4,000,000</span>
-                </p>
-              </motion.div>
-
-              {/* Right Column - Image */}
+              {/* Image for mobile comes after headers */}
               <motion.div
                 initial={{ scale: 0.9 }}
                 animate={{ 
@@ -247,7 +235,7 @@ export default function AscendantChallengePage() {
                     duration: 1
                   }
                 }}
-                className="relative w-60 h-60 md:w-80 md:h-80"
+                className="order-2 md:order-last relative w-60 h-60 md:w-80 md:h-80 mb-8 md:mb-0"
               >
                 <Image
                   src="/images/ascendant.png"
@@ -257,109 +245,122 @@ export default function AscendantChallengePage() {
                   priority
                 />
               </motion.div>
+
+              {/* Description text comes last on mobile */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="order-3 md:order-first md:w-1/2 text-center md:text-left"
+              >
+                <p className="text-sm md:text-xl text-gray-300">
+                  Trade our one step program with no time limits and double your account every milestone to grow your account up to <span className="text-yellow-500">$4,000,000</span>
+                </p>
+              </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Metrics Section */}
-        <section className="py-12 bg-black/50 relative z-10">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-8">CHALLENGE METRICS</h2>
+        {/* Metrics Section - Scaled down for mobile */}
+        <section className="py-8 md:py-12 bg-black/50 relative z-10">
+          <div className="container mx-auto px-2 md:px-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8">CHALLENGE METRICS</h2>
             
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="w-full text-left text-[10px] md:text-base">
                 <thead>
                   <tr>
-                    <th className="py-4 px-6 text-yellow-500">APPLY FOR</th>
-                    <th className="py-4 px-6 text-yellow-500 text-center">$10,000</th>
-                    <th className="py-4 px-6 text-yellow-500 text-center">$25,000</th>
-                    <th className="py-4 px-6 text-yellow-500 text-center">$50,000</th>
+                    <th className="py-2 md:py-4 px-2 md:px-6 text-yellow-500">APPLY FOR</th>
+                    <th className="py-2 md:py-4 px-2 md:px-6 text-yellow-500 text-center">$10,000</th>
+                    <th className="py-2 md:py-4 px-2 md:px-6 text-yellow-500 text-center">$25,000</th>
+                    <th className="py-2 md:py-4 px-2 md:px-6 text-yellow-500 text-center">$50,000</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="border-b border-zinc-800/50">
-                    <td className="py-4 px-6">Evaluation Target</td>
-                    <td className="py-4 px-6 text-center">10%</td>
-                    <td className="py-4 px-6 text-center">10%</td>
-                    <td className="py-4 px-6 text-center">10%</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6">Evaluation Target</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">10%</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">10%</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">10%</td>
                   </tr>
                   <tr className="border-b border-zinc-800/50">
-                    <td className="py-4 px-6">Max Drawdown</td>
-                    <td className="py-4 px-6 text-center">8%</td>
-                    <td className="py-4 px-6 text-center">8%</td>
-                    <td className="py-4 px-6 text-center">8%</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6">Max Drawdown</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">8%</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">8%</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">8%</td>
                   </tr>
                   <tr className="border-b border-zinc-800/50">
-                    <td className="py-4 px-6">Max Daily Drawdown</td>
-                    <td className="py-4 px-6 text-center">4%</td>
-                    <td className="py-4 px-6 text-center">4%</td>
-                    <td className="py-4 px-6 text-center">4%</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6">Max Daily Drawdown</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">4%</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">4%</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">4%</td>
                   </tr>
                   <tr className="border-b border-zinc-800/50">
-                    <td className="py-4 px-6">Profit Split</td>
-                    <td className="py-4 px-6 text-center">up to 100%</td>
-                    <td className="py-4 px-6 text-center">up to 100%</td>
-                    <td className="py-4 px-6 text-center">up to 100%</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6">Profit Split</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">up to 100%</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">up to 100%</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">up to 100%</td>
                   </tr>
                   <tr className="border-b border-zinc-800/50">
-                    <td className="py-4 px-6">Time Limit</td>
-                    <td className="py-4 px-6 text-center">Unlimited</td>
-                    <td className="py-4 px-6 text-center">Unlimited</td>
-                    <td className="py-4 px-6 text-center">Unlimited</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6">Time Limit</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">Unlimited</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">Unlimited</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">Unlimited</td>
                   </tr>
                   <tr className="border-b border-zinc-800/50">
-                    <td className="py-4 px-6">Leverage</td>
-                    <td className="py-4 px-6 text-center">1:50</td>
-                    <td className="py-4 px-6 text-center">1:50</td>
-                    <td className="py-4 px-6 text-center">1:50</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6">Leverage</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">1:50</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">1:50</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">1:50</td>
                   </tr>
                   <tr className="border-b border-zinc-800/50">
-                    <td className="py-4 px-6">One Time Fee</td>
-                    <td className="py-4 px-6 text-center">$250</td>
-                    <td className="py-4 px-6 text-center">$500</td>
-                    <td className="py-4 px-6 text-center">$1000</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6">One Time Fee</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">$250</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">$500</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">$1000</td>
                   </tr>
                   <tr className="border-b border-zinc-800/50">
-                    <td className="py-4 px-6">Bonuses</td>
-                    <td className="py-4 px-6 text-center">From $15</td>
-                    <td className="py-4 px-6 text-center">From $25</td>
-                    <td className="py-4 px-6 text-center">From $50</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6">Bonuses</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">From $15</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">From $25</td>
+                    <td className="py-2 md:py-4 px-2 md:px-6 text-center">From $50</td>
                   </tr>
                 </tbody>
               </table>
-              {/* Add CTA Button below metrics table */}
-              <div className="text-center mt-8">
-                <Link
-                  href="/dashboard/challenge"
-                  className="inline-block bg-yellow-500 text-black px-8 py-4 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
-                >
-                  START ASCENDANT
-                </Link>
-              </div>
+            </div>
+
+            {/* CTA Button */}
+            <div className="text-center mt-8">
+              <Link
+                href="/dashboard/challenge"
+                className="inline-block bg-yellow-500 text-black px-8 py-4 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+              >
+                START ASCENDANT
+              </Link>
             </div>
           </div>
         </section>
 
-        {/* Rules Section with Parallax */}
+        {/* Rules Section with Parallax - Smaller cards on mobile */}
         <section className="py-12 bg-black relative z-10">
           <div className="parallax-content" style={{ transform: 'translateZ(-5px)' }}>
             <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-center mb-12">CHALLENGE RULES</h2>
-              <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">CHALLENGE RULES</h2>
+              <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
                 {rules.map((rule, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-start gap-3 bg-[#111111] p-4 rounded-lg h-[160px]"
+                    className="flex items-start gap-2 md:gap-3 bg-[#111111] p-3 md:p-4 rounded-lg h-[120px] md:h-[160px]"
                   >
                     <div className="text-yellow-500 flex-shrink-0">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
-                    <p className="text-gray-300 text-xs leading-relaxed">{rule}</p>
+                    <p className="text-[10px] md:text-xs leading-relaxed text-gray-300">{rule}</p>
                   </motion.div>
                 ))}
               </div>
@@ -367,13 +368,13 @@ export default function AscendantChallengePage() {
           </div>
         </section>
 
-        {/* Scaling Plan Section */}
-        <section className="py-12 bg-black/50 relative z-10">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">SCALING PLAN</h2>
+        {/* Scaling Plan Section - Scaled down for mobile */}
+        <section className="py-8 md:py-12 bg-black/50 relative z-10">
+          <div className="container mx-auto px-2 md:px-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-12">SCALING PLAN</h2>
             
             {/* Plan Size Selector */}
-            <div className="flex justify-center gap-4 mb-8">
+            <div className="flex justify-center gap-2 md:gap-4 mb-6 md:mb-8">
               {accountSizes.map((size) => (
                 <button
                   key={size}
@@ -381,7 +382,7 @@ export default function AscendantChallengePage() {
                     setSelectedSize(size);
                     setSelectedPlan(size.replace('$', '').replace(',000', 'K') as '10K' | '25K' | '50K');
                   }}
-                  className={`px-6 py-2 rounded-lg transition-all ${
+                  className={`px-3 md:px-6 py-1 md:py-2 rounded-lg text-sm md:text-base transition-all ${
                     selectedSize === size
                       ? 'bg-yellow-500 text-black font-semibold'
                       : 'bg-zinc-800 text-white hover:bg-zinc-700'
@@ -393,37 +394,40 @@ export default function AscendantChallengePage() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr>
-                    <th className="py-4 px-6 bg-yellow-500/10 text-yellow-500">Program Level</th>
-                    <th className="py-4 px-6 bg-yellow-500/10 text-yellow-500">Initial Balance</th>
-                    <th className="py-4 px-6 bg-yellow-500/10 text-yellow-500">Profit Target</th>
-                    <th className="py-4 px-6 bg-yellow-500/10 text-yellow-500">Payout</th>
-                    <th className="py-4 px-6 bg-yellow-500/10 text-yellow-500">Bonus</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {getCurrentPlan().map((level, index) => (
-                    <tr key={index} className="border-b border-zinc-800/50 hover:border-yellow-500/50 transition-colors">
-                      <td className="py-4 px-6">{level.balance}</td>
-                      <td className="py-4 px-6">{level.initial}</td>
-                      <td className="py-4 px-6">{level.target}</td>
-                      <td className="py-4 px-6">{level.payout}</td>
-                      <td className="py-4 px-6">{level.bonus}</td>
+              <div className="inline-block min-w-full">
+                <table className="w-full text-left text-[10px] md:text-base">
+                  <thead>
+                    <tr>
+                      <th className="py-2 md:py-4 px-2 md:px-6 bg-yellow-500/10 text-yellow-500">Program Level</th>
+                      <th className="py-2 md:py-4 px-2 md:px-6 bg-yellow-500/10 text-yellow-500">Initial Balance</th>
+                      <th className="py-2 md:py-4 px-2 md:px-6 bg-yellow-500/10 text-yellow-500">Profit Target</th>
+                      <th className="py-2 md:py-4 px-2 md:px-6 bg-yellow-500/10 text-yellow-500">Payout</th>
+                      <th className="py-2 md:py-4 px-2 md:px-6 bg-yellow-500/10 text-yellow-500">Bonus</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-              {/* Add CTA Button below scaling plan table */}
-              <div className="text-center mt-12">
-                <Link
-                  href="/dashboard/challenge"
-                  className="inline-block bg-yellow-500 text-black px-8 py-4 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
-                >
-                  START ASCENDANT
-                </Link>
+                  </thead>
+                  <tbody>
+                    {getCurrentPlan().map((level, index) => (
+                      <tr key={index} className="border-b border-zinc-800/50 hover:border-yellow-500/50 transition-colors">
+                        <td className="py-2 md:py-4 px-2 md:px-6 whitespace-nowrap">{level.balance}</td>
+                        <td className="py-2 md:py-4 px-2 md:px-6 whitespace-nowrap">{level.initial}</td>
+                        <td className="py-2 md:py-4 px-2 md:px-6 whitespace-nowrap">{level.target}</td>
+                        <td className="py-2 md:py-4 px-2 md:px-6 whitespace-nowrap">{level.payout}</td>
+                        <td className="py-2 md:py-4 px-2 md:px-6 whitespace-nowrap">{level.bonus}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
+            </div>
+
+            {/* CTA Button */}
+            <div className="text-center mt-8">
+              <Link
+                href="/dashboard/challenge"
+                className="inline-block bg-yellow-500 text-black px-8 py-4 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+              >
+                START ASCENDANT
+              </Link>
             </div>
           </div>
         </section>
