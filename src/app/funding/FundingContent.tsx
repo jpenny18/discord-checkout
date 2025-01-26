@@ -185,10 +185,10 @@ function CountUpAnimation({ end, duration = 2000 }: CountUpAnimationProps) {
   return `$${count.toLocaleString()}`;
 }
 
-type CustomCursor = {
-  x: number;
-  y: number;
-  visible: boolean;
+// Add loading state type
+type LoadingState = {
+  particles: boolean;
+  content: boolean;
 };
 
 // Dynamically import heavy components
@@ -197,12 +197,6 @@ const Particles = dynamic(() => import("react-tsparticles"), {
   loading: () => <div className="absolute inset-0 bg-black" />
 });
 
-// Add loading state type
-type LoadingState = {
-  particles: boolean;
-  content: boolean;
-};
-
 export default function FundingContent() {
   const [expandedBenefit, setExpandedBenefit] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -210,8 +204,6 @@ export default function FundingContent() {
   const { ref: parallaxRef } = useParallax<HTMLDivElement>({ speed: -10 });
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const heroRef = useRef<HTMLDivElement>(null);
-  const [cursor, setCursor] = useState<CustomCursor>({ x: 0, y: 0, visible: false });
-  const cursorRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Add loading state
@@ -254,35 +246,6 @@ export default function FundingContent() {
     if (hero) {
       hero.addEventListener('mousemove', handleMouseMove);
       return () => hero.removeEventListener('mousemove', handleMouseMove);
-    }
-  }, []);
-
-  // Custom cursor effect
-  useEffect(() => {
-    const handleMouseMove = (e: globalThis.MouseEvent) => {
-      requestAnimationFrame(() => {
-        setCursor({
-          x: e.clientX,
-          y: e.clientY,
-          visible: true
-        });
-      });
-    };
-
-    const handleMouseLeave = () => {
-      requestAnimationFrame(() => {
-        setCursor(prev => ({ ...prev, visible: false }));
-      });
-    };
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseleave', handleMouseLeave);
-
-      return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseleave', handleMouseLeave);
-      };
     }
   }, []);
 
@@ -394,21 +357,6 @@ export default function FundingContent() {
           }
         }
       `}</style>
-
-      {/* Custom Cursor */}
-      <div
-        ref={cursorRef}
-        className={`fixed w-8 h-8 pointer-events-none z-50 transition-opacity duration-300 ${
-          cursor.visible ? 'opacity-100' : 'opacity-0'
-        }`}
-        style={{
-          transform: `translate(${cursor.x - 16}px, ${cursor.y - 16}px)`,
-        }}
-      >
-        <div className="absolute inset-0 bg-yellow-500 rounded-full opacity-20 animate-ping" />
-        <div className="absolute inset-[6px] bg-yellow-500 rounded-full opacity-50" />
-        <div className="absolute inset-[7px] bg-yellow-500 rounded-full" />
-      </div>
 
       {/* Background Patterns */}
       <div className="fixed inset-0 z-0 opacity-[0.02] pointer-events-none">
@@ -557,9 +505,8 @@ export default function FundingContent() {
       {/* Add padding to account for fixed header */}
       <div className="pt-16">
         {/* Hero Section */}
-        <section ref={heroRef} className="relative h-screen flex items-center justify-center overflow-hidden">
+        <section ref={heroRef} className="relative h-screen flex items-center justify-center overflow-hidden -mt-16 md:mt-0">
           <div ref={parallaxRef} className="absolute inset-0 z-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/80 to-black" />
             <Particles
               id="tsparticles"
               init={particlesInit}
@@ -626,18 +573,9 @@ export default function FundingContent() {
                 smooth: true,
               }}
             />
-            {/* Gradient Overlay for Particles */}
+            {/* Keep gradient overlay for particles */}
             <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black via-black/90 to-transparent" />
           </div>
-
-          {/* Mouse follow gradient */}
-          <div 
-            className="absolute w-[500px] h-[500px] bg-yellow-500/10 rounded-full blur-[100px] pointer-events-none transition-transform duration-1000"
-            style={{
-              transform: `translate(${mousePosition.x - 250}px, ${mousePosition.y - 250}px)`,
-              opacity: 0.5,
-            }}
-          />
 
           <div className="container mx-auto px-4 z-10">
             {/* Floating Achievement Badges */}
@@ -658,8 +596,8 @@ export default function FundingContent() {
                   }}
                   className="text-center"
                 >
-                  <h3 className="text-xl md:text-4xl font-bold text-yellow-500 mb-1">{achievement.title}</h3>
-                  <p className="text-xs md:text-sm text-gray-400">{achievement.subtitle}</p>
+                  <h3 className="text-sm md:text-4xl font-bold text-yellow-500 mb-1">{achievement.title}</h3>
+                  <p className="text-[8px] md:text-sm text-gray-400">{achievement.subtitle}</p>
                 </motion.div>
               ))}
             </div>
@@ -668,9 +606,10 @@ export default function FundingContent() {
               <motion.h1 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 break-words sm:whitespace-nowrap mx-auto"
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
               >
-                BECOME A <span className="text-yellow-500">FUNDED TRADER</span>
+                <span className="block">BECOME A</span>
+                <span className="block text-yellow-500">FUNDED TRADER</span>
               </motion.h1>
               
               <motion.div
@@ -701,7 +640,7 @@ export default function FundingContent() {
                 transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
                 className="flex justify-center"
               >
-                <Link href="/funding/gauntlet" className="relative group">
+                <Link href="/dashboard/challenge" className="relative group">
                   <div className="absolute -inset-1 bg-gradient-to-r from-yellow-600 to-yellow-400 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
                   <button className="relative px-8 py-4 bg-yellow-500 text-black text-lg md:text-xl font-bold rounded-lg transition-all duration-200 ease-out hover:shadow-xl hover:shadow-yellow-500/20 hover:-translate-y-1">
                     EARN FUNDING
@@ -805,7 +744,7 @@ export default function FundingContent() {
                   transition={{ delay: index * 0.1 }}
                   className="flex flex-col items-center text-center group"
                 >
-                  <div className="text-yellow-500/50 group-hover:text-yellow-500 transition-colors duration-300 mb-4">
+                  <div className="text-yellow-500/90 group-hover:text-yellow-500 transition-colors duration-300 mb-4">
                     {instrument.icon}
                   </div>
                   <h3 className="text-sm font-medium text-zinc-400 group-hover:text-yellow-500 transition-colors duration-300">
