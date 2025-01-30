@@ -1,13 +1,12 @@
-import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Providers from '@/components/Providers';
 import './globals.css';
-import { AuthProvider } from '@/contexts/AuthContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'Ascendant Academy',
-  description: 'Join our trading community and learn from the best.',
+export const metadata = {
+  title: 'Ascendant Markets',
+  description: 'Ascendant Markets - Proprietary Trading Firm',
 };
 
 export default function RootLayout({
@@ -18,9 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>
+        <Providers>
           {children}
-        </AuthProvider>
+        </Providers>
       </body>
     </html>
   );

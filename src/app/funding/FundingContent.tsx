@@ -82,7 +82,7 @@ const traderBenefits = [
   { title: 'Giveaways', description: 'Funded & Academy traders get monthly giveaways.' },
   { title: 'Fast Payout Processing', description: 'Expect your earnings quickly. We are actively processing payments every day.' },
   { title: 'Simple Payout Policy', description: 'No hidden rules or qualifications to receive your payouts.' },
-  { title: 'Learn & Earn', description: 'Gain Access to our education and livestreams.' },
+  { title: 'Learn & Earn', description: 'When you join our academy, gain access to our education and livestreams all while earning.' },
 ];
 
 const socialLinks = [
@@ -113,27 +113,27 @@ const statIcons = {
 
 const statistics = [
   {
-    amount: 13115863,
-    label: 'Average Monthly Compensation to Customers Since January of 2023',
+    amount: 207863,
+    label: 'Average Monthly Compensation to Customers Since January of 2024',
     icon: 'monthly',
     description: 'Consistent monthly payouts to our traders',
   },
   {
-    amount: 389325581,
+    amount: 5232581,
     label: 'Total Compensation to Customers Since 2022',
     icon: 'total',
     description: 'Growing total compensation year over year',
   },
   {
-    amount: 57512233,
+    amount: 575233,
     label: 'Total Compensation to Customers In The Last 90 Days',
     icon: 'recent',
-    description: 'Recent performance shows our continued growth',
+    description: 'Recent performance shows our growth',
   },
 ];
 
 const achievements = [
-  { title: '10,000+', subtitle: 'Funded Traders' },
+  { title: '1,000+', subtitle: 'Funded Traders' },
   { title: '100%', subtitle: 'Profit Split' },
   { title: '$4M', subtitle: 'Max Account Size' },
 ];
@@ -201,6 +201,7 @@ export default function FundingContent() {
   const [expandedBenefit, setExpandedBenefit] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isInfoDropdownOpen, setIsInfoDropdownOpen] = useState(false);
   const { ref: parallaxRef } = useParallax<HTMLDivElement>({ speed: -10 });
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const heroRef = useRef<HTMLDivElement>(null);
@@ -436,9 +437,27 @@ export default function FundingContent() {
                   </div>
                 )}
               </div>
-              <Link href="/dashboard" className="text-white hover:text-yellow-500 transition-colors">
-                Dashboard
-              </Link>
+              <div className="relative group">
+                <button 
+                  onClick={() => setIsInfoDropdownOpen(!isInfoDropdownOpen)}
+                  className="text-white hover:text-yellow-500 transition-colors flex items-center space-x-1"
+                >
+                  <span>Information</span>
+                  <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {isInfoDropdownOpen && (
+                  <div className="absolute left-0 mt-2 w-48 bg-black border border-zinc-800 rounded-md shadow-lg py-1 z-50">
+                    <Link href="/funding/terms" className="block px-4 py-2 text-sm text-white hover:bg-zinc-800">
+                      Terms & Policies
+                    </Link>
+                    <Link href="/funding/contact" className="block px-4 py-2 text-sm text-white hover:bg-zinc-800">
+                      Contact Us
+                    </Link>
+                  </div>
+                )}
+              </div>
             </nav>
 
             {/* Logo Container */}
@@ -490,9 +509,24 @@ export default function FundingContent() {
                     </div>
                   )}
                 </div>
-                <Link href="/dashboard" className="block px-3 py-2 text-white hover:bg-zinc-800 rounded-md">
-                  Dashboard
-                </Link>
+                <div className="space-y-1">
+                  <button 
+                    onClick={() => setIsInfoDropdownOpen(!isInfoDropdownOpen)}
+                    className="w-full text-left px-3 py-2 text-white hover:bg-zinc-800 rounded-md"
+                  >
+                    Information
+                  </button>
+                  {isInfoDropdownOpen && (
+                    <div className="pl-4 space-y-1">
+                      <Link href="/funding/terms" className="block px-3 py-2 text-sm text-white hover:bg-zinc-800 rounded-md">
+                        Terms & Policies
+                      </Link>
+                      <Link href="/funding/contact" className="block px-3 py-2 text-sm text-white hover:bg-zinc-800 rounded-md">
+                        Contact Us
+                      </Link>
+                    </div>
+                  )}
+                </div>
                 <Link href="/login" className="block px-3 py-2 text-white hover:bg-zinc-800 rounded-md">
                   Login
                 </Link>
@@ -997,7 +1031,7 @@ export default function FundingContent() {
             <div className="space-y-4">
               <h3 className="text-xl text-white font-bold">AVAILABLE INSTRUMENTS:</h3>
               <p className="text-sm leading-relaxed">
-                Ascendant Markets customers are allowed to only trade Futures products, listed on the following exchanges: CME, COMEX, NYMEX & CBOT. Trading of Spot Currencies, CFD's Stocks, Options, and Cryptocurrencies are not permitted or available in our programs vendors or platforms.
+                Ascendant Markets customers are allowed to only trade Forex, indices, commodities, stocks, and crypto products. Trading of Options, and Futures are not permitted or available in our programs vendors or platforms.
               </p>
             </div>
 
@@ -1005,7 +1039,7 @@ export default function FundingContent() {
             <div className="space-y-4">
               <h3 className="text-xl text-white font-bold">EVALUATION DISCLAIMER:</h3>
               <p className="text-sm leading-relaxed">
-                The customer pass rate of the evaluation program was 43.13% between January 1, 2023 – Sept 1, 2023, who traded at least one evaluation and obtained a PA Account during this time period. The Evaluation and PA are meant to be as close to a realistic simulation of trading under actual market conditions, including commissions, to mimic real market conditions, and the evaluation is difficult to pass even for experienced traders. The event is not meant to train the customer to be better but to be a challenge to pass. The Evaluation is not suggested for individuals with little to no trading experience.
+                The customer pass rate of the evaluation program was 39.93% between December 1, 2024 – Jan 1, 2025, who traded at least one evaluation and obtained a Ascendant Traders Account during this time period. The Evaluation and PA are meant to be as close to a realistic simulation of trading under actual market conditions, including commissions, to mimic real market conditions, and the evaluation is difficult to pass even for experienced traders. The event is not meant to train the customer to be better but to be a challenge to pass. The Evaluation is not suggested for individuals with little to no trading experience.
               </p>
             </div>
 
@@ -1013,13 +1047,13 @@ export default function FundingContent() {
             <div className="space-y-4">
               <h3 className="text-xl text-white font-bold">CUSTOMER COMPENSATION DISCLOSURE:</h3>
               <p className="text-sm leading-relaxed">
-                All trades presented for compensation to customers should be considered hypothetical and should not be expected to be replicated in a live trading account. PA Accounts may represent simulated accounts or live or copied accounts. Testimonials and payouts appearing on this website may not be representative of other clients or customers and are not a guarantee of future performance or success.
+                All trades presented for compensation to customers should be considered hypothetical and should not be expected to be replicated in a live trading account. Ascendant Traders Accounts may represent simulated accounts or live or copied accounts. Testimonials and payouts appearing on this website may not be representative of other clients or customers and are not a guarantee of future performance or success.
               </p>
             </div>
 
             {/* Copyright and Social Links */}
             <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-zinc-800">
-              <p className="text-sm mb-4 md:mb-0">© 2021-2031, Ascendant Markets Inc. All rights reserved.</p>
+              <p className="text-sm mb-4 md:mb-0">© 2022-2030, Ascendant Markets LTD. All rights reserved.</p>
               <div className="flex space-x-6">
                 {socialLinks.map((link) => (
                   <Link 

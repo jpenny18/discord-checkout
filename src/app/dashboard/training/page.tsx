@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRole } from '@/contexts/RoleContext';
 import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Course, UserProgress } from '@/types/course';
@@ -10,6 +11,7 @@ import Link from 'next/link';
 
 export default function TrainingPage() {
   const { user } = useAuth();
+  const { canAccessCourse, role } = useRole();
   const [courses, setCourses] = useState<Course[]>([]);
   const [progress, setProgress] = useState<Record<string, UserProgress>>({});
   const [loading, setLoading] = useState(true);
@@ -72,6 +74,31 @@ export default function TrainingPage() {
 
     return matchesSearch && matchesCategory && matchesLevel && matchesStatus;
   });
+
+  // Function to determine if a course is locked
+  const isCourseLocked = (course: Course) => {
+    if (course.level === 'beginner' && (!role || role === 'default')) {
+      // For default (free) users, check if it's in the first half of beginner courses
+      const beginnerCourses = courses.filter(c => c.level === 'beginner');
+      const courseIndex = beginnerCourses.findIndex(c => c.id === course.id);
+      return courseIndex >= Math.ceil(beginnerCourses.length / 2);
+    }
+    return !canAccessCourse(course.level as 'beginner' | 'intermediate' | 'advanced');
+  };
+
+  // Function to get upgrade message based on course level
+  const getUpgradeMessage = (level: string) => {
+    switch (level) {
+      case 'beginner':
+        return 'Upgrade to Ascendant Trader to access all beginner courses';
+      case 'intermediate':
+        return 'Upgrade to Ascendant Challenger to access intermediate courses';
+      case 'advanced':
+        return 'Upgrade to Ascendant Hero to access advanced courses';
+      default:
+        return 'Upgrade your membership to access this course';
+    }
+  };
 
   if (loading) {
     return (
@@ -143,95 +170,118 @@ export default function TrainingPage() {
         {filteredCourses.map((course) => {
           const courseProgress = progress[course.id];
           const completedLessons = courseProgress?.completedLessons.length || 0;
-          const totalLessons = course.lessons.length;
+          const totalLessons = course.lessons?.length || 0;
           const progressPercentage = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
+          const locked = isCourseLocked(course);
 
           return (
-            <Link
+            <div
               key={course.id}
-              href={`/dashboard/training/${course.id}`}
-              className="group rounded-lg bg-[#111111] p-4 transition-transform hover:scale-[1.02]"
+              className="group relative rounded-lg bg-[#111111] p-4 transition-transform hover:scale-[1.02]"
             >
-              <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-                <Image
-                  src={course.thumbnail}
-                  alt={course.title}
-                  fill
-                  className="object-cover"
-                />
-                {courseProgress?.certificateEarned && (
-                  <div className="absolute right-2 top-2 rounded-full bg-green-500 p-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-white"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                )}
-              </div>
-
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`rounded px-2 py-1 text-xs font-semibold ${
-                      course.level === 'beginner'
-                        ? 'bg-green-900/50 text-green-400'
-                        : course.level === 'intermediate'
-                        ? 'bg-yellow-900/50 text-yellow-400'
-                        : 'bg-red-900/50 text-red-400'
-                    }`}
+              {/* Lock overlay for restricted courses */}
+              {locked && (
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-lg bg-black/80 backdrop-blur-sm p-6 text-center">
+                  <svg
+                    className="w-12 h-12 text-[#ffc62d] mb-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    {course.level.charAt(0).toUpperCase() + course.level.slice(1)}
-                  </span>
-                  <span className="text-sm text-gray-400">
-                    {course.duration} mins
-                  </span>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7a4 4 0 00-8 0v4h8z"
+                    />
+                  </svg>
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    Course Locked
+                  </h3>
+                  <p className="text-gray-400 mb-4">
+                    {getUpgradeMessage(course.level)}
+                  </p>
+                  <Link
+                    href="/dashboard/challenge"
+                    className="px-6 py-2 bg-[#ffc62d] text-black rounded-lg font-medium hover:bg-[#ffc62d]/90 transition-colors"
+                  >
+                    Upgrade Now
+                  </Link>
                 </div>
+              )}
 
-                <h3 className="text-lg font-semibold text-white group-hover:text-[#ffc62d]">
-                  {course.title}
-                </h3>
-
-                <p className="line-clamp-2 text-sm text-gray-400">
-                  {course.description}
-                </p>
-
-                <div className="flex items-center space-x-2">
-                  <Image
-                    src={course.instructor.avatar}
-                    alt={course.instructor.name}
-                    width={24}
-                    height={24}
-                    className="rounded-full"
-                  />
-                  <span className="text-sm text-gray-400">
-                    {course.instructor.name}
-                  </span>
-                </div>
-
-                {courseProgress && (
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-xs text-gray-400">
-                      <span>Progress</span>
-                      <span>{Math.round(progressPercentage)}%</span>
-                    </div>
-                    <div className="h-1 rounded-full bg-gray-800">
-                      <div
-                        className="h-full rounded-full bg-[#ffc62d]"
-                        style={{ width: `${progressPercentage}%` }}
-                      />
+              {/* Course content */}
+              <Link href={locked ? '#' : `/dashboard/training/${course.id}`}>
+                <span className="block">
+                  <div className="relative aspect-video mb-4 overflow-hidden rounded-lg">
+                    <Image
+                      src={course.thumbnail || '/images/course-placeholder.jpg'}
+                      alt={course.title}
+                      fill
+                      className="object-cover"
+                    />
+                    {/* Progress overlay */}
+                    <div className="absolute inset-0 bg-black/60">
+                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
+                        <div
+                          className="h-full bg-[#ffc62d]"
+                          style={{ width: `${progressPercentage}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
-                )}
-              </div>
-            </Link>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span
+                        className={`text-xs font-semibold px-2 py-1 rounded ${
+                          course.level === 'beginner'
+                            ? 'bg-green-900/50 text-green-400'
+                            : course.level === 'intermediate'
+                            ? 'bg-yellow-900/50 text-yellow-400'
+                            : 'bg-red-900/50 text-red-400'
+                        }`}
+                      >
+                        {course.level.charAt(0).toUpperCase() + course.level.slice(1)}
+                      </span>
+                      <span className="text-sm text-gray-400">{course.duration} mins</span>
+                    </div>
+
+                    <h3 className="text-lg font-semibold text-white mb-2">{course.title}</h3>
+                    <p className="text-sm text-gray-400 line-clamp-2 mb-4">
+                      {course.description}
+                    </p>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        {course.instructor ? (
+                          <>
+                            <Image
+                              src={course.instructor.avatar || '/images/default-avatar.png'}
+                              alt={course.instructor.name}
+                              width={24}
+                              height={24}
+                              className="rounded-full"
+                            />
+                            <span className="text-sm text-gray-400">
+                              {course.instructor.name}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <div className="w-6 h-6 rounded-full bg-gray-700" />
+                            <span className="text-sm text-gray-400">No instructor</span>
+                          </>
+                        )}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        {completedLessons} / {totalLessons} lessons
+                      </div>
+                    </div>
+                  </div>
+                </span>
+              </Link>
+            </div>
           );
         })}
       </div>

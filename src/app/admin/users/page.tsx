@@ -3,18 +3,41 @@
 import { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { UserProfile } from '@/types/user';
+import { useRole } from '@/contexts/RoleContext';
+import { UserRole } from '@/utils/roleUtils';
 
-interface ExtendedUserProfile extends UserProfile {
+interface User {
   id: string;
+  email: string;
+  firstName: string;
+  role: UserRole;
+  roles?: string[];
+  createdAt: Date;
+  subscription?: {
+    plan: string;
+    currentPeriodEnd: Date;
+  };
 }
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<ExtendedUserProfile[]>([]);
+  const { isAdmin } = useRole();
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingUser, setEditingUser] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<Partial<UserProfile>>({});
+  const [editForm, setEditForm] = useState<Partial<User>>({});
+
+  // Only admin should access this page
+  if (!isAdmin) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">Access Denied</h1>
+          <p className="text-gray-400">You do not have permission to view this page.</p>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     const usersQuery = query(
@@ -27,12 +50,11 @@ export default function UsersPage() {
         id: doc.id,
         ...doc.data(),
         createdAt: doc.data().createdAt?.toDate(),
-        updatedAt: doc.data().updatedAt?.toDate(),
         subscription: doc.data().subscription ? {
           ...doc.data().subscription,
           currentPeriodEnd: doc.data().subscription.currentPeriodEnd?.toDate()
         } : undefined
-      })) as ExtendedUserProfile[];
+      })) as User[];
       setUsers(usersData);
       setLoading(false);
     });
@@ -54,6 +76,18 @@ export default function UsersPage() {
     }
   };
 
+  const handleRoleChange = async (userId: string, newRole: UserRole) => {
+    try {
+      const userRef = doc(db, 'users', userId);
+      await updateDoc(userRef, {
+        role: newRole,
+        updatedAt: new Date()
+      });
+    } catch (error) {
+      console.error('Error updating user role:', error);
+    }
+  };
+
   const toggleRole = (userId: string, role: string) => {
     const user = users.find(u => u.id === userId);
     if (!user) return;
@@ -68,13 +102,13 @@ export default function UsersPage() {
   };
 
   const filteredUsers = users.filter(user => 
-    user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
+      <div className="flex h-96 items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#ffc62d] border-t-transparent" />
       </div>
     );
@@ -104,17 +138,18 @@ export default function UsersPage() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">User</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Joined</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Subscription</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Roles</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Role</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Permissions</th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800">
             {filteredUsers.map((user) => (
-              <tr key={user.id}>
+              <tr key={user.id} className="hover:bg-gray-900/50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div>
-                      <div className="text-sm font-medium text-white">{user.firstName}</div>
+                      <div className="text-sm font-medium text-white">{user.firstName || 'No name'}</div>
                       <div className="text-sm text-gray-400">{user.email}</div>
                     </div>
                   </div>
@@ -135,8 +170,20 @@ export default function UsersPage() {
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
+                  <select
+                    value={user.role}
+                    onChange={(e) => handleRoleChange(user.id, e.target.value as UserRole)}
+                    className="rounded-lg bg-gray-900 px-3 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#ffc62d]"
+                  >
+                    <option value="default">Free</option>
+                    <option value="ascendant_trader">Ascendant Trader</option>
+                    <option value="ascendant_challenger">Ascendant Challenger</option>
+                    <option value="ascendant_hero">Ascendant Hero</option>
+                  </select>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
                   <div className="space-x-2">
-                    {['admin', 'user', 'moderator'].map((role) => (
+                    {['admin', 'moderator'].map((role) => (
                       <button
                         key={role}
                         onClick={() => toggleRole(user.id, role)}

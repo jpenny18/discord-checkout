@@ -8,6 +8,7 @@ interface Signal {
   id: string;
   symbol: string;
   type: 'long' | 'short';
+  tradeType: 'scalp' | 'swing';
   entry: number;
   stopLoss: number;
   takeProfit1: number;
@@ -25,6 +26,7 @@ export default function SignalsPage() {
   const [loading, setLoading] = useState(true);
   const [newSignal, setNewSignal] = useState<Partial<Signal>>({
     type: 'long',
+    tradeType: 'scalp',
     status: 'active'
   });
   const [editingSignal, setEditingSignal] = useState<string | null>(null);
@@ -64,7 +66,7 @@ export default function SignalsPage() {
           timestamp: new Date()
         });
       }
-      setNewSignal({ type: 'long', status: 'active' });
+      setNewSignal({ type: 'long', tradeType: 'scalp', status: 'active' });
       setEditingSignal(null);
     } catch (error) {
       console.error('Error saving signal:', error);
@@ -140,7 +142,6 @@ export default function SignalsPage() {
               onChange={handleInputChange}
               placeholder="BTC/USDT"
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
-              required
             />
           </div>
 
@@ -158,6 +159,19 @@ export default function SignalsPage() {
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Trade Type</label>
+            <select
+              name="tradeType"
+              value={newSignal.tradeType}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
+            >
+              <option value="scalp">Scalp</option>
+              <option value="swing">Swing</option>
+            </select>
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">Entry Price</label>
             <input
               type="number"
@@ -166,7 +180,6 @@ export default function SignalsPage() {
               onChange={handleInputChange}
               step="0.00000001"
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
-              required
             />
           </div>
 
@@ -179,7 +192,6 @@ export default function SignalsPage() {
               onChange={handleInputChange}
               step="0.00000001"
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
-              required
             />
           </div>
 
@@ -192,7 +204,6 @@ export default function SignalsPage() {
               onChange={handleInputChange}
               step="0.00000001"
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
-              required
             />
           </div>
 
@@ -205,7 +216,6 @@ export default function SignalsPage() {
               onChange={handleInputChange}
               step="0.00000001"
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
-              required
             />
           </div>
 
@@ -218,7 +228,6 @@ export default function SignalsPage() {
               onChange={handleInputChange}
               step="0.00000001"
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
-              required
             />
           </div>
 
@@ -229,7 +238,6 @@ export default function SignalsPage() {
               value={newSignal.risk || ''}
               onChange={handleInputChange}
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
-              required
             >
               <option value="">Select Risk Level</option>
               <option value="low">Low</option>
@@ -247,7 +255,6 @@ export default function SignalsPage() {
             onChange={handleInputChange}
             rows={3}
             className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
-            required
           />
         </div>
 
@@ -257,7 +264,7 @@ export default function SignalsPage() {
               type="button"
               onClick={() => {
                 setEditingSignal(null);
-                setNewSignal({ type: 'long', status: 'active' });
+                setNewSignal({ type: 'long', tradeType: 'scalp', status: 'active' });
               }}
               className="mr-4 px-6 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700"
             >
@@ -284,9 +291,12 @@ export default function SignalsPage() {
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-lg font-medium text-white">{signal.symbol}</h3>
-                  <p className="text-sm text-gray-400">
-                    {signal.type.toUpperCase()} @ {signal.entry}
-                  </p>
+                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <span>{signal.type.toUpperCase()} @ {signal.entry}</span>
+                    <span className="px-2 py-0.5 rounded-full bg-gray-800 text-xs">
+                      {signal.tradeType}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex space-x-2">
                   <button

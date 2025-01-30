@@ -12,6 +12,7 @@ import {
   ChartBarIcon,
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
+import { useRole } from '@/contexts/RoleContext';
 
 const navigation = [
   { name: 'Overview', href: '/dashboard', icon: HomeIcon },

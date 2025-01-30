@@ -3,11 +3,14 @@
 import { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useRole } from '@/contexts/RoleContext';
+import Link from 'next/link';
 
 interface Signal {
   id: string;
   symbol: string;
   type: 'long' | 'short';
+  tradeType: 'scalp' | 'swing';
   entry: number;
   stopLoss: number;
   takeProfit1: number;
@@ -24,6 +27,7 @@ export default function SignalsPage() {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'active' | 'closed'>('all');
+  const { canAccessSignals, role } = useRole();
 
   useEffect(() => {
     const signalsQuery = query(
@@ -112,14 +116,35 @@ export default function SignalsPage() {
         {filteredSignals.map((signal) => (
           <div
             key={signal.id}
-            className="bg-[#111111] p-6 rounded-lg space-y-4"
+            className="relative bg-[#111111] p-6 rounded-lg space-y-4 overflow-hidden"
           >
+            {/* Blur overlay for non-paying members */}
+            {!canAccessSignals && signal.status === 'active' && (
+              <div className="absolute inset-0 backdrop-blur-md bg-black/50 z-10 flex flex-col items-center justify-center p-6 text-center">
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  Upgrade to Access Active Signals
+                </h3>
+                <p className="text-gray-400 mb-4">
+                  Active signals are available to Ascendant Trader members and above
+                </p>
+                <Link
+                  href="/dashboard/challenge"
+                  className="px-6 py-2 bg-[#ffc62d] text-black rounded-lg font-medium hover:bg-[#ffc62d]/90 transition-colors"
+                >
+                  Upgrade Now
+                </Link>
+              </div>
+            )}
+
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="text-lg font-medium text-white">{signal.symbol}</h3>
-                <p className="text-sm text-gray-400">
-                  {signal.type.toUpperCase()} @ {signal.entry}
-                </p>
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <span>{signal.type.toUpperCase()} @ {signal.entry}</span>
+                  <span className="px-2 py-0.5 rounded-full bg-gray-800 text-xs">
+                    {signal.tradeType}
+                  </span>
+                </div>
               </div>
               <span
                 className={`px-2 py-1 rounded text-xs font-medium ${
