@@ -15,7 +15,8 @@ const nextConfig = {
         stream: false,
         http: false,
         https: false,
-        zlib: false
+        zlib: false,
+        vertx: false
       };
     }
 

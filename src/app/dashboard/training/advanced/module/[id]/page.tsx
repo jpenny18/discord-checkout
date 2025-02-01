@@ -1,5 +1,3 @@
-'use client';
-
 import { useRole } from '@/contexts/RoleContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
@@ -12,7 +10,7 @@ import { moduleContent, ModuleContent } from '@/utils/moduleContent';
 import ReactMarkdown from 'react-markdown';
 
 type PageProps = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
@@ -54,7 +52,19 @@ function NavigationButtons({ moduleId, totalModules, canAccessNextModule, course
   );
 }
 
-export default function ModulePage({ params, searchParams }: PageProps) {
+async function ModulePageWrapper({ params, searchParams }: PageProps) {
+  const resolvedParams = await params;
+  return <ModulePageClient params={resolvedParams} searchParams={searchParams} />;
+}
+
+'use client';
+function ModulePageClient({ 
+  params,
+  searchParams 
+}: {
+  params: { id: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const router = useRouter();
   const { role } = useRole();
   const { user } = useAuth();
@@ -291,4 +301,6 @@ export default function ModulePage({ params, searchParams }: PageProps) {
       </div>
     </div>
   );
-} 
+}
+
+export default ModulePageWrapper; 
