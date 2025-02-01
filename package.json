@@ -11,6 +11,9 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "resolutions": {
+    "es6-promise": "4.2.8"
+  },
   "dependencies": {
     "@fontsource/inter-tight": "^5.1.1",
     "@headlessui/react": "^2.2.0",
