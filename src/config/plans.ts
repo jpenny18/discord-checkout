@@ -11,8 +11,7 @@ export const plans: Plan[] = [
       '🔴 300+ hours of education, trade recaps, and technical and psychology training',
       '🚨 Recieve trading signals/ideas everyday',
       '📝 Weekly educational sessions, recaps/outlooks, and Q&A every Sunday',
-      '⭐️ Monthly Rewards/Giveaways',
-      '🎁 Free $50,000 Challenge Account'
+      '⭐️ Monthly Rewards/Giveaways'
     ],
     allowedPaymentMethods: ['card'],
   },
@@ -28,7 +27,7 @@ export const plans: Plan[] = [
       'Weekly mentorship calls',
       'Private Discord channels',
       '200% guarantee',
-      '🎁 Free $100,000 Challenge Account'
+      '🎁 Free $50,000 Challenge Account'
     ],
     allowedPaymentMethods: ['card', 'crypto'],
     popular: true,
@@ -45,7 +44,7 @@ export const plans: Plan[] = [
       'Early access to new content',
       'Advanced training modules',
       '200% guarantee',
-      '🎁 Free $500,000 Challenge Account'
+      '🎁 Free $100,000 Challenge Account'
     ],
     allowedPaymentMethods: ['crypto'],
   },

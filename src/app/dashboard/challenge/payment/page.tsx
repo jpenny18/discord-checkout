@@ -163,10 +163,6 @@ export default function PaymentPage() {
                 <span>Pay with Credit/Debit Card</span>
               </div>
               <div className="flex items-center gap-4">
-                <div className="flex gap-2">
-                  <img src="/visa.svg" alt="Visa" className="h-6" />
-                  <img src="/mastercard.svg" alt="Mastercard" className="h-6" />
-                </div>
                 <svg
                   className={`w-6 h-6 transform transition-transform ${
                     isCardExpanded ? 'rotate-180' : ''

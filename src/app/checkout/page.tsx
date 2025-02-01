@@ -237,7 +237,8 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <div className="flex justify-center mb-12">
+        {/* VSL Section - Hidden */}
+        <div className="flex justify-center mb-12 hidden">
           <div className="w-full max-w-[600px] aspect-video relative">
             <iframe
               className="absolute top-0 left-0 w-full h-full rounded-lg"
