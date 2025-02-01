@@ -8,7 +8,14 @@ import { Course, Lesson, UserProgress } from '@/types/course';
 import Image from 'next/image';
 import LessonQuiz from '@/components/LessonQuiz';
 
-export default function CoursePage({ params }: { params: { courseId: string } }) {
+interface CoursePageProps {
+  params: {
+    courseId: string;
+  };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export default function CoursePage({ params, searchParams }: CoursePageProps) {
   const { user } = useAuth();
   const [course, setCourse] = useState<Course | null>(null);
   const [progress, setProgress] = useState<UserProgress | null>(null);
