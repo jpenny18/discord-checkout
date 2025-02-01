@@ -11,6 +11,11 @@ import { getCourseProgress, CourseProgress, updateModuleCompletion } from '@/uti
 import { moduleContent, ModuleContent } from '@/utils/moduleContent';
 import ReactMarkdown from 'react-markdown';
 
+type PageProps = {
+  params: { id: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
 function NavigationButtons({ moduleId, totalModules, canAccessNextModule, courseId, isModuleCompleted }: {
   moduleId: number;
   totalModules: number;
@@ -49,7 +54,7 @@ function NavigationButtons({ moduleId, totalModules, canAccessNextModule, course
   );
 }
 
-export default function ModulePage({ params }: { params: { id: string } }) {
+export default function ModulePage({ params, searchParams }: PageProps) {
   const router = useRouter();
   const { role } = useRole();
   const { user } = useAuth();
