@@ -16,7 +16,14 @@ const nextConfig = {
         http: false,
         https: false,
         zlib: false,
-        vertx: false
+        vertx: false,
+      };
+
+      // Handle es6-promise dependency
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'vertx': false,
+        'es6-promise': false
       };
     }
 

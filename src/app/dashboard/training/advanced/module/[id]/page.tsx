@@ -3,10 +3,11 @@ import { ModulePageClient } from './ModulePageClient';
 
 type PageProps = {
   params: Promise<{ id: string }>;
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function ModulePageWrapper({ params, searchParams }: PageProps) {
-  const resolvedParams = await params;
-  return <ModulePageClient params={resolvedParams} searchParams={searchParams} />;
+  // Await both promises
+  const [resolvedParams, resolvedSearchParams] = await Promise.all([params, searchParams]);
+  return <ModulePageClient params={resolvedParams} searchParams={resolvedSearchParams} />;
 } 
