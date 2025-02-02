@@ -2,8 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   webpack: (config, { isServer }) => {
-    // Fixes npm packages that depend on `fs` module
     if (!isServer) {
+      // Handle modules that depend on Node.js built-ins
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
@@ -15,15 +15,13 @@ const nextConfig = {
         stream: false,
         http: false,
         https: false,
-        zlib: false,
-        vertx: false,
+        zlib: false
       };
 
-      // Handle es6-promise dependency
+      // Explicitly handle es6-promise and vertx
       config.resolve.alias = {
         ...config.resolve.alias,
-        'vertx': false,
-        'es6-promise': false
+        vertx: false
       };
     }
 
