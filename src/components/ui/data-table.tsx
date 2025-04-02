@@ -9,10 +9,6 @@ import {
   getPaginationRowModel,
   SortingState,
   getSortedRowModel,
-  HeaderGroup,
-  Header,
-  Row,
-  Cell,
 } from '@tanstack/react-table';
 
 import {

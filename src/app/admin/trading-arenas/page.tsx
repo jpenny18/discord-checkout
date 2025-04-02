@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DataTable } from '@/components/ui/data-table';
 import type { ColumnDef, Row } from '@tanstack/react-table';
 import type { ArenaEntry } from '@/types/index';
-import { AlertCircle, CheckCircle2, Clock, Search, RefreshCw } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Clock, RefreshCw } from 'lucide-react';
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-US', {

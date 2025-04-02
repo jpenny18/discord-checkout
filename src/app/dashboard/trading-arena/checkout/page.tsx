@@ -6,7 +6,6 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import CardPaymentForm from '@/components/CardPaymentForm';
 import { ShieldCheck, Lock, CreditCard } from 'lucide-react';
-import type { UserData, Plan } from '@/types/index';
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);

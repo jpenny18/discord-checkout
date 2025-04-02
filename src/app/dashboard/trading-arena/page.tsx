@@ -480,7 +480,7 @@ export default function TradingArenaPage() {
             </div>
 
             <p className="text-xs md:text-sm text-gray-400 text-center mt-8">
-              Arena's every single month and ends at the end of the month. Registration for the next month is open from the 1st-5th of every single month.
+              Arena&apos;s every single month and ends at the end of the month. Registration for the next month is open from the 1st-5th of every single month.
             </p>
           </div>
         </motion.div>

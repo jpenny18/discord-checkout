@@ -1,0 +1,23 @@
+# Build output
+.next/
+out/
+dist/
+build/
+
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+.env.*
+
+# Public assets
+public/
+
+# Generated types
+next-env.d.ts
+
+# Some problematic files
+src/app/funding/FundingContent.tsx
+src/components/DottedGlobe.tsx
+src/lib/metaapi.ts 
