@@ -68,7 +68,6 @@ export default function MyAccountsPage() {
         },
         animations: {
           enabled: true,
-          easing: 'linear',
           dynamicAnimation: {
             speed: 1000
           }
