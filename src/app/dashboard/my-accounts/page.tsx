@@ -10,10 +10,20 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import dynamic from 'next/dynamic';
 import { initializeMetaApi, getMetaApiInstance } from '@/lib/metaapi';
 import type { AccountMetrics, Trade } from '@/lib/metaapi';
-import { ApexOptions } from 'apexcharts';
+// Import type only to avoid direct dependency
+import type { ApexOptions } from 'apexcharts';
 
-// Dynamically import ApexCharts with no SSR
-const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
+// Dynamically import with SSR disabled and loading component
+const ApexChart = dynamic(
+  () => import('react-apexcharts').then((mod) => mod.default),
+  { 
+    ssr: false,
+    loading: () => <div className="h-[350px] w-full bg-gray-900 animate-pulse rounded-lg"></div>
+  }
+);
+
+// Dynamic import for any other client-only components
+const ClientOnlyComponent = dynamic(() => import('./ClientComponents'), { ssr: false });
 
 interface TradingAccount {
   id: string;
@@ -40,7 +50,7 @@ export default function MyAccountsPage() {
   const [accounts, setAccounts] = useState<TradingAccount[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<TradingAccount | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isClient, setIsClient] = useState(false); // Add this to track client-side rendering
+  const [isClient, setIsClient] = useState(false);
   const [accountMetrics, setAccountMetrics] = useState<AccountMetrics>({
     balance: 0,
     equity: 0,
@@ -69,10 +79,7 @@ export default function MyAccountsPage() {
           show: false
         },
         animations: {
-          enabled: true,
-          dynamicAnimation: {
-            speed: 1000
-          }
+          enabled: true
         }
       },
       stroke: {
@@ -139,13 +146,16 @@ export default function MyAccountsPage() {
     }
   });
 
-  // Add this useEffect to detect client-side rendering
+  // This useEffect only runs once on the client
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  // Only run data fetching on the client
   useEffect(() => {
-    if (user?.uid && isClient) {
+    if (!isClient) return; // Early exit if not client-side
+    
+    if (user?.uid) {
       console.log('User authenticated, fetching accounts...');
       fetchAccounts();
     }
@@ -273,6 +283,20 @@ export default function MyAccountsPage() {
     }
   };
 
+  // Show a loading state during SSR
+  if (!isClient) {
+    return (
+      <div className="container mx-auto py-6">
+        <h1 className="text-2xl font-bold text-white mb-4">My Trading Accounts</h1>
+        <div className="grid grid-cols-2 gap-4 animate-pulse">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-32 bg-gray-800 rounded-lg"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  
   if (loading) {
     return <div>Loading...</div>;
   }
