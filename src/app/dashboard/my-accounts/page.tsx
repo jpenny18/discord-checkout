@@ -12,6 +12,7 @@ import { initializeMetaApi, getMetaApiInstance } from '@/lib/metaapi';
 import type { AccountMetrics, Trade } from '@/lib/metaapi';
 import { ApexOptions } from 'apexcharts';
 
+// Dynamically import ApexCharts with no SSR
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 interface TradingAccount {
@@ -39,6 +40,7 @@ export default function MyAccountsPage() {
   const [accounts, setAccounts] = useState<TradingAccount[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<TradingAccount | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false); // Add this to track client-side rendering
   const [accountMetrics, setAccountMetrics] = useState<AccountMetrics>({
     balance: 0,
     equity: 0,
@@ -137,12 +139,17 @@ export default function MyAccountsPage() {
     }
   });
 
+  // Add this useEffect to detect client-side rendering
   useEffect(() => {
-    if (user?.uid) {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (user?.uid && isClient) {
       console.log('User authenticated, fetching accounts...');
       fetchAccounts();
     }
-  }, [user]);
+  }, [user, isClient]);
 
   const fetchAccounts = async () => {
     try {
@@ -171,6 +178,8 @@ export default function MyAccountsPage() {
   };
 
   const connectAndFetchData = async (account: TradingAccount) => {
+    if (!isClient) return; // Skip if not client
+    
     console.log('Starting connectAndFetchData for account:', {
       id: account.id,
       login: account.mt_login,
@@ -358,12 +367,15 @@ export default function MyAccountsPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <ApexChart
-                  options={chartData.options}
-                  series={chartData.series}
-                  type="line"
-                  height={350}
-                />
+                {/* Only render ApexChart on the client side */}
+                {isClient && (
+                  <ApexChart
+                    options={chartData.options}
+                    series={chartData.series}
+                    type="line"
+                    height={350}
+                  />
+                )}
               </CardContent>
             </Card>
             <Card>
