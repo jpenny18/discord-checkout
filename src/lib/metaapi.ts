@@ -8,8 +8,7 @@ import MetaApi, {
   MetatraderHistoryOrders,
   MetatraderDeals,
   MetatraderDeal,
-  NewMetatraderAccountDto,
-  AccountType
+  NewMetatraderAccountDto
 } from 'metaapi.cloud-sdk';
 
 const API_KEY = process.env.NEXT_PUBLIC_META_API_TOKEN;
