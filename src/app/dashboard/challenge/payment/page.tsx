@@ -283,6 +283,11 @@ export default function PaymentPage() {
                       id: 'challenge',
                       name: `${challengeData.type} ${challengeData.amount}`,
                       price: Number(challengeData.price),
+                      priceDisplay: {
+                        amount: `$${challengeData.price}`,
+                        period: 'one-time',
+                        toString: () => `$${challengeData.price} one-time`
+                      },
                       duration: 'one-time',
                       features: [],
                       popular: false,
