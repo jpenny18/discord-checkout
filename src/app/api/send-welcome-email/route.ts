@@ -4,10 +4,20 @@ import { Resend } from 'resend';
 // Add debug logging for API key presence
 console.log('RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY);
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Resend only if API key is available
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export async function POST(request: Request) {
   try {
+    // Check if Resend client is initialized
+    if (!resend) {
+      console.warn('Resend API key is missing - email functionality is disabled');
+      return NextResponse.json(
+        { error: 'Email service is not configured', details: 'RESEND_API_KEY is missing' },
+        { status: 503 }
+      );
+    }
+
     const { email, password, firstName } = await request.json();
 
     if (!email || !password || !firstName) {
