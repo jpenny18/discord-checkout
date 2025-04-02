@@ -14,7 +14,7 @@ import type { AccountMetrics, Trade } from '@/lib/metaapi';
 import type { ApexOptions } from 'apexcharts';
 
 // Dynamically import with SSR disabled and loading component
-const ApexChart = dynamic(
+const ApexChartComponent = dynamic(
   () => import('react-apexcharts').then((mod) => mod.default),
   { 
     ssr: false,
@@ -26,7 +26,7 @@ const ApexChart = dynamic(
 const ClientOnlyComponent = dynamic(() => import('./ClientComponents').then(mod => mod.default), { ssr: false });
 
 // This added export configuration ensures Next.js doesn't try to pre-render this page
-export const dynamicConfig = "force-dynamic";
+export const dynamic = "force-dynamic";
 
 interface TradingAccount {
   id: string;
@@ -396,7 +396,7 @@ export default function MyAccountsPage() {
               <CardContent>
                 {/* Only render ApexChart on the client side */}
                 {isClient && (
-                  <ApexChart
+                  <ApexChartComponent
                     options={chartData.options}
                     series={chartData.series}
                     type="line"

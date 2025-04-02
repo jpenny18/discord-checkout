@@ -74,20 +74,6 @@ const nextConfig = {
   // Prevent static generation for specific routes
   skipTrailingSlashRedirect: true,
   skipMiddlewareUrlNormalize: true,
-  // Specify which pages are exclusively server-side rendered
-  // This is needed to avoid static generation for pages that use browser APIs
-  excludeServerRoutes: [
-    '/dashboard/my-accounts',
-    '/dashboard/trading-arena',
-  ]
-};
-
-// Explicitly exclude routes from static generation
-nextConfig.exportPathMap = async function() {
-  return {
-    '/': { page: '/' },
-    // Other static pages can be defined here
-  };
 };
 
 module.exports = nextConfig; 
