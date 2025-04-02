@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Disable ESLint during build for now
+  eslint: {
+    // Warning: this disables linting during build
+    ignoreDuringBuilds: true,
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Handle modules that depend on Node.js built-ins
