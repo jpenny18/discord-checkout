@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { plans } from '../../config/plans';
-import { UserData, PaymentMethod } from '../../types';
+import { plans } from '@/config/plans';
+import { UserData, PaymentMethod, PlanFeature } from '@/types/index';
 import Image from 'next/image';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import CardPaymentForm from '@/components/CardPaymentForm';
 import Link from 'next/link';
+import { signUp } from '@/lib/auth';
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -50,6 +51,11 @@ export default function CheckoutPage() {
   }, []);
 
   const handlePlanSelect = (plan: typeof plans[0]) => {
+    // If it's an application-only plan, redirect to application form
+    if (plan.allowedPaymentMethods.includes('application')) {
+      window.location.href = '/apply'; // You'll need to create this page
+      return;
+    }
     setSelectedPlan(plan);
   };
 
@@ -103,8 +109,8 @@ export default function CheckoutPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setUserData(prev => ({
-      ...prev,
+    setUserData((prevState: UserData) => ({
+      ...prevState,
       [name]: value
     }));
   };
@@ -128,6 +134,21 @@ export default function CheckoutPage() {
 
     try {
       setIsProcessingPayment(true);
+
+      // Generate a secure random password
+      const generatePassword = () => {
+        const length = 12;
+        const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+        let password = '';
+        for (let i = 0; i < length; i++) {
+          const randomIndex = Math.floor(Math.random() * charset.length);
+          password += charset[randomIndex];
+        }
+        return password;
+      };
+
+      const password = generatePassword();
+
       const response = await fetch('/api/create-payment', {
         method: 'POST',
         headers: {
@@ -175,12 +196,74 @@ export default function CheckoutPage() {
 
         const verifyData = await verifyResponse.json();
         if (verifyData.success) {
-          window.location.href = verifyData.redirectUrl;
+          // Create user account
+          try {
+            await signUp({
+              email: userData.email,
+              password,
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              phone: '', // Optional
+              countryCode: '', // Optional
+              country: '', // Optional
+            });
+
+            // Send welcome email with credentials
+            await fetch('/api/send-welcome-email', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                email: userData.email,
+                password,
+                firstName: userData.firstName,
+              }),
+            });
+
+            window.location.href = verifyData.redirectUrl;
+          } catch (error) {
+            console.error('Error creating user account:', error);
+            // Still redirect to success page even if account creation fails
+            // The user will need to sign up manually in this case
+            window.location.href = verifyData.redirectUrl;
+          }
         } else {
           throw new Error(verifyData.error || 'Payment verification failed');
         }
       } else if (data.success) {
-        window.location.href = data.redirectUrl;
+        // Create user account for non-3DS payments
+        try {
+          await signUp({
+            email: userData.email,
+            password,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            phone: '', // Optional
+            countryCode: '', // Optional
+            country: '', // Optional
+          });
+
+          // Send welcome email with credentials
+          await fetch('/api/send-welcome-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: userData.email,
+              password,
+              firstName: userData.firstName,
+            }),
+          });
+
+          window.location.href = data.redirectUrl;
+        } catch (error) {
+          console.error('Error creating user account:', error);
+          // Still redirect to success page even if account creation fails
+          // The user will need to sign up manually in this case
+          window.location.href = data.redirectUrl;
+        }
       } else {
         throw new Error(data.error || 'Payment failed');
       }
@@ -197,12 +280,15 @@ export default function CheckoutPage() {
 
   const getRecurringText = () => {
     if (!selectedPlan) return '';
-    const planConfig = {
-      cadet: '99/month',
-      challenger: '399/4 months',
-      hero: '499/year'
-    }[selectedPlan.id.toLowerCase()];
-    return `I agree to recurring billing of $${planConfig} until cancelled.`;
+    
+    switch (selectedPlan.duration) {
+      case 'weekly':
+        return 'I understand this is a recurring weekly payment of $7.';
+      case 'monthly':
+        return 'I understand this is a recurring monthly payment of $199.';
+      default:
+        return '';
+    }
   };
 
   if (isLoading) {
@@ -219,6 +305,49 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-black text-white">
       {isProcessingPayment && <PaymentProcessingOverlay />}
+      <style jsx global>{`
+        @keyframes glowingBorder {
+          0% {
+            box-shadow: 0 -50% 20px -15px #ffc62d, 0 0 0 2px #ffc62d;
+            filter: brightness(1.2);
+          }
+          25% {
+            box-shadow: 50% 0 20px -15px #ffc62d, 0 0 0 2px #ffc62d;
+            filter: brightness(1);
+          }
+          50% {
+            box-shadow: 0 50% 20px -15px #ffc62d, 0 0 0 2px #ffc62d;
+            filter: brightness(1.2);
+          }
+          75% {
+            box-shadow: -50% 0 20px -15px #ffc62d, 0 0 0 2px #ffc62d;
+            filter: brightness(1);
+          }
+          100% {
+            box-shadow: 0 -50% 20px -15px #ffc62d, 0 0 0 2px #ffc62d;
+            filter: brightness(1.2);
+          }
+        }
+
+        .platinum-card {
+          animation: glowingBorder 4s infinite;
+          position: relative;
+          overflow: visible !important;
+        }
+
+        .platinum-card::before {
+          content: '';
+          position: absolute;
+          inset: -2px;
+          border-radius: inherit;
+          padding: 2px;
+          background: linear-gradient(to right, transparent, #ffc62d, transparent);
+          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+        }
+      `}</style>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col items-center text-center mb-12">
           <div className="mb-4">
@@ -257,20 +386,40 @@ export default function CheckoutPage() {
               <div
                 key={plan.id}
                 onClick={() => handlePlanSelect(plan)}
-                className={`flex-none w-[300px] md:w-full p-6 rounded-xl bg-[#111111] border cursor-pointer transition-all hover:scale-105 snap-center ${
+                className={`flex-none w-[300px] md:w-full p-6 rounded-xl border cursor-pointer transition-all hover:scale-105 snap-center ${
                   selectedPlan?.id === plan.id
                     ? 'border-[#ffc62d] scale-105'
-                    : 'border-gray-700'
-                }`}
-                style={{ transform: selectedPlan?.id === plan.id ? 'scale(1.05)' : 'scale(1)' }}
+                    : plan.popular 
+                      ? 'border-2 border-[#ffc62d] platinum-card' 
+                      : 'border-gray-700'
+                } ${plan.popular ? 'md:scale-110' : ''}`}
+                style={{ 
+                  transform: selectedPlan?.id === plan.id ? 'scale(1.05)' : 'scale(1)',
+                  ...(plan.popular ? {
+                    background: 'linear-gradient(180deg, rgba(255, 198, 45, 0.05) 0%, rgba(17, 17, 17, 1) 100%)'
+                  } : {
+                    background: '#111111'
+                  })
+                }}
               >
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-xl font-bold">{plan.name}</h3>
-                    <p className="text-3xl font-bold mt-2">
-                      ${plan.price}
-                      <span className="text-sm text-gray-400">/{plan.duration}</span>
-                    </p>
+                    <div className="text-center mb-6">
+                      <h3 className={`text-base font-semibold mb-3 tracking-wide ${plan.popular ? 'text-lg' : ''}`}>{plan.name}</h3>
+                      <div className="flex flex-col items-center justify-center">
+                        {typeof plan.priceDisplay === 'string' ? (
+                          <span className={`font-bold ${plan.popular ? 'text-4xl' : 'text-3xl'}`}>{plan.priceDisplay}</span>
+                        ) : (
+                          <div className="flex flex-col items-center">
+                            <span className={`font-bold ${plan.popular ? 'text-4xl' : 'text-3xl'}`}>{plan.priceDisplay.amount}</span>
+                            <span className="text-sm text-gray-400">{plan.priceDisplay.period}</span>
+                          </div>
+                        )}
+                        {plan.billingNote && (
+                          <span className="text-gray-400 text-xs mt-1">{plan.billingNote}</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                   {plan.popular && (
                     <span className="bg-[#ffc62d] text-black text-xs px-2 py-1 rounded">
@@ -279,22 +428,38 @@ export default function CheckoutPage() {
                   )}
                 </div>
                 <ul className="space-y-3">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-center text-sm">
-                      <svg
-                        className="w-4 h-4 text-[#ffc62d] mr-2 flex-shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span className="text-gray-300">{feature}</span>
+                  {plan.features.map((feature: PlanFeature, index: number): JSX.Element => (
+                    <li key={index} className={`flex items-center text-sm ${!feature.included ? 'opacity-50' : ''}`}>
+                      {feature.included ? (
+                        <svg
+                          className="w-4 h-4 text-[#ffc62d] mr-2 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="w-4 h-4 text-gray-500 mr-2 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      )}
+                      <span className={`text-gray-300 ${!feature.included ? 'text-gray-500' : ''}`}>{feature.name}</span>
                     </li>
                   ))}
                 </ul>

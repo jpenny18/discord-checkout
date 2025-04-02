@@ -16,6 +16,7 @@ import { Menu, X } from 'lucide-react';
 import PlatinumToggle from '@/components/PlatinumToggle';
 import DottedGlobe from '@/components/DottedGlobe';
 import styles from '@/styles/home.module.css';
+import { PlanFeature } from '@/types/index';
 
 // Dynamically import Particles component
 const Particles = dynamic(() => import("react-tsparticles"), {
@@ -827,6 +828,48 @@ function HomeContent() {
               padding-right: 1.5rem;
             }
           }
+
+          @keyframes glowingBorder {
+            0% {
+              box-shadow: 0 -50% 20px -15px #ffc62d, 0 0 0 2px #ffc62d;
+              filter: brightness(1.2);
+            }
+            25% {
+              box-shadow: 50% 0 20px -15px #ffc62d, 0 0 0 2px #ffc62d;
+              filter: brightness(1);
+            }
+            50% {
+              box-shadow: 0 50% 20px -15px #ffc62d, 0 0 0 2px #ffc62d;
+              filter: brightness(1.2);
+            }
+            75% {
+              box-shadow: -50% 0 20px -15px #ffc62d, 0 0 0 2px #ffc62d;
+              filter: brightness(1);
+            }
+            100% {
+              box-shadow: 0 -50% 20px -15px #ffc62d, 0 0 0 2px #ffc62d;
+              filter: brightness(1.2);
+            }
+          }
+
+          .platinum-card {
+            animation: glowingBorder 4s infinite;
+            position: relative;
+            overflow: visible !important;
+          }
+
+          .platinum-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: inherit;
+            padding: 2px;
+            background: linear-gradient(to right, transparent, #ffc62d, transparent);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+          }
         `}</style>
 
         {/* Pricing Section */}
@@ -855,12 +898,12 @@ function HomeContent() {
                   transition={{ delay: index * 0.2 }}
                   className={`
                     relative overflow-hidden rounded-2xl
-                    ${plan.popular ? 'md:scale-105 z-10' : ''}
-                    ${plan.popular ? 'bg-black' : 'bg-black border border-[#232323]'}
+                    ${plan.popular ? 'md:scale-110 z-10 platinum-card' : ''}
+                    ${plan.popular ? 'bg-gradient-to-b from-[#111111] to-[#111111] border-2 border-[#ffc62d]' : 'bg-black border border-[#232323]'}
                     ${plan.popular ? styles.popularCard : ''}
                   `}
                   style={plan.popular ? {
-                    boxShadow: '0 0 25px rgba(255, 198, 45, 0.2), 0 0 80px rgba(255, 198, 45, 0.1)'
+                    background: 'linear-gradient(180deg, rgba(255, 198, 45, 0.05) 0%, rgba(17, 17, 17, 1) 100%)'
                   } : {}}
                 >
                   {/* Noise Background */}
@@ -880,19 +923,34 @@ function HomeContent() {
                   <div className="p-6 relative z-10">
                     <div className="text-center mb-6">
                       <h3 className={`text-base font-semibold mb-3 tracking-wide ${plan.popular ? 'text-lg' : ''}`}>{plan.name}</h3>
-                      <div className="flex items-baseline justify-center gap-1">
-                        <span className={`font-bold ${plan.popular ? 'text-4xl' : 'text-3xl'}`}>${plan.price}</span>
-                        <span className="text-gray-400 text-xs">/{plan.duration}</span>
+                      <div className="flex flex-col items-center justify-center">
+                        {typeof plan.priceDisplay === 'string' ? (
+                          <span className={`font-bold ${plan.popular ? 'text-4xl' : 'text-3xl'}`}>{plan.priceDisplay}</span>
+                        ) : (
+                          <div className="flex flex-col items-center">
+                            <span className={`font-bold ${plan.popular ? 'text-4xl' : 'text-3xl'}`}>{plan.priceDisplay.amount}</span>
+                            <span className="text-sm text-gray-400">{plan.priceDisplay.period}</span>
+                          </div>
+                        )}
+                        {plan.billingNote && (
+                          <span className="text-gray-400 text-xs mt-1">{plan.billingNote}</span>
+                        )}
                       </div>
                     </div>
 
                     <ul className="space-y-3 mb-6">
-                      {plan.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-start text-xs text-gray-300">
-                          <svg className="w-4 h-4 text-[#ffc62d] mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                          </svg>
-                          <span>{feature}</span>
+                      {plan.features.map((feature: PlanFeature, featureIndex: number): JSX.Element => (
+                        <li key={featureIndex} className={`flex items-start text-xs text-gray-300 ${!feature.included ? 'opacity-50' : ''}`}>
+                          {feature.included ? (
+                            <svg className="w-4 h-4 text-[#ffc62d] mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : (
+                            <svg className="w-4 h-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          )}
+                          <span className={!feature.included ? 'text-gray-500' : ''}>{feature.name}</span>
                         </li>
                       ))}
                     </ul>

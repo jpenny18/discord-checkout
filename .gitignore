@@ -26,6 +26,7 @@ yarn-error.log*
 .env*.local
 .env.development
 .env.production
+.env.example
 
 # vercel
 .vercel
@@ -34,3 +35,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts VSL 1.mov
 VSL 1.mov
+
+console.log
+metaapi-implementation.md
+metaapi.md
+CUSTOM EMAIL SYSTEM/
+code samples - metaapi/
+tokenManagementApi.md
+metaapi-javascript-sdk-main
+console .log
+localhost-1740785642133.log

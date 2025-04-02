@@ -3,19 +3,14 @@ import stripe from '@/lib/stripe';
 import { adminDb } from '@/lib/firebase-admin';
 
 const PLAN_CONFIGS = {
-  cadet: {
-    amount: 99 * 100, // $99 in cents
-    interval: 'month' as const,
+  lite: {
+    amount: 7 * 100, // $7 in cents
+    interval: 'week' as const,
     intervalCount: 1
   },
-  challenger: {
-    amount: 399 * 100, // $399 in cents
+  platinum: {
+    amount: 199 * 100, // $199 in cents
     interval: 'month' as const,
-    intervalCount: 4
-  },
-  hero: {
-    amount: 499 * 100, // $499 in cents
-    interval: 'year' as const,
     intervalCount: 1
   }
 } as const;

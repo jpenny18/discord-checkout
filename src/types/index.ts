@@ -1,4 +1,4 @@
-export type PaymentMethod = 'card' | 'crypto';
+export type PaymentMethod = 'card' | 'crypto' | 'application';
 export type CryptoType = 'USDT' | 'BTC';
 
 export interface UserData {
@@ -6,17 +6,32 @@ export interface UserData {
   firstName: string;
   lastName: string;
   discordUsername: string;
+  phone?: string;
+  country?: string;
   selectedPlan?: Plan;
   paymentMethod?: PaymentMethod;
   status?: 'pending' | 'completed' | 'failed';
+}
+
+export interface PlanFeature {
+  name: string;
+  included: boolean;
+}
+
+export interface PriceDisplay {
+  amount: string;
+  period: string;
+  toString(): string;
 }
 
 export interface Plan {
   id: string;
   name: string;
   price: number;
+  priceDisplay: PriceDisplay | string;
+  billingNote?: string;
   duration: string;
-  features: string[];
+  features: PlanFeature[];
   popular?: boolean;
   allowedPaymentMethods: PaymentMethod[];
 }
@@ -52,4 +67,24 @@ export interface CryptoPayment {
   cryptoType: CryptoType;
   walletAddress: string;
   orderId: string;
+}
+
+export interface ArenaEntry {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  country: string;
+  discordUsername?: string;
+  selectedType: 'arena' | 'trial';
+  accountSize?: string;
+  platform: string;
+  amount: number;
+  paymentIntentId: string;
+  status: 'pending' | 'completed' | 'failed';
+  timestamp: { toDate: () => Date };
+  completedAt?: { toDate: () => Date };
+  customerId?: string;
+  subscriptionId?: string;
 } 

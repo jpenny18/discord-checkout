@@ -5,11 +5,15 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Image from 'next/image';
+import { Toaster } from 'react-hot-toast';
 
 const adminNavigation = [
   { name: 'Overview', href: '/admin' },
   { name: 'Users', href: '/admin/users' },
   { name: 'Orders', href: '/admin/orders' },
+  { name: 'Applications', href: '/admin/applications' },
+  { name: 'Trading Accounts', href: '/admin/trading-accounts' },
+  { name: 'Trading Arenas', href: '/admin/trading-arenas' },
   { name: 'Signals', href: '/admin/signals' },
   { name: 'Content', href: '/admin/content' },
   { name: 'Analytics', href: '/admin/analytics' }
@@ -44,6 +48,7 @@ export default function AdminLayout({
 
   return (
     <div className="flex min-h-screen">
+      <Toaster position="top-right" />
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-[#111111] border-r border-gray-800 transition-transform duration-300 ease-in-out ${
         isMenuOpen ? 'translate-x-0' : '-translate-x-full'

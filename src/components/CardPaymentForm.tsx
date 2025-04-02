@@ -6,7 +6,7 @@ import {
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
-import { UserData, Plan } from '@/types';
+import type { UserData, Plan } from '@/types/index';
 
 interface Props {
   onPaymentComplete: (paymentMethodId: string) => void;

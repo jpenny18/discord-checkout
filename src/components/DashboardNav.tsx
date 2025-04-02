@@ -10,12 +10,14 @@ import {
   SignalIcon,
   ChatBubbleLeftRightIcon,
   ChartBarIcon,
+  BuildingLibraryIcon,
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import { useRole } from '@/contexts/RoleContext';
 
 const navigation = [
   { name: 'Overview', href: '/dashboard', icon: HomeIcon },
+  { name: 'My Accounts', href: '/dashboard/my-accounts', icon: ChartBarIcon },
   { name: 'Signals', href: '/dashboard/signals', icon: SignalIcon },
   { name: 'Training', href: '/dashboard/training', icon: AcademicCapIcon },
   { name: 'Community', href: '/dashboard/community', icon: ChatBubbleLeftRightIcon },
@@ -32,13 +34,24 @@ export default function DashboardNav() {
       
 
       {/* New ACI Challenge Button */}
-      <div className="py-6">
+      <div className="py-2">
         <Link
           href="/dashboard/challenge"
           className="flex items-center justify-center gap-2 bg-[#ffc62d] text-black px-4 py-3 rounded-lg font-semibold hover:bg-[#e5b228] transition-colors shadow-[0_0_25px_rgba(255,198,45,0.25)] hover:shadow-[0_0_25px_rgba(255,198,45,0.4)]"
         >
           <TrophyIcon className="h-5 w-5" />
           New ACI Challenge
+        </Link>
+      </div>
+
+      {/* Trading Arena Button */}
+      <div className="py-2">
+        <Link
+          href="/dashboard/trading-arena"
+          className="flex items-center justify-center gap-2 bg-[#8B0000] text-black px-4 py-3 rounded-lg font-semibold hover:bg-[#660000] transition-colors shadow-[0_0_25px_rgba(139,0,0,0.25)] hover:shadow-[0_0_25px_rgba(139,0,0,0.4)]"
+        >
+          <BuildingLibraryIcon className="h-5 w-5" />
+          Trading Arena
         </Link>
       </div>
 
