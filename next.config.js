@@ -27,6 +27,8 @@ const nextConfig = {
       config.resolve.alias = {
         ...config.resolve.alias,
         vertx: false,
+        // Explicitly handle the specific path that's causing the error
+        'node_modules/es6-promise/dist/vertx': false,
         // Force all undici instances to use the same version
         undici: require.resolve('undici')
       };
