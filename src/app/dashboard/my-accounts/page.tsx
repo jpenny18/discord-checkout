@@ -283,7 +283,7 @@ export default function MyAccountsPage() {
     }
   };
 
-  // Show a loading state during SSR
+  // Return a loading state or a static placeholder during server-side rendering
   if (!isClient) {
     return (
       <div className="container mx-auto py-6">

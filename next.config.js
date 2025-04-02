@@ -71,6 +71,9 @@ const nextConfig = {
     domains: ['localhost'],
   },
   transpilePackages: ['@firebase/auth', 'firebase', '@firebase/app', '@firebase/firestore', 'undici'],
+  // Prevent static generation for specific routes
+  skipTrailingSlashRedirect: true,
+  skipMiddlewareUrlNormalize: true,
 };
 
 module.exports = nextConfig; 
