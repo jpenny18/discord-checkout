@@ -25,6 +25,9 @@ const ApexChart = dynamic(
 // Dynamic import for any other client-only components
 const ClientOnlyComponent = dynamic(() => import('./ClientComponents').then(mod => mod.default), { ssr: false });
 
+// This added export configuration ensures Next.js doesn't try to pre-render this page
+export const dynamicConfig = "force-dynamic";
+
 interface TradingAccount {
   id: string;
   user_id: string;

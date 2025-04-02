@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { signOut } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import DashboardNav from '@/components/DashboardNav';
+import DashboardClientWrapper from './DashboardClientWrapper';
 
 export default function DashboardLayout({
   children,
@@ -45,96 +46,98 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-black">
-      {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-[#111111] transition-transform duration-300 ease-in-out ${
-        isMenuOpen ? 'translate-x-0' : '-translate-x-full'
-      } md:translate-x-0 md:shadow-lg`}>
-        <div className="flex h-full flex-col">
-          {/* Logo */}
-          <div className="flex h-16 items-center justify-center border-b border-gray-800">
-            <Image
-              src="/images/logo.png"
-              alt="Ascendant Academy Logo"
-              width={50}
-              height={50}
-              className="rounded-full"
-            />
-            <span className="ml-2 text-lg font-bold text-white">
-              
-            </span>
-          </div>
+    <DashboardClientWrapper>
+      <div className="min-h-screen bg-black">
+        {/* Sidebar */}
+        <div className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-[#111111] transition-transform duration-300 ease-in-out ${
+          isMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        } md:translate-x-0 md:shadow-lg`}>
+          <div className="flex h-full flex-col">
+            {/* Logo */}
+            <div className="flex h-16 items-center justify-center border-b border-gray-800">
+              <Image
+                src="/images/logo.png"
+                alt="Ascendant Academy Logo"
+                width={50}
+                height={50}
+                className="rounded-full"
+              />
+              <span className="ml-2 text-lg font-bold text-white">
+                
+              </span>
+            </div>
 
-          {/* Navigation */}
-          <DashboardNav />
+            {/* Navigation */}
+            <DashboardNav />
 
-          {/* User Profile */}
-          <div className="border-t border-gray-800 p-4">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="h-10 w-10 rounded-full bg-gray-800" />
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-white">
-                  {userProfile?.firstName || 'User'}
-                </p>
-                <p className="text-xs text-gray-400">{user?.email}</p>
-              </div>
-              <button
-                onClick={handleSignOut}
-                className="ml-auto rounded-md p-2 text-gray-400 hover:bg-gray-800 hover:text-[#ffc62d]"
-              >
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+            {/* User Profile */}
+            <div className="border-t border-gray-800 p-4">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="h-10 w-10 rounded-full bg-gray-800" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-white">
+                    {userProfile?.firstName || 'User'}
+                  </p>
+                  <p className="text-xs text-gray-400">{user?.email}</p>
+                </div>
+                <button
+                  onClick={handleSignOut}
+                  className="ml-auto rounded-md p-2 text-gray-400 hover:bg-gray-800 hover:text-[#ffc62d]"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Mobile menu button */}
-      <div className="fixed top-0 left-0 z-50 flex h-16 w-16 items-center justify-center bg-[#111111] md:hidden">
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="rounded-md p-2 text-gray-400 hover:bg-gray-800 hover:text-[#ffc62d] focus:outline-none"
-        >
-          <svg
-            className="h-6 w-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        {/* Mobile menu button */}
+        <div className="fixed top-0 left-0 z-50 flex h-16 w-16 items-center justify-center bg-[#111111] md:hidden">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="rounded-md p-2 text-gray-400 hover:bg-gray-800 hover:text-[#ffc62d] focus:outline-none"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d={isMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
-            />
-          </svg>
-        </button>
-      </div>
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d={isMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+              />
+            </svg>
+          </button>
+        </div>
 
-      {/* Main Content */}
-      <div className="flex flex-col md:pl-64">
-        <main className="flex-1">
-          <div className="py-6 pt-20 md:pt-6">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-              {children}
+        {/* Main Content */}
+        <div className="flex flex-col md:pl-64">
+          <main className="flex-1">
+            <div className="py-6 pt-20 md:pt-6">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
+                {children}
+              </div>
             </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
-    </div>
+    </DashboardClientWrapper>
   );
 } 
