@@ -23,7 +23,7 @@ const ApexChart = dynamic(
 );
 
 // Dynamic import for any other client-only components
-const ClientOnlyComponent = dynamic(() => import('./ClientComponents'), { ssr: false });
+const ClientOnlyComponent = dynamic(() => import('./ClientComponents').then(mod => mod.default), { ssr: false });
 
 interface TradingAccount {
   id: string;

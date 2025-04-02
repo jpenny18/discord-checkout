@@ -71,15 +71,6 @@ const nextConfig = {
     domains: ['localhost'],
   },
   transpilePackages: ['@firebase/auth', 'firebase', '@firebase/app', '@firebase/firestore', 'undici'],
-  // Configuration to handle exports more gracefully
-  exportPathMap: async function () {
-    return {
-      // Export only routes that don't cause errors
-      '/': { page: '/' },
-      // Skip problematic dashboard pages
-      '/dashboard': { page: '/dashboard' },
-    }
-  },
 };
 
 module.exports = nextConfig; 
