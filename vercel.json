@@ -1,8 +1,4 @@
 {
   "buildCommand": "next build",
-  "env": {
-    "RESEND_API_KEY": {
-      "required": false
-    }
-  }
+  "framework": "nextjs"
 } 
