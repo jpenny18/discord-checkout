@@ -7,14 +7,14 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import dynamic from 'next/dynamic';
+import dynamicImport from 'next/dynamic';
 import { initializeMetaApi, getMetaApiInstance } from '@/lib/metaapi';
 import type { AccountMetrics, Trade } from '@/lib/metaapi';
 // Import type only to avoid direct dependency
 import type { ApexOptions } from 'apexcharts';
 
 // Dynamically import with SSR disabled and loading component
-const ApexChartComponent = dynamic(
+const ApexChartComponent = dynamicImport(
   () => import('react-apexcharts').then((mod) => mod.default),
   { 
     ssr: false,
@@ -23,7 +23,7 @@ const ApexChartComponent = dynamic(
 );
 
 // Dynamic import for any other client-only components
-const ClientOnlyComponent = dynamic(() => import('./ClientComponents').then(mod => mod.default), { ssr: false });
+const ClientOnlyComponent = dynamicImport(() => import('./ClientComponents').then(mod => mod.default), { ssr: false });
 
 // This added export configuration ensures Next.js doesn't try to pre-render this page
 export const dynamic = "force-dynamic";
