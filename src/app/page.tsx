@@ -143,6 +143,7 @@ function HomeContent() {
   const prefersReducedMotion = useReducedMotion();
   const heroRef = useRef<HTMLDivElement>(null);
   const { ref: parallaxRef } = useParallax<HTMLDivElement>({ speed: -10 });
+  const [hasWebGL, setHasWebGL] = useState(true);
 
   const particlesInit = useCallback(async (engine: Engine) => {
     await loadSlim(engine);
@@ -160,6 +161,13 @@ function HomeContent() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    // Check for WebGL support
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    setHasWebGL(!!gl);
   }, []);
 
   const motionConfig = {
@@ -324,98 +332,102 @@ function HomeContent() {
       <div className="pt-12">
         {/* Hero Section with Particles */}
         <div id="about" ref={parallaxRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-          <Particles
-            id="tsparticles"
-            init={particlesInit}
-            options={{
-              fullScreen: false,
-              fpsLimit: 120,
-              particles: {
-                number: {
-                  value: 100,
-                  density: {
-                    enable: true,
-                    value_area: 800
-                  }
-                },
-                color: {
-                  value: "#ffc62d"
-                },
-                shape: {
-                  type: "circle"
-                },
-                opacity: {
-                  value: 0.3,
-                  random: true,
-                  animation: {
-                    enable: true,
-                    speed: 1,
-                    minimumValue: 0.1,
-                    sync: false
-                  }
-                },
-                size: {
-                  value: 4,
-                  random: true,
-                  animation: {
-                    enable: true,
-                    speed: 2,
-                    minimumValue: 0.5,
-                    sync: false
-                  }
-                },
-                links: {
-                  enable: true,
-                  distance: 150,
-                  color: "#ffc62d",
-                  opacity: 0.2,
-                  width: 1.5
-                },
-                move: {
-                  enable: true,
-                  speed: 1.2,
-                  direction: "none",
-                  random: true,
-                  straight: false,
-                  outModes: {
-                    default: "out"
-                  },
-                  attract: {
-                    enable: false,
-                    rotateX: 600,
-                    rotateY: 1200
-                  }
-                }
-              },
-              interactivity: {
-                detectsOn: "canvas",
-                events: {
-                  onHover: {
-                    enable: true,
-                    mode: "grab"
-                  },
-                  onClick: {
-                    enable: true,
-                    mode: "push"
-                  },
-                  resize: true
-                },
-                modes: {
-                  grab: {
-                    distance: 140,
-                    links: {
-                      opacity: 0.5
+          {hasWebGL ? (
+            <Particles
+              id="tsparticles"
+              init={particlesInit}
+              options={{
+                fullScreen: false,
+                fpsLimit: 120,
+                particles: {
+                  number: {
+                    value: 100,
+                    density: {
+                      enable: true,
+                      value_area: 800
                     }
                   },
-                  push: {
-                    quantity: 4
+                  color: {
+                    value: "#ffc62d"
+                  },
+                  shape: {
+                    type: "circle"
+                  },
+                  opacity: {
+                    value: 0.3,
+                    random: true,
+                    animation: {
+                      enable: true,
+                      speed: 1,
+                      minimumValue: 0.1,
+                      sync: false
+                    }
+                  },
+                  size: {
+                    value: 4,
+                    random: true,
+                    animation: {
+                      enable: true,
+                      speed: 2,
+                      minimumValue: 0.5,
+                      sync: false
+                    }
+                  },
+                  links: {
+                    enable: true,
+                    distance: 150,
+                    color: "#ffc62d",
+                    opacity: 0.2,
+                    width: 1.5
+                  },
+                  move: {
+                    enable: true,
+                    speed: 1.2,
+                    direction: "none",
+                    random: true,
+                    straight: false,
+                    outModes: {
+                      default: "out"
+                    },
+                    attract: {
+                      enable: false,
+                      rotateX: 600,
+                      rotateY: 1200
+                    }
                   }
-                }
-              },
-              detectRetina: true
-            }}
-            className="absolute inset-0"
-          />
+                },
+                interactivity: {
+                  detectsOn: "canvas",
+                  events: {
+                    onHover: {
+                      enable: true,
+                      mode: "grab"
+                    },
+                    onClick: {
+                      enable: true,
+                      mode: "push"
+                    },
+                    resize: true
+                  },
+                  modes: {
+                    grab: {
+                      distance: 140,
+                      links: {
+                        opacity: 0.5
+                      }
+                    },
+                    push: {
+                      quantity: 4
+                    }
+                  }
+                },
+                detectRetina: true
+              }}
+              className="absolute inset-0"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-b from-black to-[#111]" />
+          )}
 
           <div className="relative z-10 text-center px-4">
             <motion.div
@@ -671,9 +683,21 @@ function HomeContent() {
                   <div className="w-full relative space-y-8">
                     {/* Globe Section */}
                     <div className="bg-black p-3 rounded-lg border border-[#232323] relative overflow-hidden h-[250px] flex items-center justify-center">
-                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                        <DottedGlobe />
-                      </div>
+                      {hasWebGL ? (
+                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                          <DottedGlobe />
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center">
+                          <Image
+                            src="/images/logo.png"
+                            alt="Ascendant Logo"
+                            width={64}
+                            height={64}
+                            className="rounded-full animate-pulse"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     {/* Title and Description */}
@@ -1076,45 +1100,49 @@ function HomeContent() {
 
         {/* Footer */}
         <footer className="py-16 bg-black relative overflow-hidden">
-          <Particles
-            id="footer-particles"
-            className="absolute inset-0"
-            options={{
-              fullScreen: false,
-              fpsLimit: 60,
-              particles: {
-                number: {
-                  value: 40,
-                  density: {
+          {hasWebGL ? (
+            <Particles
+              id="footer-particles"
+              className="absolute inset-0"
+              options={{
+                fullScreen: false,
+                fpsLimit: 60,
+                particles: {
+                  number: {
+                    value: 40,
+                    density: {
+                      enable: true,
+                      value_area: 800
+                    }
+                  },
+                  color: {
+                    value: "#ffc62d"
+                  },
+                  opacity: {
+                    value: 0.15,
+                    random: true
+                  },
+                  size: {
+                    value: 2,
+                    random: true
+                  },
+                  move: {
                     enable: true,
-                    value_area: 800
+                    speed: 0.5,
+                    direction: "none",
+                    random: true,
+                    straight: false,
+                    outModes: {
+                      default: "out"
+                    }
                   }
                 },
-                color: {
-                  value: "#ffc62d"
-                },
-                opacity: {
-                  value: 0.15,
-                  random: true
-                },
-                size: {
-                  value: 2,
-                  random: true
-                },
-                move: {
-                  enable: true,
-                  speed: 0.5,
-                  direction: "none",
-                  random: true,
-                  straight: false,
-                  outModes: {
-                    default: "out"
-                  }
-                }
-              },
-              detectRetina: true
-            }}
-          />
+                detectRetina: true
+              }}
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-b from-black to-[#111]" />
+          )}
           
           <div className="max-w-7xl mx-auto px-4 relative z-10">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -1183,7 +1211,7 @@ function HomeContent() {
                   </a>
                   <a href="#" className="text-gray-400 hover:text-white transition-colors">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.151 18.939c-.203.271-.428.393-.677.393-.141 0-.281-.03-.419-.089l-4.71-2.715c-.548-.315-.848-.903-.848-1.528v-5.5c0-.626.3-1.213.848-1.528l4.71-2.715c.138-.059.278-.089.419-.089.249 0 .474.121.677.393.203.271.305.545.305.823v10.732c0 .278-.102.552-.305.823z"/>
                     </svg>
                   </a>
                   <a href="#" className="text-gray-400 hover:text-white transition-colors">
@@ -1193,7 +1221,7 @@ function HomeContent() {
                   </a>
                   <a href="#" className="text-gray-400 hover:text-white transition-colors">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 0C5.373 0 0 5.373 0 0 0 0 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.151 18.939c-.203.271-.428.393-.677.393-.141 0-.281-.03-.419-.089l-4.71-2.715c-.548-.315-.848-.903-.848-1.528v-5.5c0-.626.3-1.213.848-1.528l4.71-2.715c.138-.059.278-.089.419-.089.249 0 .474.121.677.348 1.135z"/>
+                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.151 18.939c-.203.271-.428.393-.677.393-.141 0-.281-.03-.419-.089l-4.71-2.715c-.548-.315-.848-.903-.848-1.528v-5.5c0-.626.3-1.213.848-1.528l4.71-2.715c.138-.059.278-.089.419-.089.249 0 .474.121.677.393.203.271.305.545.305.823v10.732c0 .278-.102.552-.305.823z"/>
                     </svg>
                   </a>
                 </div>
