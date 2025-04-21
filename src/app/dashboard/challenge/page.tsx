@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ChallengeMetrics from '@/components/ChallengeMetrics';
 import { performanceMetrics } from '@/components/ChallengeMetrics';
+import Image from 'next/image';
 
 // Define the type locally since we can't import it
 type ChallengeType = 'Gauntlet' | 'Ascendant' | 'Standard';
@@ -12,17 +13,23 @@ const challengeTypes = [
   { 
     id: 'Gauntlet' as const, 
     name: 'Gauntlet Challenge', 
-    amounts: ['$50,000', '$100,000', '$300,000']
+    amounts: ['$50,000', '$100,000', '$300,000'],
+    image: '/images/gauntlet.png',
+    description: 'Prove you can trade first, pay the rest after passing'
   },
   { 
     id: 'Ascendant' as const, 
     name: 'Ascendant Challenge', 
-    amounts: ['$10,000', '$25,000', '$50,000']
+    amounts: ['$10,000', '$25,000', '$50,000'],
+    image: '/images/ascendant.png',
+    description: 'One step challenge, double your account every target'
   },
   { 
     id: 'Standard' as const, 
     name: 'Standard Challenge', 
-    amounts: ['$10,000', '$25,000', '$50,000', '$100,000']
+    amounts: ['$10,000', '$25,000', '$50,000', '$100,000'],
+    image: '/images/standard.png',
+    description: 'Classic two step challenge for confident traders'
   },
 ];
 
@@ -131,35 +138,80 @@ export default function ChallengePage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
       <div className="space-y-12">
-        {/* Challenge Selection Section */}
-        <section>
           <h2 className="text-2xl font-semibold mb-8 text-[#ffc62d]">Challenge Details</h2>
           
-          <div className="space-y-8">
+        {/* Main Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          {/* First Card - Challenge Selection */}
+          <div className="lg:col-span-3 bg-[#111111] rounded-2xl p-6 border border-gray-800">
+            <div className="transform scale-[1] origin-top">
             {/* Challenge Type Selection */}
-            <div>
+              <div className="mb-12">
               <h3 className="text-lg font-medium mb-4">Select Challenge Type</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {challengeTypes.map((type) => (
                   <button
                     key={type.id}
                     onClick={() => handleTypeSelect(type.id)}
-                    className={`p-4 rounded-lg border ${
+                      className={`relative group w-full aspect-[16/20] rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
                       selectedType === type.id
-                        ? 'border-[#ffc62d] bg-[#ffc62d]/10'
+                          ? 'border-[#ffc62d] shadow-[0_0_40px_rgba(255,198,45,0.2)]'
                         : 'border-gray-700 hover:border-gray-600'
                     }`}
                   >
+                      {/* Border glow animation */}
+                      <div className={`absolute inset-0 border-4 rounded-2xl transition-all duration-500 ${
+                        selectedType === type.id 
+                          ? 'border-[#ffc62d]/50'
+                          : 'border-transparent group-hover:border-[#ffc62d]/20'
+                      }`}></div>
+                      
+                      {/* Image section - top 80% */}
+                      <div className="relative w-full h-[80%] overflow-hidden flex items-center justify-center">
+                        <div className="relative w-[85%] h-[85%]">
+                          <Image
+                            src={type.image}
+                            alt={type.name}
+                            fill
+                            className={`object-contain transition-all duration-700 ${
+                              selectedType === type.id
+                                ? 'scale-125'
+                                : 'scale-110 group-hover:scale-125'
+                            }`}
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            priority
+                          />
+                        </div>
+                        
+                        {/* Overlay gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/15 to-transparent"></div>
+                      </div>
+                      
+                      {/* Text section - bottom 20% */}
+                      <div className="relative h-[20%] bg-gradient-to-t from-black to-black/90 p-2 flex flex-col justify-center items-center text-center">
+                        <div className={`transform transition-all duration-300 ${
+                          selectedType === type.id
+                            ? '-translate-y-1'
+                            : 'group-hover:-translate-y-1'
+                        }`}>
+                          <h2 className="text-[0.6rem] font-bold mb-0.5 text-white drop-shadow-lg">
                     {type.name}
+                          </h2>
+                          <div className="h-0.5 w-12 bg-[#ffc62d] mb-0.5 rounded mx-auto"></div>
+                          <p className="text-white/80 text-[0.41rem] max-w-md truncate px-1">
+                            {type.description}
+                          </p>
+                        </div>
+                      </div>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Amount Selection */}
-            <div className={selectedType ? 'opacity-100' : 'opacity-50 pointer-events-none'}>
+              <div className={`mb-12 ${selectedType ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
               <h3 className="text-lg font-medium mb-4">Select Amount</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {(selectedType ? challengeTypes.find(type => type.id === selectedType)?.amounts : [])?.map((amount) => (
@@ -181,28 +233,69 @@ export default function ChallengePage() {
             {/* Platform Selection */}
             <div className={selectedAmount ? 'opacity-100' : 'opacity-50 pointer-events-none'}>
               <h3 className="text-lg font-medium mb-4">Select Platform</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 max-w-[50%]">
                 {platforms.map((platform) => (
                   <button
                     key={platform}
                     onClick={() => handlePlatformSelect(platform)}
-                    className={`p-4 rounded-lg border ${
+                    className={`relative group w-full aspect-square rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
                       selectedPlatform === platform
-                        ? 'border-[#ffc62d] bg-[#ffc62d]/10'
+                        ? 'border-[#ffc62d] shadow-[0_0_40px_rgba(255,198,45,0.2)]'
                         : 'border-gray-700 hover:border-gray-600'
                     }`}
                   >
-                    {platform}
+                    {/* Border glow animation */}
+                    <div className={`absolute inset-0 border-4 rounded-2xl transition-all duration-500 ${
+                      selectedPlatform === platform 
+                        ? 'border-[#ffc62d]/50'
+                        : 'border-transparent group-hover:border-[#ffc62d]/20'
+                    }`}></div>
+                    
+                    {/* Image section - top 75% */}
+                    <div className="relative w-full h-[80%] overflow-hidden flex items-center justify-center">
+                      <div className="relative w-full h-full">
+                        <Image
+                          src={`/images/${platform.toLowerCase()}.png`}
+                          alt={platform}
+                          fill
+                          className={`object-cover transition-all duration-700 ${
+                            selectedPlatform === platform
+                              ? 'scale-125'
+                              : 'scale-110 group-hover:scale-125'
+                          }`}
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          priority
+                        />
+                      </div>
+                      
+                      {/* Overlay gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/15 to-transparent"></div>
+                    </div>
+                    
+                    {/* Text section - bottom 25% */}
+                    <div className="relative h-[20%] bg-gradient-to-t from-black to-black/90 p-2 flex flex-col justify-center items-center text-center">
+                      <div className={`transform transition-all duration-300 ${
+                        selectedPlatform === platform
+                          ? '-translate-y-1'
+                          : 'group-hover:-translate-y-1'
+                      }`}>
+                        <h2 className="text-[0.6rem] font-bold mb-0.5 text-white drop-shadow-lg">
+                          {platform}
+                        </h2>
+                        <div className="h-0.5 w-12 bg-[#ffc62d] rounded mx-auto"></div>
+                      </div>
+                    </div>
                   </button>
                 ))}
               </div>
             </div>
           </div>
-        </section>
+          </div>
 
-        {/* Personal Details Section */}
-        <section>
-          <h2 className="text-2xl font-semibold mb-8 text-[#ffc62d]">Personal Details</h2>
+          {/* Second Card - Personal Details */}
+          <div className="lg:col-span-2 bg-[#111111] rounded-2xl p-6 border border-gray-800">
+            <div className="transform scale-[1] origin-top">
+              <h2 className="text-2xl font-semibold mb-8">Personal Details</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="firstName" className="block text-sm font-medium mb-2">
@@ -303,8 +396,12 @@ export default function ChallengePage() {
               />
             </div>
           </div>
-        </section>
+            </div>
+          </div>
+        </div>
 
+        {/* Bottom Section - Challenge Metrics and Payment */}
+        <div className="space-y-12">
         {/* Metrics Table */}
         {selectedType && selectedAmount && (
           <section>
@@ -347,6 +444,7 @@ export default function ChallengePage() {
             </div>
           </div>
         </section>
+        </div>
       </div>
     </div>
   );

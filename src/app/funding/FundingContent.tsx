@@ -791,43 +791,54 @@ export default function FundingContent() {
         </section>
 
         {/* Funding Programs */}
-        <section className="py-20 bg-black">
+        <section id="programs" className="py-20 bg-black">
           <div className="container mx-auto px-4">
             <h2 className="text-4xl font-bold text-center mb-16">CHOOSE YOUR FUNDING PROGRAM</h2>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
               {[
                 {
-                  name: 'GAUNTLET',
-                  image: '/images/gauntlet.png',
+                  name: 'STANDARD',
+                  tier: 'BEGINNER FRIENDLY',
                   type: 'LOW COST PROGRAM',
-                  description: 'Pay upon passing',
-                  feature: 'Scale your account every milestone',
-                  price: '$50',
-                  tier: 'STARTER',
-                  color: 'from-yellow-400/20 to-yellow-600/20',
+                  color: 'from-blue-900/20 to-blue-900/40',
+                  description: 'Traditional 2-phase program for those who are new to funded trading.',
+                  price: '$97',
+                  feature: 'Up to 90% Profit Split',
+                  image: '/images/standard.png',
+                  href: '/funding/standard'
+                },
+                {
+                  name: 'GAUNTLET',
+                  tier: 'MOST POPULAR',
+                  type: '1-STEP PROGRAM',
+                  color: 'from-yellow-900/20 to-yellow-900/40',
+                  description: 'One phase program with multiple scaling levels.',
+                  price: '$297',
+                  feature: 'Up to 100% Profit Split',
+                  image: '/images/gauntlet.png',
                   href: '/funding/gauntlet'
                 },
                 {
                   name: 'ASCENDANT',
+                  tier: 'ADVANCED',
+                  type: '2-STEP PROGRAM',
+                  color: 'from-purple-900/20 to-purple-900/40',
+                  description: 'Two phase program with multiple scaling tiers.',
+                  price: '$147',
+                  feature: 'Fixed 80% Profit Split',
                   image: '/images/ascendant.png',
-                  type: '1-STEP PROGRAM',
-                  description: 'Get paid quickly',
-                  feature: 'Double your account every milestone',
-                  price: '$250',
-                  tier: 'PREMIUM',
-                  color: 'from-yellow-400/30 to-yellow-600/30',
                   href: '/funding/ascendant'
                 },
                 {
-                  name: 'STANDARD',
-                  image: '/images/standard.png',
-                  type: '2-STEP PROGRAM',
-                  description: 'Pay upon passing',
-                  feature: 'Scale your account every milestone',
-                  price: '$100',
-                  tier: 'CLASSIC',
-                  color: 'from-yellow-400/20 to-yellow-600/20',
-                  href: '/funding/standard'
+                  name: 'TRADING ARENA',
+                  tier: 'COMPETITIVE',
+                  type: 'COMPETITION PROGRAM',
+                  color: 'from-red-900/20 to-red-900/40',
+                  description: 'No rules, 30-day trading competition. Flip and win prizes.',
+                  price: '$99',
+                  feature: 'Cash Prizes + Funded Accounts',
+                  image: '/images/arena.png',
+                  href: '/funding/trading-arena'
                 }
               ].map((program, index) => {
                 const [ref, entry] = useIntersectionObserver({
