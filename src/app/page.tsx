@@ -18,18 +18,115 @@ import DottedGlobe from '@/components/DottedGlobe';
 import styles from '@/styles/home.module.css';
 import { PlanFeature } from '@/types/index';
 
-// Dynamically import Particles component
-const Particles = dynamic(() => import("react-tsparticles"), {
+// Add WebGL type definitions
+interface WebGLContextAttributes {
+  alpha?: boolean;
+  depth?: boolean;
+  stencil?: boolean;
+  antialias?: boolean;
+  premultipliedAlpha?: boolean;
+  preserveDrawingBuffer?: boolean;
+  powerPreference?: 'default' | 'high-performance' | 'low-power';
+}
+
+interface WebGLRenderingContext extends WebGLRenderingContextBase {}
+interface WebGL2RenderingContext extends WebGLRenderingContextBase {}
+
+// WebGL detection utility
+const checkWebGLSupport = () => {
+  if (typeof window === 'undefined') return false;
+  
+  try {
+    const canvas = document.createElement('canvas');
+    let gl: WebGLRenderingContext | WebGL2RenderingContext | null = null;
+
+    // Try to get WebGL context, with fallbacks
+    gl = canvas.getContext('webgl2') as WebGL2RenderingContext;
+    if (!gl) {
+      gl = canvas.getContext('webgl') as WebGLRenderingContext;
+    }
+    if (!gl) {
+      gl = canvas.getContext('experimental-webgl') as WebGLRenderingContext;
+    }
+
+    if (!gl) return false;
+               
+    // Additional checks for iOS Safari
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    
+    if (isIOS && isSafari) {
+      try {
+        // Safe type assertion since we've already checked gl is not null
+        const webGLContext = gl as WebGLRenderingContext;
+        const maxTextureSize = webGLContext.getParameter(webGLContext.MAX_TEXTURE_SIZE);
+        if (!maxTextureSize || maxTextureSize < 4096) {
+          return false;
+        }
+      } catch (e) {
+        return false;
+      }
+    }
+    
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+// Fallback components
+const FallbackParticles = () => (
+  <div className="absolute inset-0">
+    <div className="absolute inset-0 bg-gradient-to-b from-black via-black/90 to-black">
+      <div className="absolute inset-0 opacity-30" 
+           style={{ 
+             backgroundImage: 'radial-gradient(circle at center, #ffc62d 1px, transparent 1px)', 
+             backgroundSize: '50px 50px' 
+           }} 
+      />
+    </div>
+  </div>
+);
+
+const FallbackGlobe = () => (
+  <div className="relative w-full h-full flex items-center justify-center">
+    <div className="absolute inset-0 bg-[#ffc62d]/5 rounded-lg" />
+    <div className="relative">
+      <Image
+        src="/images/logo.png"
+        alt="Ascendant Logo"
+        width={64}
+        height={64}
+        className="rounded-full animate-pulse"
+      />
+      <div className="absolute -inset-4 bg-[#ffc62d]/10 rounded-full animate-ping" />
+    </div>
+  </div>
+);
+
+// Conditionally import components based on WebGL support
+const Particles = dynamic(() => {
+  if (!checkWebGLSupport()) {
+    return Promise.resolve(FallbackParticles);
+  }
+  return import("react-tsparticles").then((mod) => mod.default);
+}, {
   ssr: false,
   loading: () => <div className="absolute inset-0 bg-black" />
 });
 
-// Dynamically import Globe component
-const Globe = dynamic(() => import('react-globe.gl'), {
+const Globe = dynamic(() => {
+  if (!checkWebGLSupport()) {
+    return Promise.resolve(FallbackGlobe);
+  }
+  return import('react-globe.gl').then((mod) => mod.default);
+}, {
   ssr: false,
-  loading: () => <div className="w-64 h-64 flex items-center justify-center">
-    <div className="w-8 h-8 border-2 border-[#ffc62d] border-t-transparent rounded-full animate-spin" />
-  </div>
+  loading: () => (
+    <div className="w-64 h-64 flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-[#ffc62d] border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
 });
 
 const tradingInstruments = [
@@ -143,10 +240,11 @@ function HomeContent() {
   const prefersReducedMotion = useReducedMotion();
   const heroRef = useRef<HTMLDivElement>(null);
   const { ref: parallaxRef } = useParallax<HTMLDivElement>({ speed: -10 });
-  const [hasWebGL, setHasWebGL] = useState(true);
 
   const particlesInit = useCallback(async (engine: Engine) => {
-    await loadSlim(engine);
+    if (checkWebGLSupport()) {
+      await loadSlim(engine);
+    }
     setLoading(prev => ({ ...prev, particles: false }));
   }, []);
 
@@ -161,13 +259,6 @@ function HomeContent() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    // Check for WebGL support
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    setHasWebGL(!!gl);
   }, []);
 
   const motionConfig = {
@@ -332,102 +423,86 @@ function HomeContent() {
       <div className="pt-12">
         {/* Hero Section with Particles */}
         <div id="about" ref={parallaxRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-          {hasWebGL ? (
-            <Particles
-              id="tsparticles"
-              init={particlesInit}
-              options={{
-                fullScreen: false,
-                fpsLimit: 120,
-                particles: {
-                  number: {
-                    value: 100,
-                    density: {
-                      enable: true,
-                      value_area: 800
-                    }
-                  },
-                  color: {
-                    value: "#ffc62d"
-                  },
-                  shape: {
-                    type: "circle"
-                  },
-                  opacity: {
-                    value: 0.3,
-                    random: true,
-                    animation: {
-                      enable: true,
-                      speed: 1,
-                      minimumValue: 0.1,
-                      sync: false
-                    }
-                  },
-                  size: {
-                    value: 4,
-                    random: true,
-                    animation: {
-                      enable: true,
-                      speed: 2,
-                      minimumValue: 0.5,
-                      sync: false
-                    }
-                  },
-                  links: {
+          <Particles
+            id="tsparticles"
+            init={particlesInit}
+            options={{
+              fullScreen: false,
+              fpsLimit: 60,
+              particles: {
+                number: { value: 100, density: { enable: true, value_area: 800 } },
+                color: { value: "#ffc62d" },
+                shape: { type: "circle" },
+                opacity: {
+                  value: 0.3,
+                  random: true,
+                  animation: {
                     enable: true,
-                    distance: 150,
-                    color: "#ffc62d",
-                    opacity: 0.2,
-                    width: 1.5
-                  },
-                  move: {
-                    enable: true,
-                    speed: 1.2,
-                    direction: "none",
-                    random: true,
-                    straight: false,
-                    outModes: {
-                      default: "out"
-                    },
-                    attract: {
-                      enable: false,
-                      rotateX: 600,
-                      rotateY: 1200
-                    }
+                    speed: 1,
+                    minimumValue: 0.1,
+                    sync: false
                   }
                 },
-                interactivity: {
-                  detectsOn: "canvas",
-                  events: {
-                    onHover: {
-                      enable: true,
-                      mode: "grab"
-                    },
-                    onClick: {
-                      enable: true,
-                      mode: "push"
-                    },
-                    resize: true
-                  },
-                  modes: {
-                    grab: {
-                      distance: 140,
-                      links: {
-                        opacity: 0.5
-                      }
-                    },
-                    push: {
-                      quantity: 4
-                    }
+                size: {
+                  value: 4,
+                  random: true,
+                  animation: {
+                    enable: true,
+                    speed: 2,
+                    minimumValue: 0.5,
+                    sync: false
                   }
                 },
-                detectRetina: true
-              }}
-              className="absolute inset-0"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-b from-black to-[#111]" />
-          )}
+                links: {
+                  enable: true,
+                  distance: 150,
+                  color: "#ffc62d",
+                  opacity: 0.2,
+                  width: 1.5
+                },
+                move: {
+                  enable: true,
+                  speed: 1.2,
+                  direction: "none",
+                  random: true,
+                  straight: false,
+                  outModes: { default: "out" },
+                  attract: {
+                    enable: false,
+                    rotateX: 600,
+                    rotateY: 1200
+                  }
+                }
+              },
+              interactivity: {
+                detectsOn: "canvas",
+                events: {
+                  onHover: {
+                    enable: true,
+                    mode: "grab"
+                  },
+                  onClick: {
+                    enable: true,
+                    mode: "push"
+                  },
+                  resize: true
+                },
+                modes: {
+                  grab: {
+                    distance: 140,
+                    links: {
+                      opacity: 0.5
+                    }
+                  },
+                  push: {
+                    quantity: 4
+                  }
+                }
+              },
+              detectRetina: true
+            }}
+            className="absolute inset-0"
+          />
 
           <div className="relative z-10 text-center px-4">
             <motion.div
@@ -683,21 +758,7 @@ function HomeContent() {
                   <div className="w-full relative space-y-8">
                     {/* Globe Section */}
                     <div className="bg-black p-3 rounded-lg border border-[#232323] relative overflow-hidden h-[250px] flex items-center justify-center">
-                      {hasWebGL ? (
-                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                          <DottedGlobe />
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center">
-                          <Image
-                            src="/images/logo.png"
-                            alt="Ascendant Logo"
-                            width={64}
-                            height={64}
-                            className="rounded-full animate-pulse"
-                          />
-                        </div>
-                      )}
+                      <Globe />
                     </div>
 
                     {/* Title and Description */}
@@ -1100,50 +1161,6 @@ function HomeContent() {
 
         {/* Footer */}
         <footer className="py-16 bg-black relative overflow-hidden">
-          {hasWebGL ? (
-            <Particles
-              id="footer-particles"
-              className="absolute inset-0"
-              options={{
-                fullScreen: false,
-                fpsLimit: 60,
-                particles: {
-                  number: {
-                    value: 40,
-                    density: {
-                      enable: true,
-                      value_area: 800
-                    }
-                  },
-                  color: {
-                    value: "#ffc62d"
-                  },
-                  opacity: {
-                    value: 0.15,
-                    random: true
-                  },
-                  size: {
-                    value: 2,
-                    random: true
-                  },
-                  move: {
-                    enable: true,
-                    speed: 0.5,
-                    direction: "none",
-                    random: true,
-                    straight: false,
-                    outModes: {
-                      default: "out"
-                    }
-                  }
-                },
-                detectRetina: true
-              }}
-            />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-b from-black to-[#111]" />
-          )}
-          
           <div className="max-w-7xl mx-auto px-4 relative z-10">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               <div className="space-y-4">
