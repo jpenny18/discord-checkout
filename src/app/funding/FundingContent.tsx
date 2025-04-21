@@ -434,6 +434,9 @@ export default function FundingContent() {
                     <Link href="/funding/standard" className="block px-4 py-2 text-sm text-white hover:bg-zinc-800">
                       Standard Challenge
                     </Link>
+                    <Link href="/funding/trading-arena" className="block px-4 py-2 text-sm text-white hover:bg-zinc-800">
+                      Trading Arena
+                    </Link>
                   </div>
                 )}
               </div>
@@ -505,6 +508,9 @@ export default function FundingContent() {
                       </Link>
                       <Link href="/funding/standard" className="block px-3 py-2 text-sm text-white hover:bg-zinc-800 rounded-md">
                         Standard Challenge
+                      </Link>
+                      <Link href="/funding/trading-arena" className="block px-3 py-2 text-sm text-white hover:bg-zinc-800 rounded-md">
+                        Trading Arena
                       </Link>
                     </div>
                   )}
@@ -794,52 +800,42 @@ export default function FundingContent() {
         <section id="programs" className="py-20 bg-black">
           <div className="container mx-auto px-4">
             <h2 className="text-4xl font-bold text-center mb-16">CHOOSE YOUR FUNDING PROGRAM</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               {[
                 {
-                  name: 'STANDARD',
-                  tier: 'BEGINNER FRIENDLY',
-                  type: 'LOW COST PROGRAM',
-                  color: 'from-blue-900/20 to-blue-900/40',
-                  description: 'Traditional 2-phase program for those who are new to funded trading.',
-                  price: '$97',
-                  feature: 'Up to 90% Profit Split',
-                  image: '/images/standard.png',
-                  href: '/funding/standard'
-                },
-                {
                   name: 'GAUNTLET',
-                  tier: 'MOST POPULAR',
-                  type: '1-STEP PROGRAM',
+                  tier: 'STARTER',
+                  type: 'LOW COST PROGRAM',
                   color: 'from-yellow-900/20 to-yellow-900/40',
-                  description: 'One phase program with multiple scaling levels.',
-                  price: '$297',
-                  feature: 'Up to 100% Profit Split',
+                  description: 'Pay upon passing',
+                  price: '$50',
+                  feature: 'Scale your account every milestone',
                   image: '/images/gauntlet.png',
                   href: '/funding/gauntlet'
                 },
                 {
                   name: 'ASCENDANT',
-                  tier: 'ADVANCED',
-                  type: '2-STEP PROGRAM',
+                  tier: 'PREMIUM',
+                  type: '1-STEP PROGRAM',
                   color: 'from-purple-900/20 to-purple-900/40',
-                  description: 'Two phase program with multiple scaling tiers.',
-                  price: '$147',
-                  feature: 'Fixed 80% Profit Split',
+                  description: 'Get paid quickly',
+                  price: '$250',
+                  feature: 'Double your account every milestone',
                   image: '/images/ascendant.png',
                   href: '/funding/ascendant'
                 },
                 {
-                  name: 'TRADING ARENA',
-                  tier: 'COMPETITIVE',
-                  type: 'COMPETITION PROGRAM',
-                  color: 'from-red-900/20 to-red-900/40',
-                  description: 'No rules, 30-day trading competition. Flip and win prizes.',
-                  price: '$99',
-                  feature: 'Cash Prizes + Funded Accounts',
-                  image: '/images/arena.png',
-                  href: '/funding/trading-arena'
+                  name: 'STANDARD',
+                  tier: 'CLASSIC',
+                  type: '2-STEP PROGRAM',
+                  color: 'from-blue-900/20 to-blue-900/40',
+                  description: 'Classic challenge',
+                  price: '$100',
+                  feature: 'High-Risk High-Reward Scaling',
+                  image: '/images/standard.png',
+                  href: '/funding/standard'
                 }
+      
               ].map((program, index) => {
                 const [ref, entry] = useIntersectionObserver({
                   threshold: 0.2,

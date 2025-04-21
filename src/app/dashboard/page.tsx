@@ -70,7 +70,7 @@ export default function DashboardPage() {
           Here's what's happening with your trading journey. Explore your options below to continue your path to success.
         </p>
       </div>
-      
+
       {/* Main Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* ACI Challenge Card */}
@@ -325,59 +325,59 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
           {/* Lessons Completed */}
           <div className="p-5 bg-black/20 backdrop-blur-sm rounded-xl border border-white/5 hover:border-white/10 transition-all group">
-            <div className="flex items-center">
+          <div className="flex items-center">
               <div className="rounded-lg bg-[#ffc62d]/10 group-hover:bg-[#ffc62d]/15 p-3 transition-all">
-                <svg
-                  className="h-6 w-6 text-[#ffc62d]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-400">
-                  Lessons Completed
-                </p>
+              <svg
+                className="h-6 w-6 text-[#ffc62d]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-400">
+                Lessons Completed
+              </p>
                 <p className="mt-1 text-xl font-semibold text-white flex items-end gap-1">
-                  {stats?.totalLessonsCompleted || 0}
+                {stats?.totalLessonsCompleted || 0}
                   <span className="text-xs text-[#ffc62d]/70">lessons</span>
-                </p>
+              </p>
               </div>
             </div>
           </div>
 
           {/* Subscription Status */}
           <div className="p-5 bg-black/20 backdrop-blur-sm rounded-xl border border-white/5 hover:border-white/10 transition-all group">
-            <div className="flex items-center">
+          <div className="flex items-center">
               <div className="rounded-lg bg-green-500/10 group-hover:bg-green-500/15 p-3 transition-all">
-                <svg
-                  className="h-6 w-6 text-green-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                  />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-400">
-                  Subscription Status
-                </p>
+              <svg
+                className="h-6 w-6 text-green-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-400">
+                Subscription Status
+              </p>
                 <p className="mt-1 text-xl font-semibold flex items-center gap-2">
                   <span className={stats?.activeSubscription ? 'text-green-500' : 'text-red-500'}>
-                    {stats?.activeSubscription ? 'Active' : 'Inactive'}
+                {stats?.activeSubscription ? 'Active' : 'Inactive'}
                   </span>
                   {stats?.activeSubscription && (
                     <span className="flex h-2 w-2 relative">
@@ -392,58 +392,58 @@ export default function DashboardPage() {
 
           {/* Subscription Tier */}
           <div className="p-5 bg-black/20 backdrop-blur-sm rounded-xl border border-white/5 hover:border-white/10 transition-all group">
-            <div className="flex items-center">
+          <div className="flex items-center">
               <div className="rounded-lg bg-purple-500/10 group-hover:bg-purple-500/15 p-3 transition-all">
-                <svg
-                  className="h-6 w-6 text-purple-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                  />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-400">
-                  Subscription Tier
-                </p>
+              <svg
+                className="h-6 w-6 text-purple-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-400">
+                Subscription Tier
+              </p>
                 <p className="mt-1 text-xl font-semibold text-purple-400">
-                  {stats?.subscriptionTier || 'None'}
-                </p>
+                {stats?.subscriptionTier || 'None'}
+              </p>
               </div>
             </div>
           </div>
 
           {/* Last Active */}
           <div className="p-5 bg-black/20 backdrop-blur-sm rounded-xl border border-white/5 hover:border-white/10 transition-all group">
-            <div className="flex items-center">
+          <div className="flex items-center">
               <div className="rounded-lg bg-blue-500/10 group-hover:bg-blue-500/15 p-3 transition-all">
-                <svg
-                  className="h-6 w-6 text-blue-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-400">Last Active</p>
-                <p className="mt-1 text-xl font-semibold text-white">
-                  {stats?.lastActive
-                    ? new Date(stats.lastActive).toLocaleDateString()
-                    : 'Never'}
-                </p>
+              <svg
+                className="h-6 w-6 text-blue-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-400">Last Active</p>
+              <p className="mt-1 text-xl font-semibold text-white">
+                {stats?.lastActive
+                  ? new Date(stats.lastActive).toLocaleDateString()
+                  : 'Never'}
+              </p>
               </div>
             </div>
           </div>

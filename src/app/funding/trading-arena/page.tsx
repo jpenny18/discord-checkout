@@ -555,7 +555,7 @@ export default function TradingArenaPage() {
                         <p className="text-sm text-gray-400">$100 one-time payment. 30 days. No rules. Just flip.</p>
                       </div>
                       <Link
-                        href="/dashboard/login"
+                        href="/dashboard/trading-arena"
                         className="bg-[#8B0000] text-white px-6 py-3 rounded font-semibold hover:bg-red-900 transition-colors w-full md:w-auto text-center"
                       >
                         JOIN THE ARENA
@@ -603,7 +603,7 @@ export default function TradingArenaPage() {
             <h2 className="text-2xl md:text-3xl font-bold mb-4">READY TO TEST YOUR SKILLS?</h2>
             <p className="text-gray-400 max-w-2xl mx-auto mb-8">Join the Trading Arena today and compete against the best traders globally. No rules, no limits - just pure trading skill.</p>
             <Link
-              href="/dashboard/login"
+              href="/dashboard/trading-arena"
               className="inline-block bg-[#8B0000] text-white px-8 py-4 rounded-lg font-semibold hover:bg-red-800 transition-colors"
             >
               JOIN THE ARENA
