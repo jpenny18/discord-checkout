@@ -115,12 +115,8 @@ const Particles = dynamic(() => {
   loading: () => <div className="absolute inset-0 bg-black" />
 });
 
-const Globe = dynamic(() => {
-  if (!checkWebGLSupport()) {
-    return Promise.resolve(FallbackGlobe);
-  }
-  return import('react-globe.gl').then((mod) => mod.default);
-}, {
+// Always use fallback for Globe
+const Globe = dynamic(() => Promise.resolve(FallbackGlobe), {
   ssr: false,
   loading: () => (
     <div className="w-64 h-64 flex items-center justify-center">
@@ -243,7 +239,7 @@ function HomeContent() {
 
   const particlesInit = useCallback(async (engine: Engine) => {
     if (checkWebGLSupport()) {
-      await loadSlim(engine);
+    await loadSlim(engine);
     }
     setLoading(prev => ({ ...prev, particles: false }));
   }, []);
@@ -274,7 +270,7 @@ function HomeContent() {
     <main className="min-h-screen bg-black text-white">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50">
-        <nav className="max-w-2xl mx-auto px-3 py-2 my-2 bg-black/80 backdrop-blur-sm rounded-full border border-[#232323] shadow-lg">
+        <nav className={`max-w-2xl mx-auto px-3 py-2 my-2 bg-black/80 backdrop-blur-sm border border-[#232323] shadow-lg ${isMobileMenuOpen ? 'rounded-2xl' : 'rounded-full'} transition-all duration-300`}>
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
@@ -369,8 +365,11 @@ function HomeContent() {
                 <div className="flex flex-col space-y-2 py-2">
                   <button 
                     onClick={() => {
-                      document.getElementById('stats')?.scrollIntoView({ behavior: 'smooth' });
+                      const element = document.getElementById('stats');
                       setIsMobileMenuOpen(false);
+                      setTimeout(() => {
+                        element?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
                     }}
                     className="text-gray-300 hover:text-white transition-colors text-sm"
                   >
@@ -378,8 +377,11 @@ function HomeContent() {
                   </button>
                   <button 
                     onClick={() => {
-                      document.getElementById('bento')?.scrollIntoView({ behavior: 'smooth' });
+                      const element = document.getElementById('bento');
                       setIsMobileMenuOpen(false);
+                      setTimeout(() => {
+                        element?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
                     }}
                     className="text-gray-300 hover:text-white transition-colors text-sm"
                   >
@@ -387,8 +389,11 @@ function HomeContent() {
                   </button>
                   <button 
                     onClick={() => {
-                      document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' });
+                      const element = document.getElementById('reviews');
                       setIsMobileMenuOpen(false);
+                      setTimeout(() => {
+                        element?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
                     }}
                     className="text-gray-300 hover:text-white transition-colors text-sm"
                   >
@@ -396,8 +401,11 @@ function HomeContent() {
                   </button>
                   <button 
                     onClick={() => {
-                      document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+                      const element = document.getElementById('pricing');
                       setIsMobileMenuOpen(false);
+                      setTimeout(() => {
+                        element?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
                     }}
                     className="text-gray-300 hover:text-white transition-colors text-sm"
                   >
@@ -405,8 +413,11 @@ function HomeContent() {
                   </button>
                   <button 
                     onClick={() => {
-                      document.getElementById('faqs')?.scrollIntoView({ behavior: 'smooth' });
+                      const element = document.getElementById('faqs');
                       setIsMobileMenuOpen(false);
+                      setTimeout(() => {
+                        element?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
                     }}
                     className="text-gray-300 hover:text-white transition-colors text-sm"
                   >
@@ -512,7 +523,7 @@ function HomeContent() {
               className="mb-8"
             >
               <h1 className="text-4xl md:text-5xl font-bold mb-8 tracking-tight">
-                EARN, LEARN, AND
+                LEARN, EARN, AND
                 <br />
                 <span className="text-[#ffc62d]">ASCEND TO NEW HEIGHTS</span>
               </h1>
@@ -520,7 +531,7 @@ function HomeContent() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5, duration: 0.8 }}
-                className="text-lg md:text-xl text-gray-300 mb-12 max-w-4xl mx-auto"
+                className="text-sm md:text-xl text-gray-300 mb-12 max-w-4xl mx-auto"
               >
                 <TypeAnimation
                   sequence={[
@@ -540,13 +551,13 @@ function HomeContent() {
               >
                 <Link 
                   href="/checkout"
-                  className="bg-[#ffc62d] text-black px-8 py-3 rounded-lg text-base font-semibold hover:bg-[#ffd700] transition-all duration-300 hover:scale-105 inline-block"
+                  className="bg-[#ffc62d] text-black px-4 md:px-8 py-2 md:py-3 rounded-lg text-xs md:text-base font-semibold hover:bg-[#ffd700] transition-all duration-300 hover:scale-105 inline-block"
                 >
                   JOIN THE COMMUNITY
                 </Link>
                 <Link 
                   href="/funding"
-                  className="border border-[#ffc62d] text-[#ffc62d] px-8 py-3 rounded-lg text-base font-semibold hover:bg-[#ffc62d]/10 transition-all duration-300 hover:scale-105 inline-block"
+                  className="border border-[#ffc62d] text-[#ffc62d] px-4 md:px-8 py-2 md:py-3 rounded-lg text-xs md:text-base font-semibold hover:bg-[#ffc62d]/10 transition-all duration-300 hover:scale-105 inline-block"
                 >
                   EARN FUNDING
                 </Link>
