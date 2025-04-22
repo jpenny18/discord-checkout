@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import * as THREE from 'three';
 // @ts-ignore
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -8,6 +9,48 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 // @ts-ignore
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+// WebGL capability check function
+const checkWebGLCapability = (): boolean => {
+  try {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    
+    if (!context) return false;
+
+    // Type assertion for WebGL context
+    const gl = context as WebGLRenderingContext & {
+      getExtension(name: string): any;
+      getParameter(parameter: number): any;
+    };
+
+    // Check for required extensions and capabilities
+    const extensions = [
+      'OES_texture_float',
+      'OES_standard_derivatives'
+    ];
+    
+    const hasRequiredExtensions = extensions.every(ext => gl.getExtension(ext));
+    
+    // Check memory (if available)
+    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+    if (debugInfo) {
+      const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL).toLowerCase();
+      // Filter out known problematic GPUs or low-end mobile GPUs
+      if (renderer.includes('intel') || renderer.includes('swiftshader')) {
+        return false;
+      }
+    }
+
+    // Check maximum texture size
+    const maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+    if (maxTextureSize < 4096) return false;
+
+    return hasRequiredExtensions;
+  } catch (e) {
+    return false;
+  }
+};
 
 const vertexShader = `
   uniform float uSize;
@@ -79,123 +122,171 @@ export default function DottedGlobe() {
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const pointsRef = useRef<THREE.Points | null>(null);
   const composerRef = useRef<EffectComposer | null>(null);
+  const [isWebGLCapable, setIsWebGLCapable] = useState<boolean | null>(null);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    if (!canvasRef.current) return;
+    setIsWebGLCapable(checkWebGLCapability());
+  }, []);
 
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
+  useEffect(() => {
+    if (!isWebGLCapable || !canvasRef.current) return;
 
-    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-    camera.position.set(30, 30, 200);  // Adjusted camera height
-    camera.lookAt(0, 0, 0);
-    cameraRef.current = camera;
+    try {
+      const scene = new THREE.Scene();
+      sceneRef.current = scene;
 
-    const renderer = new THREE.WebGLRenderer({
-      canvas: canvasRef.current,
-      antialias: true,
-      alpha: true,
-      powerPreference: 'high-performance',
-    });
-    
-    const pixelRatio = Math.min(window.devicePixelRatio, 2);
-    renderer.setPixelRatio(pixelRatio);
-    renderer.setSize(1002, 1002, false);
-    rendererRef.current = renderer;
+      const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+      camera.position.set(30, 30, 200);  // Adjusted camera height
+      camera.lookAt(0, 0, 0);
+      cameraRef.current = camera;
 
-    // Load Earth texture with better filtering
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load('/earth-topology.png', (earthTexture) => {
-      earthTexture.minFilter = THREE.LinearFilter;
-      earthTexture.magFilter = THREE.LinearFilter;
-      earthTexture.generateMipmaps = false; // Disable mipmaps for sharper texture
-
-      // Create higher resolution sphere
-      const radius = 60;
-      const geometry = new THREE.IcosahedronGeometry(radius, 64); // Increased detail level
+      const renderer = new THREE.WebGLRenderer({
+        canvas: canvasRef.current,
+        antialias: true,
+        alpha: true,
+        powerPreference: 'high-performance',
+      });
       
-      const material = new THREE.ShaderMaterial({
-        uniforms: {
-          uSize: { value: 1.8 }, // Slightly reduced point size
-          uColor: { value: new THREE.Color(0xffc62d) },
-          uTime: { value: 0 },
-          uEarthTexture: { value: earthTexture }
-        },
-        vertexShader,
-        fragmentShader,
-        transparent: true,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false
+      const pixelRatio = Math.min(window.devicePixelRatio, 2);
+      renderer.setPixelRatio(pixelRatio);
+      renderer.setSize(1002, 1002, false);
+      rendererRef.current = renderer;
+
+      // Load Earth texture with better filtering
+      const textureLoader = new THREE.TextureLoader();
+      textureLoader.load('/earth-topology.png', (earthTexture) => {
+        earthTexture.minFilter = THREE.LinearFilter;
+        earthTexture.magFilter = THREE.LinearFilter;
+        earthTexture.generateMipmaps = false; // Disable mipmaps for sharper texture
+
+        // Create higher resolution sphere
+        const radius = 60;
+        const geometry = new THREE.IcosahedronGeometry(radius, 64); // Increased detail level
+        
+        const material = new THREE.ShaderMaterial({
+          uniforms: {
+            uSize: { value: 1.8 }, // Slightly reduced point size
+            uColor: { value: new THREE.Color(0xffc62d) },
+            uTime: { value: 0 },
+            uEarthTexture: { value: earthTexture }
+          },
+          vertexShader,
+          fragmentShader,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+
+        const pointsMesh = new THREE.Points(geometry, material);
+        // Set initial rotation to show North America right-side up
+        pointsMesh.rotation.y = Math.PI * 3.6; // Adjusted rotation to flip orientation
+        pointsMesh.rotation.x = Math.PI * 0.1; // Positive tilt to show right-side up
+        pointsMesh.rotation.z = Math.PI; // Flip upright
+        scene.add(pointsMesh);
+        pointsRef.current = pointsMesh;
+
+        const ambientLight = new THREE.AmbientLight(0xffc62d, 0.3); // Reduced ambient light intensity
+        scene.add(ambientLight);
+
+        const composer = new EffectComposer(renderer);
+        composerRef.current = composer;
+
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        const bloomPass = new UnrealBloomPass(
+          new THREE.Vector2(window.innerWidth * pixelRatio, window.innerHeight * pixelRatio),
+          0.25,   // Reduced bloom strength by 50%
+          0.2,    // Reduced radius further
+          0.4     // Increased threshold to reduce bloom spread
+        );
+        composer.addPass(bloomPass);
+
+        const animate = () => {
+          if (!composer || !pointsMesh) return;
+          
+          pointsMesh.rotation.y += 0.0002;
+          pointsMesh.rotation.x = Math.PI * 0.2 + Math.sin(Date.now() * 0.0001) * 0.1; // Keep upright tilt while wobbling
+          
+          const material = pointsMesh.material as THREE.ShaderMaterial;
+          material.uniforms.uTime.value = performance.now() * 0.0003;
+          material.uniforms.uSize.value = 1.8 * (1 + Math.sin(Date.now() * 0.0003) * 0.15);
+          
+          composer.render();
+          requestAnimationFrame(animate);
+        };
+
+        animate();
       });
 
-      const pointsMesh = new THREE.Points(geometry, material);
-      // Set initial rotation to show North America right-side up
-      pointsMesh.rotation.y = Math.PI * 3.6; // Adjusted rotation to flip orientation
-      pointsMesh.rotation.x = Math.PI * 0.1; // Positive tilt to show right-side up
-      pointsMesh.rotation.z = Math.PI; // Flip upright
-      scene.add(pointsMesh);
-      pointsRef.current = pointsMesh;
-
-      const ambientLight = new THREE.AmbientLight(0xffc62d, 0.3); // Reduced ambient light intensity
-      scene.add(ambientLight);
-
-      const composer = new EffectComposer(renderer);
-      composerRef.current = composer;
-
-      const renderPass = new RenderPass(scene, camera);
-      composer.addPass(renderPass);
-
-      const bloomPass = new UnrealBloomPass(
-        new THREE.Vector2(window.innerWidth * pixelRatio, window.innerHeight * pixelRatio),
-        0.25,   // Reduced bloom strength by 50%
-        0.2,    // Reduced radius further
-        0.4     // Increased threshold to reduce bloom spread
-      );
-      composer.addPass(bloomPass);
-
-      const animate = () => {
-        if (!composer || !pointsMesh) return;
+      const handleResize = () => {
+        if (!renderer || !camera || !composerRef.current) return;
         
-        pointsMesh.rotation.y += 0.0002;
-        pointsMesh.rotation.x = Math.PI * 0.2 + Math.sin(Date.now() * 0.0001) * 0.1; // Keep upright tilt while wobbling
+        const width = 1002;
+        const height = 1002;
+        const pixelRatio = Math.min(window.devicePixelRatio, 2);
         
-        const material = pointsMesh.material as THREE.ShaderMaterial;
-        material.uniforms.uTime.value = performance.now() * 0.0003;
-        material.uniforms.uSize.value = 1.8 * (1 + Math.sin(Date.now() * 0.0003) * 0.15);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
         
-        composer.render();
-        requestAnimationFrame(animate);
+        renderer.setSize(width, height, false);
+        renderer.setPixelRatio(pixelRatio);
+        composerRef.current.setSize(width * pixelRatio, height * pixelRatio);
       };
 
-      animate();
-    });
+      window.addEventListener('resize', handleResize);
+      handleResize();
 
-    const handleResize = () => {
-      if (!renderer || !camera || !composerRef.current) return;
-      
-      const width = 1002;
-      const height = 1002;
-      const pixelRatio = Math.min(window.devicePixelRatio, 2);
-      
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      
-      renderer.setSize(width, height, false);
-      renderer.setPixelRatio(pixelRatio);
-      composerRef.current.setSize(width * pixelRatio, height * pixelRatio);
-    };
+      const handleContextLost = (event: Event) => {
+        console.error('WebGL context lost:', event);
+        setHasError(true);
+      };
 
-    window.addEventListener('resize', handleResize);
-    handleResize();
+      const handleGlobalError = (event: Event) => {
+        console.error('Global error:', event);
+        setHasError(true);
+      };
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      pointsRef.current?.geometry.dispose();
-      (pointsRef.current?.material as THREE.Material)?.dispose();
-      composerRef.current?.dispose();
-      rendererRef.current?.dispose();
-    };
-  }, []);
+      canvasRef.current.addEventListener('webglcontextlost', handleContextLost);
+      window.addEventListener('error', handleGlobalError);
+
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        canvasRef.current?.removeEventListener('webglcontextlost', handleContextLost);
+        window.removeEventListener('error', handleGlobalError);
+        pointsRef.current?.geometry.dispose();
+        (pointsRef.current?.material as THREE.Material)?.dispose();
+        composerRef.current?.dispose();
+        rendererRef.current?.dispose();
+      };
+    } catch (error) {
+      console.error('WebGL initialization error:', error);
+      setHasError(true);
+    }
+  }, [isWebGLCapable]);
+
+  if (!isWebGLCapable || hasError) {
+    return (
+      <div className="relative w-[501px] h-[301px] flex items-center justify-center">
+        <div className="relative w-32 h-32 animate-pulse">
+          <Image
+            src="/images/logo.png"
+            alt="Ascendant Logo"
+            fill
+            className="rounded-full"
+            sizes="(max-width: 128px) 100vw, 128px"
+          />
+          <div 
+            className="absolute inset-0 rounded-full border-2 border-[#ffc62d] animate-[spin_3s_linear_infinite]"
+            style={{
+              background: 'radial-gradient(circle at 50% 50%, rgba(255,198,45,0.1) 0%, transparent 70%)'
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-[501px] h-[301px] overflow-hidden">
