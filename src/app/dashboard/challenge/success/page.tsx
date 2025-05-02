@@ -31,7 +31,9 @@ export default function SuccessPage() {
     }
 
     // Parse the data and set it in state
-    setChallengeData(JSON.parse(storedData));
+    const parsedData = JSON.parse(storedData);
+    setChallengeData(parsedData);
+    
     setIsLoading(false);
 
     // Clear the stored data after a delay
@@ -40,7 +42,7 @@ export default function SuccessPage() {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [router]);
+  }, []);
 
   if (isLoading) {
     return (

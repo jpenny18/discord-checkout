@@ -1,6 +1,7 @@
-import sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+// Initialize Resend
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface EmailParams {
   to: string;
@@ -10,16 +11,20 @@ interface EmailParams {
 }
 
 export async function sendEmail({ to, subject, text, html }: EmailParams) {
-  const msg = {
-    to,
-    from: process.env.SENDGRID_FROM_EMAIL!,
-    subject,
-    text,
-    html,
-  };
-
   try {
-    await sgMail.send(msg);
+    const result = await resend.emails.send({
+      from: 'Ascendant Academy <support@ascendantcapital.ca>',
+      to,
+      subject,
+      text,
+      html,
+    });
+
+    if (result.error) {
+      throw result.error;
+    }
+
+    return result;
   } catch (error) {
     console.error('Error sending email:', error);
     throw error;

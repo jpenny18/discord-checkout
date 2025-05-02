@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase-admin';
+import { sendEmail } from '@/lib/email';
+import { generateOrderConfirmationEmail, generateAdminOrderNotificationEmail } from '@/lib/email-templates';
 
 export async function POST(request: Request) {
   try {
@@ -17,30 +19,40 @@ export async function POST(request: Request) {
       duration: selectedPlan.duration || 'N/A',
     });
 
-    // Send confirmation email
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    if (!baseUrl) {
-      console.warn('NEXT_PUBLIC_BASE_URL is not defined, skipping confirmation email');
-    } else {
-      try {
-        await fetch(`${baseUrl}/api/send-confirmation`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: userData.email,
-            name: `${userData.firstName} ${userData.lastName}`,
-            orderId: orderRef.id,
-            plan: selectedPlan.name || 'Unknown Plan',
-            amount,
-            discordUsername: userData.discordUsername,
-          }),
-        });
-      } catch (emailError) {
-        // Log the error but don't fail the order creation
-        console.error('Failed to send confirmation email:', emailError);
-      }
+    const orderData = {
+      id: orderRef.id,
+      ...userData,
+      amount,
+      paymentMethod,
+      stripeCustomerId: customerId,
+      status: 'completed',
+      timestamp: new Date(),
+      plan: selectedPlan.name || 'Unknown Plan',
+      duration: selectedPlan.duration || 'N/A',
+    };
+
+    // Send customer confirmation email
+    try {
+      await sendEmail({
+        to: userData.email,
+        subject: 'Order Confirmation - Ascendant Academy',
+        text: `Thank you for your order! Order ID: ${orderRef.id}`,
+        html: generateOrderConfirmationEmail(orderData),
+      });
+    } catch (emailError) {
+      console.error('Failed to send customer confirmation email:', emailError);
+    }
+
+    // Send admin notification email
+    try {
+      await sendEmail({
+        to: 'support@ascendantcapital.ca',
+        subject: `New Order Received - ${orderRef.id}`,
+        text: `New order received from ${userData.email}`,
+        html: generateAdminOrderNotificationEmail(orderData),
+      });
+    } catch (emailError) {
+      console.error('Failed to send admin notification email:', emailError);
     }
 
     return NextResponse.json({

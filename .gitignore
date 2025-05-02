@@ -45,3 +45,10 @@ tokenManagementApi.md
 metaapi-javascript-sdk-main
 console .log
 localhost-1740785642133.log
+
+# local env files
+.env*.local
+.env.development
+.env.production
+.env.example
+deleteafter

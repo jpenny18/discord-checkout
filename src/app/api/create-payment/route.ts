@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import stripe from '@/lib/stripe';
 import { adminDb } from '@/lib/firebase-admin';
+import { sendEmail } from '@/lib/email';
+import { generateOrderConfirmationEmail, generateAdminOrderNotificationEmail } from '@/lib/email-templates';
+import Stripe from 'stripe';
 
 const PLAN_CONFIGS = {
   lite: {
@@ -138,30 +141,43 @@ export async function POST(request: NextRequest) {
         billingIntervalCount: planConfig.intervalCount
       });
 
-      // Send confirmation email
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-      if (baseUrl) {
-        try {
-          await fetch(`${baseUrl}/api/send-confirmation`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: userData.email,
-              name: customerName,
-              orderId: orderRef.id,
-              plan: userData.selectedPlan.name || 'Unknown Plan',
-              amount: planConfig.amount / 100,
-              discordUsername: userData.discordUsername,
-              isRecurring: true,
-              billingInterval: planConfig.interval,
-              billingIntervalCount: planConfig.intervalCount
-            }),
-          });
-        } catch (emailError) {
-          console.error('Failed to send confirmation email:', emailError);
-        }
+      const orderData = {
+        id: orderRef.id,
+        ...userData,
+        amount: planConfig.amount / 100,
+        paymentMethod: 'card',
+        stripeCustomerId: customer.id,
+        status: 'completed',
+        timestamp: new Date(),
+        plan: userData.selectedPlan.name || 'Unknown Plan',
+        duration: userData.selectedPlan.duration || 'N/A',
+        isRecurring: true,
+        billingInterval: planConfig.interval,
+        billingIntervalCount: planConfig.intervalCount
+      };
+
+      // Send customer confirmation email
+      try {
+        await sendEmail({
+          to: userData.email,
+          subject: 'Subscription Confirmation - Ascendant Academy',
+          text: `Thank you for your subscription! Order ID: ${orderRef.id}`,
+          html: generateOrderConfirmationEmail(orderData),
+        });
+      } catch (emailError) {
+        console.error('Failed to send customer confirmation email:', emailError);
+      }
+
+      // Send admin notification email
+      try {
+        await sendEmail({
+          to: 'support@ascendantcapital.ca',
+          subject: `New Subscription - ${orderRef.id}`,
+          text: `New subscription received from ${userData.email}`,
+          html: generateAdminOrderNotificationEmail(orderData),
+        });
+      } catch (emailError) {
+        console.error('Failed to send admin notification email:', emailError);
       }
 
       return NextResponse.json({
