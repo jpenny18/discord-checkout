@@ -254,13 +254,13 @@ export default function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.7 }}
               >
-                <Link 
-                  href="/checkout"
+                <button 
+                  onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
                 className="inline-flex items-center space-x-2 bg-blue-600 text-white px-8 py-4 rounded-xl sm:rounded-lg text-base sm:text-lg font-semibold hover:bg-blue-700 transition-all duration-300 hover:scale-105 shadow-xl border border-blue-700"
               >
                 <span>⚡</span>
-                <span>Start Learning For Free</span>
-                </Link>
+                <span>Join Ascendant Academy</span>
+                </button>
               </motion.div>
 
             {/* Disclaimer */}
