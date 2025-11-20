@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
-interface Signal {
+interface Alert {
   id: string;
   symbol: string;
   type: 'long' | 'short';
@@ -21,30 +21,30 @@ interface Signal {
   result?: 'win' | 'loss';
 }
 
-export default function SignalsPage() {
-  const [signals, setSignals] = useState<Signal[]>([]);
+export default function AlertsPage() {
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newSignal, setNewSignal] = useState<Partial<Signal>>({
+  const [newAlert, setNewAlert] = useState<Partial<Alert>>({
     type: 'long',
     tradeType: 'scalp',
     status: 'active'
   });
-  const [editingSignal, setEditingSignal] = useState<string | null>(null);
-  const [deletingSignals, setDeletingSignals] = useState<Set<string>>(new Set());
+  const [editingAlert, setEditingAlert] = useState<string | null>(null);
+  const [deletingAlerts, setDeletingAlerts] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const signalsQuery = query(
+    const alertsQuery = query(
       collection(db, 'signals'),
       orderBy('timestamp', 'desc')
     );
 
-    const unsubscribe = onSnapshot(signalsQuery, (snapshot) => {
-      const signalsData = snapshot.docs.map((doc) => ({
+    const unsubscribe = onSnapshot(alertsQuery, (snapshot) => {
+      const alertsData = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
         timestamp: doc.data().timestamp?.toDate() || new Date()
-      })) as Signal[];
-      setSignals(signalsData);
+      })) as Alert[];
+      setAlerts(alertsData);
       setLoading(false);
     });
 
@@ -54,61 +54,61 @@ export default function SignalsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (editingSignal) {
-        const signalRef = doc(db, 'signals', editingSignal);
-        await updateDoc(signalRef, {
-          ...newSignal,
+      if (editingAlert) {
+        const alertRef = doc(db, 'signals', editingAlert);
+        await updateDoc(alertRef, {
+          ...newAlert,
           timestamp: new Date()
         });
       } else {
         await addDoc(collection(db, 'signals'), {
-          ...newSignal,
+          ...newAlert,
           timestamp: new Date()
         });
       }
-      setNewSignal({ type: 'long', tradeType: 'scalp', status: 'active' });
-      setEditingSignal(null);
+      setNewAlert({ type: 'long', tradeType: 'scalp', status: 'active' });
+      setEditingAlert(null);
     } catch (error) {
-      console.error('Error saving signal:', error);
+      console.error('Error saving alert:', error);
     }
   };
 
-  const handleDelete = async (signalId: string) => {
+  const handleDelete = async (alertId: string) => {
     try {
-      setDeletingSignals(prev => new Set(Array.from(prev).concat(signalId)));
-      await deleteDoc(doc(db, 'signals', signalId));
+      setDeletingAlerts(prev => new Set(Array.from(prev).concat(alertId)));
+      await deleteDoc(doc(db, 'signals', alertId));
     } catch (error) {
-      console.error('Error deleting signal:', error);
+      console.error('Error deleting alert:', error);
     } finally {
-      setDeletingSignals(prev => {
+      setDeletingAlerts(prev => {
         const newSet = new Set(Array.from(prev));
-        newSet.delete(signalId);
+        newSet.delete(alertId);
         return newSet;
       });
     }
   };
 
-  const toggleResult = async (signalId: string, currentResult?: 'win' | 'loss') => {
+  const toggleResult = async (alertId: string, currentResult?: 'win' | 'loss') => {
     try {
-      const signalRef = doc(db, 'signals', signalId);
+      const alertRef = doc(db, 'signals', alertId);
       const newResult = currentResult === 'win' ? 'loss' : 'win';
-      await updateDoc(signalRef, {
+      await updateDoc(alertRef, {
         result: newResult,
         status: 'closed'
       });
     } catch (error) {
-      console.error('Error updating signal result:', error);
+      console.error('Error updating alert result:', error);
     }
   };
 
-  const handleEdit = (signal: Signal) => {
-    setEditingSignal(signal.id);
-    setNewSignal(signal);
+  const handleEdit = (alert: Alert) => {
+    setEditingAlert(alert.id);
+    setNewAlert(alert);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setNewSignal(prev => ({
+    setNewAlert(prev => ({
       ...prev,
       [name]: name.includes('take') || name.includes('entry') || name.includes('stop') 
         ? parseFloat(value) 
@@ -127,8 +127,8 @@ export default function SignalsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-white">Trade Signals</h1>
-        <p className="text-gray-400">Create and manage trade signals for users</p>
+        <h1 className="text-2xl font-bold text-white">Trade Alerts</h1>
+        <p className="text-gray-400">Create and manage trade alerts for users</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 bg-[#111111] p-6 rounded-lg">
@@ -138,7 +138,7 @@ export default function SignalsPage() {
             <input
               type="text"
               name="symbol"
-              value={newSignal.symbol || ''}
+              value={newAlert.symbol || ''}
               onChange={handleInputChange}
               placeholder="BTC/USDT"
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
@@ -149,7 +149,7 @@ export default function SignalsPage() {
             <label className="block text-sm font-medium text-gray-300 mb-2">Type</label>
             <select
               name="type"
-              value={newSignal.type}
+              value={newAlert.type}
               onChange={handleInputChange}
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
             >
@@ -162,7 +162,7 @@ export default function SignalsPage() {
             <label className="block text-sm font-medium text-gray-300 mb-2">Trade Type</label>
             <select
               name="tradeType"
-              value={newSignal.tradeType}
+              value={newAlert.tradeType}
               onChange={handleInputChange}
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
             >
@@ -176,7 +176,7 @@ export default function SignalsPage() {
             <input
               type="number"
               name="entry"
-              value={newSignal.entry || ''}
+              value={newAlert.entry || ''}
               onChange={handleInputChange}
               step="0.00000001"
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
@@ -188,7 +188,7 @@ export default function SignalsPage() {
             <input
               type="number"
               name="stopLoss"
-              value={newSignal.stopLoss || ''}
+              value={newAlert.stopLoss || ''}
               onChange={handleInputChange}
               step="0.00000001"
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
@@ -200,7 +200,7 @@ export default function SignalsPage() {
             <input
               type="number"
               name="takeProfit1"
-              value={newSignal.takeProfit1 || ''}
+              value={newAlert.takeProfit1 || ''}
               onChange={handleInputChange}
               step="0.00000001"
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
@@ -212,7 +212,7 @@ export default function SignalsPage() {
             <input
               type="number"
               name="takeProfit2"
-              value={newSignal.takeProfit2 || ''}
+              value={newAlert.takeProfit2 || ''}
               onChange={handleInputChange}
               step="0.00000001"
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
@@ -224,7 +224,7 @@ export default function SignalsPage() {
             <input
               type="number"
               name="takeProfit3"
-              value={newSignal.takeProfit3 || ''}
+              value={newAlert.takeProfit3 || ''}
               onChange={handleInputChange}
               step="0.00000001"
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
@@ -235,7 +235,7 @@ export default function SignalsPage() {
             <label className="block text-sm font-medium text-gray-300 mb-2">Risk</label>
             <select
               name="risk"
-              value={newSignal.risk || ''}
+              value={newAlert.risk || ''}
               onChange={handleInputChange}
               className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
             >
@@ -251,7 +251,7 @@ export default function SignalsPage() {
           <label className="block text-sm font-medium text-gray-300 mb-2">Analysis</label>
           <textarea
             name="analysis"
-            value={newSignal.analysis || ''}
+            value={newAlert.analysis || ''}
             onChange={handleInputChange}
             rows={3}
             className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-[#ffc62d]"
@@ -259,12 +259,12 @@ export default function SignalsPage() {
         </div>
 
         <div className="flex justify-end">
-          {editingSignal && (
+          {editingAlert && (
             <button
               type="button"
               onClick={() => {
-                setEditingSignal(null);
-                setNewSignal({ type: 'long', tradeType: 'scalp', status: 'active' });
+                setEditingAlert(null);
+                setNewAlert({ type: 'long', tradeType: 'scalp', status: 'active' });
               }}
               className="mr-4 px-6 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700"
             >
@@ -275,79 +275,79 @@ export default function SignalsPage() {
             type="submit"
             className="px-6 py-2 bg-[#ffc62d] text-black rounded-lg font-medium hover:bg-[#e6b229]"
           >
-            {editingSignal ? 'Update Signal' : 'Create Signal'}
+            {editingAlert ? 'Update Alert' : 'Create Alert'}
           </button>
         </div>
       </form>
 
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-white">Recent Signals</h2>
+        <h2 className="text-xl font-semibold text-white">Recent Alerts</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {signals.map((signal) => (
+          {alerts.map((alert) => (
             <div
-              key={signal.id}
+              key={alert.id}
               className="bg-[#111111] p-6 rounded-lg space-y-4"
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-lg font-medium text-white">{signal.symbol}</h3>
+                  <h3 className="text-lg font-medium text-white">{alert.symbol}</h3>
                   <div className="flex items-center gap-2 text-sm text-gray-400">
-                    <span>{signal.type.toUpperCase()} @ {signal.entry}</span>
+                    <span>{alert.type.toUpperCase()} @ {alert.entry}</span>
                     <span className="px-2 py-0.5 rounded-full bg-gray-800 text-xs">
-                      {signal.tradeType}
+                      {alert.tradeType}
                     </span>
                   </div>
                 </div>
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => toggleResult(signal.id, signal.result)}
+                    onClick={() => toggleResult(alert.id, alert.result)}
                     className={`px-2 py-1 rounded text-xs font-medium ${
-                      signal.status === 'active'
+                      alert.status === 'active'
                         ? 'bg-green-900 text-green-200'
-                        : signal.result === 'win'
+                        : alert.result === 'win'
                         ? 'bg-[#ffc62d] text-black'
-                        : signal.result === 'loss'
+                        : alert.result === 'loss'
                         ? 'bg-red-900 text-red-200'
                         : 'bg-gray-800 text-gray-300'
                     }`}
                   >
-                    {signal.result ? signal.result.toUpperCase() : signal.status.toUpperCase()}
+                    {alert.result ? alert.result.toUpperCase() : alert.status.toUpperCase()}
                   </button>
                   <button
-                    onClick={() => handleDelete(signal.id)}
-                    disabled={deletingSignals.has(signal.id)}
+                    onClick={() => handleDelete(alert.id)}
+                    disabled={deletingAlerts.has(alert.id)}
                     className={`px-2 py-1 rounded text-xs font-medium ${
-                      deletingSignals.has(signal.id)
+                      deletingAlerts.has(alert.id)
                         ? 'bg-gray-700 text-gray-300 cursor-not-allowed'
                         : 'bg-red-900 text-red-200 hover:bg-red-800'
                     }`}
                   >
-                    {deletingSignals.has(signal.id) ? 'Deleting...' : 'Delete'}
+                    {deletingAlerts.has(alert.id) ? 'Deleting...' : 'Delete'}
                   </button>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <p className="text-sm text-gray-300">
-                  <span className="font-medium">Stop Loss:</span> {signal.stopLoss}
+                  <span className="font-medium">Stop Loss:</span> {alert.stopLoss}
                 </p>
                 <p className="text-sm text-gray-300">
-                  <span className="font-medium">Take Profit:</span> {signal.takeProfit1} / {signal.takeProfit2} / {signal.takeProfit3}
+                  <span className="font-medium">Take Profit:</span> {alert.takeProfit1} / {alert.takeProfit2} / {alert.takeProfit3}
                 </p>
                 <p className="text-sm text-gray-300">
-                  <span className="font-medium">Risk:</span> {signal.risk}
+                  <span className="font-medium">Risk:</span> {alert.risk}
                 </p>
                 <p className="text-sm text-gray-300">
-                  <span className="font-medium">Analysis:</span> {signal.analysis}
+                  <span className="font-medium">Analysis:</span> {alert.analysis}
                 </p>
               </div>
 
               <div className="flex justify-between items-center">
                 <div className="text-xs text-gray-400">
-                  {signal.timestamp.toLocaleDateString()} at {signal.timestamp.toLocaleTimeString()}
+                  {alert.timestamp.toLocaleDateString()} at {alert.timestamp.toLocaleTimeString()}
                 </div>
                 <button
-                  onClick={() => handleEdit(signal)}
+                  onClick={() => handleEdit(alert)}
                   className="text-xs text-[#ffc62d] hover:text-[#e6b229]"
                 >
                   Edit
