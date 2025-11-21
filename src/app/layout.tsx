@@ -5,8 +5,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Ascendant Markets',
-  description: 'Ascendant Markets - Proprietary Trading Firm',
+  title: 'Ascendant Academy',
+  description: 'Ascendant Academy - Ascend to new heights',
 };
 
 export default function RootLayout({

@@ -56,10 +56,6 @@ export default function Footer() {
             Privacy Policy
           </Link>
           <span className="text-gray-600 text-[8px] md:text-sm">|</span>
-          <Link href="/refund" className="text-gray-400 hover:text-[#ffc62d] transition-colors text-[8px] md:text-sm">
-            Refund Policy
-          </Link>
-          <span className="text-gray-600 text-[8px] md:text-sm">|</span>
           <Link href="/cookies" className="text-gray-400 hover:text-[#ffc62d] transition-colors text-[8px] md:text-sm">
             Cookie Policy
           </Link>

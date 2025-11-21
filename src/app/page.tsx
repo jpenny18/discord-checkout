@@ -191,7 +191,7 @@ export default function HomePage() {
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#ffc62d]/5 via-transparent to-blue-600/10"></div>
         
-        <div className="max-w-6xl mx-auto px-4 py-20 min-h-screen relative z-10 flex flex-col justify-center">
+        <div className="max-w-6xl mx-auto px-4 pt-8 pb-20 min-h-screen relative z-10 flex flex-col justify-center">
           {/* Top Content - Text Section */}
           <div className="text-center space-y-8 mb-16">
             {/* Badge */}
@@ -275,7 +275,9 @@ export default function HomePage() {
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
                   </div>
-              <span>Trading Involves Risk, Read Our Disclaimer</span>
+              <a href="/terms" className="hover:text-gray-300 transition-colors">
+                <span>Trading Involves Risk, Read Our Disclaimer</span>
+              </a>
                 </motion.div>
             </div>
 
