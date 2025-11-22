@@ -8,19 +8,16 @@ import {
   Cog6ToothIcon,
   TrophyIcon,
   SignalIcon,
-  ChatBubbleLeftRightIcon,
   ChartBarIcon,
   BuildingLibraryIcon,
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import { useRole } from '@/contexts/RoleContext';
 
 const navigation = [
   { name: 'Overview', href: '/dashboard', icon: HomeIcon },
   { name: 'My Accounts', href: '/dashboard/my-accounts', icon: ChartBarIcon },
   { name: 'Signals', href: '/dashboard/signals', icon: SignalIcon },
   { name: 'Training', href: '/dashboard/training', icon: AcademicCapIcon },
-  { name: 'Community', href: '/dashboard/community', icon: ChatBubbleLeftRightIcon },
   { name: 'Trading Tools', href: '/dashboard/trading-tools', icon: ChartBarIcon },
   { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon },
 ];
