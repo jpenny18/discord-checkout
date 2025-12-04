@@ -29,6 +29,7 @@
     "@tsparticles/engine": "^3.8.0",
     "@types/ws": "^8.5.13",
     "@uidotdev/usehooks": "^2.4.1",
+    "@whop/checkout": "^0.0.45",
     "apexcharts": "^4.5.0",
     "asciify-image": "^0.1.1",
     "class-variance-authority": "^0.7.1",
