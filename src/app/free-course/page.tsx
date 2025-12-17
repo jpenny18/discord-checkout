@@ -3,9 +3,24 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Script from 'next/script';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, CheckCircle, TrendingUp, Shield, Users, BarChart3, BookOpen, Play, ArrowRight, Menu, X, DollarSign, Calculator, Bell, GraduationCap } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, TrendingUp, Shield, Users, BarChart3, BookOpen, Play, ArrowRight, Menu, X, DollarSign, Calculator, Bell, GraduationCap, RefreshCw } from 'lucide-react';
 import Footer from '@/components/Footer';
+import { db } from '@/lib/firebase';
+import { collection, addDoc } from 'firebase/firestore';
+
+// Declare Wistia custom element for TypeScript
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'wistia-player': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        'media-id'?: string;
+        aspect?: string;
+      };
+    }
+  }
+}
 
 // CountUpStat Component
 interface CountUpStatProps {
@@ -74,6 +89,11 @@ export default function HomePage() {
   const [activeCaseStudy, setActiveCaseStudy] = useState('500-flip');
   const [caseStudyImageIndex, setCaseStudyImageIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
+  const [acceptPolicy, setAcceptPolicy] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -86,6 +106,60 @@ export default function HomePage() {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  // Check if user is already registered
+  useEffect(() => {
+    const registered = localStorage.getItem('freeCourseRegistered');
+    if (registered === 'true') {
+      setIsRegistered(true);
+    }
+  }, []);
+
+  const handleRegistrationSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!acceptPolicy) {
+      alert('Please accept the Privacy Policy to continue');
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      // Save directly to Firestore using client SDK
+      await addDoc(collection(db, 'freeCourseRegistrations'), {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || '',
+        registeredAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+      });
+
+      localStorage.setItem('freeCourseRegistered', 'true');
+      setIsRegistered(true);
+      setShowRegistrationModal(false);
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleVideoClick = () => {
+    if (!isRegistered) {
+      setShowRegistrationModal(true);
+    }
+  };
+
+  const handleAccessClick = () => {
+    if (!isRegistered) {
+      setShowRegistrationModal(true);
+    } else {
+      // Scroll to video if already registered
+      document.querySelector('wistia-player')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   // Main showcase tools data
   const showcaseTools = [
@@ -150,6 +224,10 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-black text-white overflow-x-hidden">
+      {/* Wistia Player Scripts */}
+      <Script src="https://fast.wistia.com/player.js" strategy="lazyOnload" />
+      <Script src="https://fast.wistia.com/embed/3ymo9d7dq2.js" strategy="lazyOnload" type="module" />
+      
       {/* Navigation Header */}
       <header className="relative z-50">
         {/* Main Navigation */}
@@ -205,7 +283,7 @@ export default function HomePage() {
                 <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
                   <CheckCircle className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-white text-sm font-medium">ASCENDANT Trading Academy</span>
+                <span className="text-white text-sm font-medium">FREE Online Course</span>
               </div>
             </motion.div>
 
@@ -218,7 +296,7 @@ export default function HomePage() {
             >
               <h1 className="text-4xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight">
                 <div>
-                  Learn To Become A Skilled Trader With{' '}
+                  Learn How to Start Day Trading From{' '}
                   <span 
                     className="relative inline-block" 
                     style={{
@@ -226,7 +304,7 @@ export default function HomePage() {
                     }}
                   >
                     <span className="relative z-10 text-black font-bold px-3 py-2 drop-shadow-sm">
-                      Real Proof
+                      ZERO
                     </span>
                     <div className="absolute inset-0 bg-gradient-to-br from-[#ffc62d] via-yellow-400 to-[#ffb000] shadow-md"></div>
                     <div className="absolute inset-0 bg-gradient-to-tl from-[#ffc62d]/60 via-yellow-300/40 to-[#ffb000]/50 blur-sm"></div>
@@ -243,29 +321,70 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.5 }}
             >
               <h3 className="text-sm sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-3xl mx-auto px-6">
-                We are the only trading education platform that openly shows <strong className="text-white">verified broker statements and live trading results</strong> — 
-                proving our methods work in real markets. Learn with confidence, backed by real evidence.
+                This free course takes you from complete beginner to confident trader. Master <strong className="text-white">core fundamentals</strong>, set up your demo account and trading platforms (MT4/MT5/TradingView), learn beginner-friendly <strong className="text-white">entry models</strong>, and start filtering high-probability trade ideas independently.
               </h3>
               </motion.div>
+            </div>
 
-            {/* CTA Button */}
-              <motion.div
+          {/* Bottom Content - Video Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="max-w-4xl mx-auto w-full"
+          >
+            {/* Video Container */}
+            <div className="relative bg-black/40 backdrop-blur-sm rounded-2xl border border-blue-500/20 p-4 md:p-6 shadow-2xl">
+              <div className="aspect-video bg-black rounded-xl overflow-hidden relative">
+                {/* Wistia Video Player */}
+                <style dangerouslySetInnerHTML={{
+                  __html: `
+                    wistia-player[media-id='3ymo9d7dq2']:not(:defined) { 
+                      background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/3ymo9d7dq2/swatch'); 
+                      display: block; 
+                      filter: blur(5px); 
+                      padding-top: 56.25%; 
+                    }
+                    ${!isRegistered ? 'wistia-player { pointer-events: none; }' : ''}
+                  `
+                }} />
+                <wistia-player 
+                  media-id="3ymo9d7dq2" 
+                  aspect="1.7777777777777777"
+                  className="w-full h-full"
+                ></wistia-player>
+                
+                {/* Video Gate Overlay - Invisible but clickable */}
+                {!isRegistered && (
+                  <div 
+                    onClick={handleVideoClick}
+                    className="absolute inset-0 cursor-pointer z-50 rounded-xl"
+                    style={{ background: 'transparent' }}
+                  />
+                )}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* CTA Button */}
+          <div className="text-center space-y-6 mt-8">
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.7 }}
-              >
-                <button 
-                  onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              <button 
+                onClick={handleAccessClick}
                 className="inline-flex items-center space-x-2 bg-blue-600 text-white px-8 py-4 rounded-xl sm:rounded-lg text-base sm:text-lg font-semibold hover:bg-blue-700 transition-all duration-300 hover:scale-105 shadow-xl border border-blue-700"
               >
                 <span>⚡</span>
-                <span>Join Ascendant Academy</span>
-                </button>
-              </motion.div>
+                <span>Access Free Course</span>
+              </button>
+            </motion.div>
 
             {/* Disclaimer */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.9 }}
               className="flex items-center justify-center space-x-2 text-gray-400 text-xs"
@@ -274,57 +393,120 @@ export default function HomePage() {
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
-                  </div>
+              </div>
               <a href="/terms" className="hover:text-gray-300 transition-colors">
                 <span>Trading Involves Risk, Read Our Disclaimer</span>
               </a>
-                </motion.div>
-            </div>
-
-          {/* Bottom Content - Video Section - HIDDEN FOR NOW */}
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="max-w-4xl mx-auto w-full hidden"
-          >
-            {/* Video Container */}
-            <div className="relative bg-black/40 backdrop-blur-sm rounded-2xl border border-[#ffc62d]/20 p-6 shadow-2xl">
-              <div className="aspect-video bg-gradient-to-br from-gray-900 to-black rounded-xl overflow-hidden relative">
-                {/* Video Placeholder */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <div className="w-0 h-0 border-l-[16px] border-l-white border-y-8 border-y-transparent ml-1"></div>
-                  </div>
-                </div>
-                
-                {/* Video Overlay Content */}
-                <div className="absolute bottom-4 left-4 right-4">
-                  <div className="bg-black/50 backdrop-blur-sm rounded-lg p-4">
-                    <h4 className="text-white font-semibold text-lg mb-2">
-                      Real Trading Education
-                    </h4>
-                    <p className="text-white/80 text-sm">
-                      Learn from verified results and proven strategies that work in real markets.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Click for Sound Button */}
-                <div className="absolute top-4 right-4">
-                  <div className="bg-black/50 backdrop-blur-sm rounded-full p-3 flex items-center space-x-2">
-                    <div className="w-6 h-6 text-white">
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
           </div>
         </section>
+
+      {/* Verified Results Intro Section */}
+      <section className="py-20 px-4 bg-gradient-to-b from-black to-slate-900 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5 pointer-events-none">
+          <div className="absolute inset-0 bg-repeat" style={{
+            backgroundImage: 'radial-gradient(circle at center, #3b82f6 1px, transparent 1px)',
+            backgroundSize: '40px 40px'
+          }} />
+        </div>
+
+        <div className="max-w-4xl mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center space-y-8"
+          >
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-blue-600/20 border border-blue-500/30 rounded-full px-4 py-2">
+              <CheckCircle className="w-5 h-5 text-blue-400" />
+              <span className="text-blue-300 text-sm font-medium">Verified & Transparent</span>
+            </div>
+
+            {/* Main Headline */}
+            <h2 className="text-3xl md:text-5xl font-bold text-white leading-tight">
+              I Show My <span className="text-blue-400">Broker Statements</span>
+            </h2>
+
+            {/* Description */}
+            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Unlike most trading educators, I don't hide behind flashy cars and rented mansions. 
+              I share <strong className="text-white">real broker statements</strong> and <strong className="text-white">verified live trading results.</strong> I let my performance do the talking not the rented lifestyle.
+            </p>
+
+            {/* Key Points */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="bg-gray-900/50 border border-gray-800 rounded-xl p-6 text-center"
+              >
+                <div className="w-12 h-12 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <BarChart3 className="w-6 h-6 text-blue-400" />
+                </div>
+                <h3 className="font-semibold text-white mb-2">Real Broker Statements</h3>
+                <p className="text-gray-400 text-sm">Actual screenshots from verified trading accounts</p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="bg-gray-900/50 border border-gray-800 rounded-xl p-6 text-center"
+              >
+                <div className="w-12 h-12 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="w-6 h-6 text-blue-400" />
+                </div>
+                <h3 className="font-semibold text-white mb-2">Live Results</h3>
+                <p className="text-gray-400 text-sm">Watch real trades executed with real money</p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+                className="bg-gray-900/50 border border-gray-800 rounded-xl p-6 text-center"
+              >
+                <div className="w-12 h-12 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Shield className="w-6 h-6 text-blue-400" />
+                </div>
+                <h3 className="font-semibold text-white mb-2">Full Transparency</h3>
+                <p className="text-gray-400 text-sm">See both wins and losses - nothing hidden</p>
+              </motion.div>
+            </div>
+
+            {/* CTA Text + Arrow */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="pt-8 space-y-4"
+            >
+              <p className="text-gray-400 text-lg">
+                Interested in learning more about my trading? <span className="text-white font-semibold">See the proof below</span>
+              </p>
+              
+              {/* Animated Arrow */}
+              <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                className="flex justify-center"
+              >
+                <div className="w-12 h-12 bg-blue-600/20 border border-blue-500/30 rounded-full flex items-center justify-center">
+                  <ChevronRight className="w-6 h-6 text-blue-400 rotate-90" />
+                </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Case Studies Section */}
       <section id="case-studies" className="py-20 px-4 bg-slate-900">
@@ -849,7 +1031,7 @@ export default function HomePage() {
           }} />
         </div>
 
-        <div className="max-w-6xl mx-auto relative z-10">
+        <div className="max-w-3xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -857,164 +1039,81 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              Choose Your <span className="text-blue-400">Path</span>
+              Ready to <span className="text-blue-400">Level Up?</span>
             </h2>
             <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              Real education backed by verified results. Start building your trading skills today.
+              Join Ascendant Platinum and trade alongside an 8-year institutional trader with verified results.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            {/* Essential Plan */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="relative bg-gradient-to-br from-gray-900/50 to-black/50 backdrop-blur-sm rounded-3xl border border-blue-500/30 overflow-hidden"
-            >
-              {/* Card Background Glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent pointer-events-none"></div>
-              
-              <div className="relative p-8">
-                {/* Header */}
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">Basic</h3>
-                  <p className="text-blue-300/80 text-sm mb-6">Best for beginner traders</p>
-                  
-                  {/* Pricing */}
-                  <div className="mb-2">
-                    <span className="text-gray-400 text-xl">$</span>
-                    <span className="text-5xl md:text-6xl font-bold text-white">9.99</span>
-                    <span className="text-gray-400 text-xl ml-2">/ Month</span>
-                  </div>
+          {/* Single Premium Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="relative bg-gradient-to-br from-blue-900/30 via-blue-800/20 to-black/50 backdrop-blur-sm rounded-3xl border-2 border-blue-500/50 overflow-hidden max-w-xl mx-auto"
+          >
+            {/* Card Background Glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-blue-500/10 to-transparent pointer-events-none"></div>
+            
+            <div className="relative p-8 md:p-10">
+              {/* Header */}
+              <div className="text-center mb-8">
+                <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-3">ASCENDANT PLATINUM</h3>
+                <p className="text-blue-300/80 text-sm mb-6">Learn To Become A Profitable Trader</p>
+                
+                {/* Pricing */}
+                <div className="mb-2">
+                  <span className="text-gray-400 text-xl">$</span>
+                  <span className="text-5xl md:text-6xl font-bold text-white">100</span>
+                  <span className="text-gray-400 text-xl ml-2">/ Month</span>
                 </div>
+              </div>
 
-                {/* CTA Button */}
-                <a
-                  href="https://buy.stripe.com/cNidRb1CC97wgpxd1o93y00"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full bg-transparent border-2 border-blue-500/50 text-white py-4 rounded-xl font-semibold hover:bg-blue-500/10 transition-all duration-300 text-center mb-8"
-                >
-                  Get Started
-                </a>
+              {/* CTA Button */}
+              <a
+                href="https://whop.com/ascendant-academy/ascendantplatinum"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 text-center mb-8 hover:scale-[1.02]"
+              >
+                Join Ascendant Platinum
+              </a>
 
-                {/* Features List */}
-                <div className="space-y-3">
+              {/* Features List */}
+              <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">Basic Discord Access</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">Trading journal</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">Trading Position Size Calculator</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">Market analysis dashboard</span>
-                  </div>
-                 
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">Daily market analysis</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">Real trade breakdowns</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">Weekly recap breakdowns</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">"Getting Started" module</span>
-                  </div>
+                  <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-white text-sm">Live Futures/Forex trading with Penny Pips at 9AM MST</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-white text-sm">Penny Pips Beginner Course (chart setup, demo account, MT4/MT5, entry models)</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-white text-sm">Daily trade reviews & exclusive education</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-white text-sm">In-house trading tools (Journal, AI Assistant, Dashboard)</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-white text-sm">Weekly educational group classes</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-white text-sm">Prop Firm account giveaways & exclusive discounts</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-white text-sm">Verified results backed by broker statements</span>
                 </div>
               </div>
-            </motion.div>
-
-            {/* Pro Plan */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="relative bg-gradient-to-br from-blue-900/30 via-blue-800/20 to-black/50 backdrop-blur-sm rounded-3xl border-2 border-blue-500/50 overflow-hidden"
-            >
-
-              {/* Card Background Glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-blue-500/10 to-transparent pointer-events-none"></div>
-              
-              <div className="relative p-8">
-                {/* Header */}
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-3">PREMIUM</h3>
-                  <p className="text-blue-300/80 text-sm mb-6">Best for advanced traders</p>
-                  
-                  {/* Pricing */}
-                  <div className="mb-2">
-                    <span className="text-gray-400 text-xl">$</span>
-                    <span className="text-5xl md:text-6xl font-bold text-white">99</span>
-                    <span className="text-gray-400 text-xl ml-2">/ Month</span>
-                  </div>
-                </div>
-
-                {/* CTA Button */}
-                <a
-                  href="https://buy.stripe.com/aFacN74OOgzYflt6D093y01"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 text-center mb-8"
-                >
-                  Get Started
-                </a>
-
-                {/* Features List */}
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm font-semibold">Everything in Essential</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">Premium Discord rooms</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">Trade alerts</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">5x/week livestreams</span>
-                  </div>
-                  
-                 
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">library of past livestreams</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">Monthly "Audit My Journal" call</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">Priority Q&A</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                    <span className="text-white text-sm">Sessions Trade Replay</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
 
           {/* Compliance Note */}
           <motion.div
@@ -1034,6 +1133,145 @@ export default function HomePage() {
 
         {/* Footer */}
       <Footer />
+
+      {/* Registration Modal */}
+      <AnimatePresence>
+        {showRegistrationModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4"
+            onClick={() => setShowRegistrationModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-gradient-to-br from-gray-900 via-slate-900 to-black rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative border border-blue-500/30 shadow-2xl"
+            >
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-5 pointer-events-none">
+                <div className="absolute inset-0 bg-repeat" style={{
+                  backgroundImage: 'radial-gradient(circle at center, #3b82f6 1px, transparent 1px)',
+                  backgroundSize: '30px 30px'
+                }} />
+              </div>
+
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-blue-600/10 pointer-events-none rounded-3xl"></div>
+
+              {/* Close Button */}
+              <button
+                onClick={() => setShowRegistrationModal(false)}
+                className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white transition-colors z-10 bg-gray-800/50 rounded-full hover:bg-gray-700/50"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Progress Bar */}
+              <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white py-4 px-8 rounded-t-3xl relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse"></div>
+                <div className="text-sm font-semibold relative z-10">Last Step: Submit Registration</div>
+              </div>
+
+              <div className="p-8 md:p-12 relative z-10">
+                {/* Heading */}
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                    Last step to access the{' '}
+                    <span className="relative inline-block">
+                      <span className="relative z-10 bg-gradient-to-r from-[#ffc62d] to-yellow-400 text-black font-bold px-3 py-1 rounded">MasterClass...</span>
+                    </span>
+                  </h2>
+                  <p className="text-gray-400 text-sm">*We will not spam, rent, or sell your information...</p>
+                </div>
+
+                {/* Form */}
+                <form onSubmit={handleRegistrationSubmit} className="space-y-6">
+                  {/* Name Field */}
+                  <div>
+                    <label className="block text-white font-medium mb-2">
+                      Name <span className="text-blue-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Enter Your Name..."
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all text-white placeholder-gray-500"
+                    />
+                  </div>
+
+                  {/* Email Field */}
+                  <div>
+                    <label className="block text-white font-medium mb-2">
+                      Email <span className="text-blue-400">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="Enter Your Email..."
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all text-white placeholder-gray-500"
+                    />
+                  </div>
+
+                  {/* Phone Field */}
+                  <div>
+                    <label className="block text-white font-medium mb-2">
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      placeholder="Enter Your Phone..."
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all text-white placeholder-gray-500"
+                    />
+                  </div>
+
+                  {/* Privacy Policy Checkbox */}
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      id="privacy"
+                      required
+                      checked={acceptPolicy}
+                      onChange={(e) => setAcceptPolicy(e.target.checked)}
+                      className="w-5 h-5 mt-0.5 border-2 border-gray-600 rounded bg-gray-800/50 focus:ring-2 focus:ring-blue-500"
+                    />
+                    <label htmlFor="privacy" className="text-gray-300 text-sm">
+                      I accept the <a href="/privacy" target="_blank" className="text-blue-400 hover:text-blue-300 underline">Privacy Policy</a>
+                    </label>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-4 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/50 hover:shadow-blue-500/70 hover:scale-[1.02]"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <RefreshCw className="w-5 h-5 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        Submit Registration 🚀
+                      </>
+                    )}
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 } 

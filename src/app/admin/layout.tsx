@@ -15,7 +15,8 @@ const adminNavigation = [
   { name: 'Trading Arenas', href: '/admin/trading-arenas' },
   { name: 'Signals', href: '/admin/signals' },
   { name: 'Content', href: '/admin/content' },
-  { name: 'Analytics', href: '/admin/analytics' }
+  { name: 'Analytics', href: '/admin/analytics' },
+  { name: 'Free Course Emails', href: '/admin/free-course-emails' }
 ];
 
 export default function AdminLayout({

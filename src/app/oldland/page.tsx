@@ -1,26 +1,48 @@
 'use client';
-
-// TEMPORARILY DISABLED - Original page preserved
-// To re-enable: rename page.old.tsx back to page.tsx
-/*
-
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useParallax } from 'react-scroll-parallax';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { loadSlim } from "tsparticles-slim";
 import type { Engine } from "tsparticles-engine";
 import { TypeAnimation } from 'react-type-animation';
 import Tilt from 'react-parallax-tilt';
 import { plans } from '@/config/plans';
-import ParallaxWrapper from './ParallaxWrapper';
+import ParallaxWrapper from '../ParallaxWrapper';
 import { Menu, X } from 'lucide-react';
 import PlatinumToggle from '@/components/PlatinumToggle';
 import DottedGlobe from '@/components/DottedGlobe';
 import styles from '@/styles/home.module.css';
 import { PlanFeature } from '@/types/index';
+
+// ============================================
+// PAGE DISABLED - REDIRECT TO MAIN LANDING PAGE
+// Remove this block to re-enable the page
+// ============================================
+export default function DisabledPage() {
+  const router = useRouter();
+  
+  useEffect(() => {
+    router.replace('/');
+  }, [router]);
+
+  return (
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="text-white text-center">
+        <div className="w-8 h-8 border-2 border-[#ffc62d] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-gray-400">Redirecting...</p>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// ORIGINAL PAGE CODE BELOW (PRESERVED)
+// ============================================
 
 // Add WebGL type definitions
 interface WebGLContextAttributes {
@@ -1288,20 +1310,11 @@ function HomeContent() {
   );
 }
 
-export default function HomePage() {
-  return (
-    <ParallaxWrapper>
-      <HomeContent />
-    </ParallaxWrapper>
-  );
-}
-*/
-
-// NEW LANDING PAGE
-export default function HomePage() {
-  return (
-    <div className="min-h-screen bg-black">
-      <h1 className="text-white text-center py-20">New Landing Page Coming Soon</h1>
-    </div>
-  );
-} 
+// Original export - commented out while page is disabled
+// export default function HomePage() {
+//   return (
+//     <ParallaxWrapper>
+//       <HomeContent />
+//     </ParallaxWrapper>
+//   );
+// } 
