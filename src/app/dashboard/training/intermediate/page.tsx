@@ -5,21 +5,21 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { LockClosedIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
-import { getCourseProgress, CourseProgress } from '@/utils/courseUtils';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { moduleContent } from '@/utils/moduleContent';
+import { getCourseProgress, CourseProgress } from '@/utils/courseUtils';
 
 export default function IntermediateCoursePage() {
   const { user } = useAuth();
   const router = useRouter();
+  const [clickedModuleId, setClickedModuleId] = useState<number | null>(null);
   const [progress, setProgress] = useState<CourseProgress>();
   const [isLoading, setIsLoading] = useState(true);
-  const [clickedModuleId, setClickedModuleId] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchProgress() {
       if (!user) {
-        router.push('/login');
+        setIsLoading(false);
         return;
       }
 
@@ -34,7 +34,12 @@ export default function IntermediateCoursePage() {
     }
 
     fetchProgress();
-  }, [user, router]);
+  }, [user]);
+
+  // All modules are unlocked - no restrictions
+  const isModuleCompleted = (moduleId: number) => {
+    return progress?.completedModules?.includes(moduleId) || false;
+  };
 
   if (isLoading) {
     return (
@@ -52,13 +57,9 @@ export default function IntermediateCoursePage() {
     );
   }
 
-  const isModuleLocked = (moduleId: number) => {
-    return moduleId > (progress?.currentModule || 1);
-  };
-
-  const isModuleCompleted = (moduleId: number) => {
-    return progress?.completedModules?.includes(moduleId) || false;
-  };
+  const totalModules = Object.keys(moduleContent.intermediate || {}).length;
+  const percentComplete = progress?.percentComplete || 0;
+  const completedModules = progress?.completedModules || [];
 
   return (
     <div className="min-h-screen bg-black">
@@ -79,20 +80,20 @@ export default function IntermediateCoursePage() {
               </div>
               <div className="text-right">
                 <span className="text-xs font-semibold inline-block text-[#ffc62d]">
-                  {Math.round(progress?.percentComplete || 0)}%
+                  {Math.round(percentComplete)}%
                 </span>
               </div>
             </div>
             <div className="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-[#1a1a1a]">
               <motion.div
                 initial={{ width: 0 }}
-                animate={{ width: `${progress?.percentComplete || 0}%` }}
+                animate={{ width: `${percentComplete}%` }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-[#ffc62d]"
               />
             </div>
             <p className="text-gray-400 text-sm text-center">
-              {progress?.completedModules?.length || 0} of {progress?.totalModules || 6} modules completed
+              {completedModules.length} of {totalModules} modules completed
             </p>
           </div>
 
@@ -100,7 +101,6 @@ export default function IntermediateCoursePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Object.entries(moduleContent.intermediate || {}).map(([id, module]) => {
               const moduleId = parseInt(id);
-              const locked = isModuleLocked(moduleId);
               const completed = isModuleCompleted(moduleId);
 
               return (
@@ -112,19 +112,12 @@ export default function IntermediateCoursePage() {
                   className="relative group"
                 >
                   <Link
-                    href={locked ? '#' : `/dashboard/training/intermediate/module/${moduleId}`}
-                    className={`block h-full ${locked ? 'cursor-not-allowed' : ''}`}
-                    onClick={(e) => {
-                      if (!locked) {
-                        setClickedModuleId(moduleId);
-                      }
-                    }}
+                    href={`/dashboard/training/intermediate/module/${moduleId}`}
+                    className="block h-full"
+                    onClick={() => setClickedModuleId(moduleId)}
                   >
                     <div 
-                      className={`bg-[#111111] rounded-lg p-6 h-full transition-all duration-200 
-                        ${!locked && 'hover:shadow-lg hover:shadow-[#ffc62d]/10 hover:scale-[1.02]'}
-                        ${completed ? 'border border-green-500/20' : ''}
-                      `}
+                      className="bg-[#111111] rounded-lg p-6 h-full transition-all duration-200 hover:shadow-lg hover:shadow-[#ffc62d]/10 hover:scale-[1.02] border border-gray-800/50"
                     >
                       <div className="flex flex-col mb-4">
                         {completed && (
@@ -151,27 +144,6 @@ export default function IntermediateCoursePage() {
                           <div className="text-center">
                             <div className="inline-block h-8 w-8 animate-spin rounded-full border-2 border-[#ffc62d] border-t-transparent" />
                             <p className="mt-2 text-[#ffc62d]">Loading...</p>
-                          </div>
-                        </motion.div>
-                      )}
-
-                      {/* Locked Overlay */}
-                      {locked && (
-                        <motion.div 
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          className="absolute inset-0 bg-black/80 backdrop-blur-sm rounded-lg flex items-center justify-center"
-                        >
-                          <div className="text-center p-6">
-                            <motion.div
-                              initial={{ scale: 0.5 }}
-                              animate={{ scale: 1 }}
-                              transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                            >
-                              <LockClosedIcon className="w-12 h-12 text-[#ffc62d]/50 mx-auto mb-4" />
-                            </motion.div>
-                            <p className="text-[#ffc62d]/80 font-medium mb-2">Module Locked</p>
-                            <p className="text-gray-400 text-sm">Complete previous modules to unlock</p>
                           </div>
                         </motion.div>
                       )}

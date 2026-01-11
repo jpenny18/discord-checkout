@@ -65,12 +65,12 @@ export default function TradingJournalPage() {
     }
   }, [user, selectedDate]);
 
-  // Load overall stats
+  // Load overall stats - now filtered by current month
   useEffect(() => {
     if (user) {
       loadStats();
     }
-  }, [user]);
+  }, [user, currentMonth]); // Added currentMonth dependency
 
   // Load trading journal settings
   useEffect(() => {
@@ -152,7 +152,14 @@ export default function TradingJournalPage() {
     if (!user) return;
 
     try {
-      const stats = await getJournalStats(user.uid);
+      // Get stats for the current month only
+      const year = currentMonth.getFullYear();
+      const month = currentMonth.getMonth() + 1;
+      const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+      const lastDay = new Date(year, month, 0).getDate();
+      const endDate = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+      
+      const stats = await getJournalStats(user.uid, startDate, endDate);
       setJournalStats(stats);
     } catch (error) {
       console.error('Error loading stats:', error);
@@ -237,51 +244,47 @@ export default function TradingJournalPage() {
     );
   }
 
+  const currentMonthName = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="rounded-lg bg-[#111111] p-6 border border-white/5 shadow-[0_0_30px_rgba(17,17,17,0.7)]">
-        <div className="flex items-center gap-4 mb-4">
+      {/* Header + Selected Date Combined */}
+      <div className="flex flex-col sm:flex-row items-center sm:items-center gap-3 md:gap-4 mb-2 md:mb-4 border border-gray-800 rounded-lg p-2">
+        <div className="flex items-center gap-3 flex-1 w-full sm:w-auto">
           <Link
             href="/dashboard/trading-tools"
-            className="p-2 rounded-lg bg-[#1a1a1a] border border-white/10 hover:border-[#ffc62d]/50 transition-all"
+            className="p-2 rounded-lg border border-gray-800 hover:border-[#ffc62d]/50 transition-all"
+            aria-label="Back to Trading Tools"
           >
             <ArrowLeftIcon className="w-5 h-5 text-white" />
           </Link>
-          <div>
-            <h1 className="text-3xl font-bold text-white">Trading Journal</h1>
-            <p className="mt-2 text-gray-400">
-              Track your trades, analyze performance, and project future growth
-            </p>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Show selected date info */}
-      {selectedDate && (
-        <div className="rounded-lg bg-[#1a1a1a] border border-[#ffc62d]/30 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-sm text-gray-400">Selected Date:</span>
-              <span className="ml-2 text-lg font-semibold text-white">
-                {/* Add T12:00:00 to avoid timezone issues */}
+          {selectedDate && (
+            <span className="flex items-center flex-wrap gap-2">
+              <span className="text-xs text-gray-400 md:text-sm">Selected Date:</span>
+              <span className="inline-block rounded px-2 py-1 text-xs md:text-base text-[#ffc62d] font-mono tracking-wide shadow-inner border border-gray-800">
                 {new Date(selectedDate + 'T12:00:00').toLocaleDateString('en-US', {
-                  weekday: 'long',
+                  weekday: 'short',
+                  month: 'short',
+                  day: '2-digit',
                   year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
                 })}
               </span>
-            </div>
-            {selectedDate === new Date().toISOString().split('T')[0] && (
-              <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-sm font-medium">
-                Today
-              </span>
-            )}
-          </div>
+              {selectedDate === new Date().toISOString().split('T')[0] && (
+                <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs md:text-sm font-medium">
+                  Today
+                </span>
+              )}
+            </span>
+          )}
         </div>
-      )}
+        {/* Month Stats Indicator - Centered on mobile, right-aligned on desktop */}
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#ffc62d]/10 border border-[#ffc62d]/30 w-full sm:w-auto justify-center sm:justify-start">
+          <svg className="w-4 h-4 text-[#ffc62d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span className="text-xs text-[#ffc62d] font-medium whitespace-nowrap">Stats: {currentMonthName}</span>
+        </div>
+      </div>
 
       {/* Calendar and Stats Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -296,7 +299,7 @@ export default function TradingJournalPage() {
             monthlyStats={{
               totalPnL: journalStats?.totalPnL || 0,
               totalDays: calendarData.filter(d => d.hasData).length,
-              netPnL: journalStats?.netPnL || 0
+              netPnL: journalStats?.netPnL || 0 // This is now filtered to current month
             }}
           />
         </div>
@@ -337,11 +340,11 @@ export default function TradingJournalPage() {
         </>
       )}
 
-      {/* Account Projections */}
+      {/* Account Projections - Based on current month performance */}
       {journalStats && journalStats.totalTrades > 0 && initialBalance !== null && (
         <AccountProjections
-          currentBalance={initialBalance + journalStats.netPnL} // Use actual balance
-          avgDailyReturn={journalStats.expectancy || 10} // Average $ per trade as proxy for daily
+          currentBalance={initialBalance + journalStats.netPnL} // Balance including current month P&L
+          avgDailyReturn={journalStats.expectancy || 10} // Average $ per trade from current month
           tradingDaysPerWeek={5} // You can make this configurable
         />
       )}

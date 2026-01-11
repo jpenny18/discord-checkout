@@ -197,13 +197,19 @@ export default function TradingCalendar({
             <tr>
               {daysOfWeek.map(day => (
                 <td key={day} className="p-0.5 md:p-1 w-[12.5%]">
-                  <div className="h-8 md:h-12 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
-                    <span className="text-[10px] md:text-sm font-bold text-gray-400">{day}</span>
+                  <div className="h-8 md:h-12 rounded-lg bg-[#1a1a1a] flex items-center justify-center overflow-hidden">
+                    <div className="px-2">
+                      <span className="text-[10px] md:text-sm font-bold text-gray-400 leading-none whitespace-nowrap">{day}</span>
+                    </div>
                   </div>
                 </td>
               ))}
               <td className="p-0.5 md:p-1 w-[12.5%] hidden md:table-cell">
-                {/* Empty cell for alignment */}
+                <div className="h-8 md:h-12 rounded-lg bg-[#1a1a1a] flex items-center justify-center overflow-hidden">
+                  <div className="px-2">
+                    <span className="text-[10px] md:text-sm font-bold text-gray-400 leading-none whitespace-nowrap">Week</span>
+                  </div>
+                </div>
               </td>
             </tr>
 
@@ -231,7 +237,7 @@ export default function TradingCalendar({
                       <button
                         onClick={() => onDateSelect(dayData.date)}
                         className={`
-                          w-full h-16 md:h-24 p-1 md:p-3 rounded-lg relative transition-all
+                          w-full h-16 md:h-24 rounded-lg transition-all overflow-hidden
                           ${dayData.hasData ? 'border-2' : 'border border-gray-700'}
                           ${getPnLColor(dayData.pnl, dayData.hasData)}
                           ${isSelected ? 'ring-1 md:ring-2 ring-[#ffc62d] ring-offset-1 md:ring-offset-2 ring-offset-black' : ''}
@@ -239,30 +245,42 @@ export default function TradingCalendar({
                           hover:scale-105
                         `}
                       >
-                        {/* Day number - small, top right */}
-                        <div className="absolute top-1 md:top-2 right-1 md:right-2 text-[10px] md:text-xs text-gray-500">
-                          {dayNumber}
+                        {/* Card Content Wrapper */}
+                        <div className="relative w-full h-full p-1.5 md:p-2">
+                          {dayData.hasData ? (
+                            <>
+                              {/* Grid Layout Container */}
+                              <div className="flex flex-col h-full justify-between">
+                                {/* Top Row: Day Number */}
+                                <div className="flex justify-end">
+                                  <div className="text-[10px] md:text-xs text-gray-500 font-medium leading-none">
+                                    {dayNumber}
+                                  </div>
+                                </div>
+                                
+                                {/* Middle Row: P&L */}
+                                <div className="flex justify-center items-center flex-1">
+                                  <div className={`text-sm md:text-lg font-bold leading-none ${getPnLTextColor(dayData.pnl, dayData.hasData)}`}>
+                                    {formatPnL(dayData.pnl)}
+                                  </div>
+                                </div>
+                                
+                                {/* Bottom Row: Trade Count */}
+                                <div className="flex justify-center">
+                                  <div className="text-[8px] md:text-[10px] text-gray-500 leading-none">
+                                    {dayData.tradeCount} trade{dayData.tradeCount !== 1 ? 's' : ''}
+                                  </div>
+                                </div>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="flex items-center justify-center h-full">
+                              <span className={`text-base md:text-lg font-medium ${isToday ? 'text-blue-500' : 'text-gray-600'}`}>
+                                {dayNumber}
+                              </span>
+                            </div>
+                          )}
                         </div>
-                        
-                        {dayData.hasData ? (
-                          <div className="flex flex-col items-end justify-center h-full pr-1 md:pr-2">
-                            {/* P&L - bold, middle right */}
-                            <div className={`text-sm md:text-lg font-bold ${getPnLTextColor(dayData.pnl, dayData.hasData)}`}>
-                              {formatPnL(dayData.pnl)}
-                            </div>
-                            
-                            {/* Trade count - below P&L */}
-                            <div className="text-[8px] md:text-[10px] text-gray-500 mt-0.5 md:mt-1">
-                              {dayData.tradeCount} trade{dayData.tradeCount !== 1 ? 's' : ''}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-center h-full">
-                            <span className={`text-sm md:text-lg ${isToday ? 'text-blue-500 font-medium' : 'text-gray-600'}`}>
-                              {dayNumber}
-                            </span>
-                          </div>
-                        )}
                       </button>
                     </td>
                   );
@@ -270,14 +288,37 @@ export default function TradingCalendar({
                 
                 {/* Weekly Breakdown Card - Hidden on mobile */}
                 <td className="p-0.5 md:p-1 hidden md:table-cell">
-                  <div className="w-full h-16 md:h-24 p-2 md:p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
-                    <div className="flex flex-col justify-center h-full">
-                      <div className="text-[10px] md:text-xs font-medium text-gray-400">Week {weeklyStats[weekIndex].weekNum}</div>
-                      <div className={`text-base md:text-lg font-bold ${weeklyStats[weekIndex].totalPnL >= 0 ? 'text-green-500' : weeklyStats[weekIndex].totalPnL < 0 ? 'text-red-500' : 'text-gray-600'}`}>
-                        {weeklyStats[weekIndex].totalPnL !== 0 ? formatPnL(weeklyStats[weekIndex].totalPnL) : '$0.00'}
-                      </div>
-                      <div className="text-[8px] md:text-[10px] text-gray-500">
-                        {weeklyStats[weekIndex].days} {weeklyStats[weekIndex].days === 1 ? 'day' : 'days'}
+                  <div className="w-full h-16 md:h-24 rounded-lg bg-[#1a1a1a] border border-gray-700 overflow-hidden">
+                    {/* Card Content Wrapper */}
+                    <div className="relative w-full h-full p-2">
+                      {/* Grid Layout Container */}
+                      <div className="flex flex-col h-full justify-between">
+                        {/* Top Row: Week Label */}
+                        <div className="flex justify-center">
+                          <div className="text-[10px] md:text-xs font-medium text-gray-400 leading-none">
+                            Week {weeklyStats[weekIndex].weekNum}
+                          </div>
+                        </div>
+                        
+                        {/* Middle Row: Week P&L */}
+                        <div className="flex justify-center items-center flex-1">
+                          <div className={`text-sm md:text-lg font-bold leading-none ${
+                            weeklyStats[weekIndex].totalPnL >= 0 
+                              ? 'text-green-500' 
+                              : weeklyStats[weekIndex].totalPnL < 0 
+                              ? 'text-red-500' 
+                              : 'text-gray-600'
+                          }`}>
+                            {weeklyStats[weekIndex].totalPnL !== 0 ? formatPnL(weeklyStats[weekIndex].totalPnL) : '$0'}
+                          </div>
+                        </div>
+                        
+                        {/* Bottom Row: Day Count */}
+                        <div className="flex justify-center">
+                          <div className="text-[8px] md:text-[10px] text-gray-500 leading-none">
+                            {weeklyStats[weekIndex].days} {weeklyStats[weekIndex].days === 1 ? 'day' : 'days'}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

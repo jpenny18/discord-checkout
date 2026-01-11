@@ -167,8 +167,9 @@ export default function DashboardLayout({
             </div>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="fixed top-0 left-0 z-50 flex h-16 w-16 items-center justify-center md:hidden bg-gradient-to-br from-[#191919] to-[#121212] border-r border-b border-gray-700 shadow-xl">
+          {/* Mobile Header */}
+          <div className="fixed top-0 left-0 z-50 w-full h-16 flex items-center justify-between md:hidden bg-gradient-to-br from-[#191919] to-[#121212] border-b border-gray-700 shadow-xl px-4">
+            {/* Mobile menu button (left) */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="group relative rounded-xl p-3 transition duration-150 bg-gradient-to-tr from-[#191919] via-[#232224] to-[#121212] border border-[#2e2b23] shadow-lg hover:from-[#191919] hover:to-[#18110c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ffc62d]/70"
@@ -192,6 +193,19 @@ export default function DashboardLayout({
                 />
               </svg>
             </button>
+            {/* Logo in center */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
+              <Image
+                src="/images/logo.png"
+                alt="Ascendant Academy Logo"
+                width={40}
+                height={40}
+                className="rounded-full"
+                priority
+              />
+            </div>
+            {/* Spacer or potential right-side actions */}
+            <div style={{ width: '40px' }} />
           </div>
 
           {/* Main Content */}

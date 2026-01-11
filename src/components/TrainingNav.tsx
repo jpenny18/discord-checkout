@@ -3,16 +3,15 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { AcademicCapIcon, LockClosedIcon } from '@heroicons/react/24/solid';
-import { useRole } from '@/contexts/RoleContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { getCourseProgress } from '@/utils/courseUtils';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-
-type UserRole = 'ascendant_hero' | 'ascendant_challenger' | 'ascendant_trader' | 'default';
 
 interface TrainingRoute {
   name: string;
   path: string;
-  minRole?: UserRole;
+  requiresCourseCompletion?: string; // course ID that must be completed
   description?: string;
 }
 
@@ -30,35 +29,51 @@ const trainingRoutes: TrainingRoute[] = [
   { 
     name: 'Beginners Course', 
     path: '/dashboard/training/beginners',
-    minRole: 'ascendant_trader',
     description: 'Master the fundamentals of trading'
   },
   { 
     name: 'Intermediate Course', 
     path: '/dashboard/training/intermediate',
-    minRole: 'ascendant_challenger',
+    requiresCourseCompletion: 'beginners',
     description: 'Advanced trading strategies'
   },
   { 
     name: 'Advanced Course', 
     path: '/dashboard/training/advanced',
-    minRole: 'ascendant_hero',
+    requiresCourseCompletion: 'intermediate',
     description: 'Expert-level trading mastery'
   }
 ];
 
-const roleHierarchy: Record<UserRole, number> = {
-  'ascendant_hero': 3,
-  'ascendant_challenger': 2,
-  'ascendant_trader': 1,
-  'default': 0
-};
-
 export default function TrainingNav() {
   const pathname = usePathname();
-  const { role } = useRole();
+  const { user } = useAuth();
   const [clickedRoute, setClickedRoute] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false); // Start closed on mobile
+  const [courseCompletion, setCourseCompletion] = useState<Record<string, boolean>>({});
+
+  // Fetch course completion status
+  useEffect(() => {
+    async function fetchCompletion() {
+      if (!user) return;
+
+      try {
+        const [beginnersProgress, intermediateProgress] = await Promise.all([
+          getCourseProgress('beginners', user.uid),
+          getCourseProgress('intermediate', user.uid)
+        ]);
+
+        setCourseCompletion({
+          beginners: beginnersProgress?.percentComplete === 100,
+          intermediate: intermediateProgress?.percentComplete === 100
+        });
+      } catch (error) {
+        console.error('Error fetching course completion:', error);
+      }
+    }
+
+    fetchCompletion();
+  }, [user]);
 
   // Reset clicked route when pathname changes
   useEffect(() => {
@@ -79,8 +94,8 @@ export default function TrainingNav() {
   }, []);
 
   const isRouteAccessible = (route: TrainingRoute) => {
-    if (!route.minRole) return true;
-    return roleHierarchy[role as UserRole] >= roleHierarchy[route.minRole];
+    if (!route.requiresCourseCompletion) return true;
+    return courseCompletion[route.requiresCourseCompletion] || false;
   };
 
   return (
@@ -214,11 +229,9 @@ export default function TrainingNav() {
                   </div>
 
                   {/* Tooltip - hidden on mobile */}
-                  {!isAccessible && (
+                  {!isAccessible && route.requiresCourseCompletion && (
                     <div className="hidden lg:block absolute left-full ml-4 px-3 py-1 bg-gray-800 rounded text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                      Unlock with {route.minRole?.split('_').map(word => 
-                        word.charAt(0).toUpperCase() + word.slice(1)
-                      ).join(' ')}
+                      Complete {route.requiresCourseCompletion.charAt(0).toUpperCase() + route.requiresCourseCompletion.slice(1)} Course
                     </div>
                   )}
                 </Link>

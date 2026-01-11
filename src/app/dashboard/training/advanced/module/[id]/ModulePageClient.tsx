@@ -1,22 +1,19 @@
 'use client';
 
-import { useRole } from '@/contexts/RoleContext';
-import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import { ChevronLeftIcon } from '@heroicons/react/24/solid';
+import { moduleContent } from '@/utils/moduleContent';
 import { getCourseProgress, CourseProgress, updateModuleCompletion } from '@/utils/courseUtils';
-import { moduleContent, ModuleContent } from '@/utils/moduleContent';
 import ReactMarkdown from 'react-markdown';
 
-function NavigationButtons({ moduleId, totalModules, canAccessNextModule, courseId, isModuleCompleted }: {
+function NavigationButtons({ moduleId, totalModules, courseId }: {
   moduleId: number;
   totalModules: number;
-  canAccessNextModule: boolean;
   courseId: string;
-  isModuleCompleted: boolean;
 }) {
   return (
     <div className="flex items-center justify-between">
@@ -36,7 +33,7 @@ function NavigationButtons({ moduleId, totalModules, canAccessNextModule, course
             Previous Module
           </Link>
         )}
-        {moduleId < totalModules && isModuleCompleted && (
+        {moduleId < totalModules && (
           <Link
             href={`/dashboard/training/${courseId}/module/${moduleId + 1}`}
             className="text-gray-400 hover:text-[#ffc62d] transition-colors duration-200"
@@ -57,33 +54,28 @@ export function ModulePageClient({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const router = useRouter();
-  const { role } = useRole();
   const { user } = useAuth();
-  const [isLoading, setIsLoading] = useState(true);
-  const [progress, setProgress] = useState<CourseProgress>();
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [quizPassed, setQuizPassed] = useState(false);
+  const [progress, setProgress] = useState<CourseProgress>();
+  const [isLoading, setIsLoading] = useState(true);
   const moduleId = parseInt(params.id);
   const courseId = 'advanced';
 
   const moduleData = moduleContent[courseId]?.[moduleId];
 
+  // Load progress from Firebase
   useEffect(() => {
     async function fetchProgress() {
       if (!user) {
-        router.push('/login');
+        setIsLoading(false);
         return;
       }
 
       try {
         const courseProgress = await getCourseProgress(courseId, user.uid);
         setProgress(courseProgress);
-
-        // Allow access to completed modules and the next unlocked module
-        if (moduleId > (courseProgress?.currentModule || 1) + 1) {
-          router.push(`/dashboard/training/${courseId}`);
-        }
       } catch (error) {
         console.error('Error fetching progress:', error);
       } finally {
@@ -92,7 +84,7 @@ export function ModulePageClient({
     }
 
     fetchProgress();
-  }, [user, courseId, moduleId, router]);
+  }, [user, courseId]);
 
   const handleAnswerSelect = (questionIndex: number, answerIndex: number) => {
     const newAnswers = [...selectedAnswers];
@@ -156,9 +148,7 @@ export function ModulePageClient({
     return null;
   }
 
-  const canAccessNextModule = progress?.completedModules?.includes(moduleId) || 
-                           moduleId <= (progress?.currentModule || 1);
-  const isModuleCompleted = progress?.completedModules?.includes(moduleId) || false;
+  const totalModules = progress?.totalModules || Object.keys(moduleContent[courseId] || {}).length;
 
   return (
     <div className="min-h-screen bg-black">
@@ -167,10 +157,8 @@ export function ModulePageClient({
           {/* Top Navigation */}
           <NavigationButtons 
             moduleId={moduleId}
-            totalModules={progress?.totalModules || 6}
-            canAccessNextModule={canAccessNextModule}
+            totalModules={totalModules}
             courseId={courseId}
-            isModuleCompleted={isModuleCompleted}
           />
 
           {/* Module Content */}
@@ -283,10 +271,8 @@ export function ModulePageClient({
           {/* Bottom Navigation */}
           <NavigationButtons 
             moduleId={moduleId}
-            totalModules={progress?.totalModules || 6}
-            canAccessNextModule={canAccessNextModule}
+            totalModules={totalModules}
             courseId={courseId}
-            isModuleCompleted={isModuleCompleted}
           />
         </div>
       </div>
