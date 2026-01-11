@@ -50,10 +50,65 @@ export default function DashboardLayout({
       <div className="min-h-screen bg-[#09090b]" style={{ '--color-white': '#ffffff' } as React.CSSProperties}>
         {/* Desktop wrapper with padding */}
         <div className="md:px-12 md:py-6 md:max-w-[1500px] md:mx-auto">
-          {/* Sidebar */}
-          <div className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-all duration-300 ease-in-out ${
+          {/* Mobile Sidebar - Opaque Background */}
+          <div className={`md:hidden fixed inset-y-0 left-0 z-50 w-64 bg-[#121212] transform transition-all duration-300 ease-in-out ${
             isMenuOpen ? 'translate-x-0' : '-translate-x-full'
-          } md:translate-x-0 md:left-auto md:ml-6 md:top-6 md:bottom-6 md:rounded-[0.3125rem] md:border`}
+          }`}>
+            <div className="flex h-full flex-col">
+              {/* Logo */}
+              <div className="flex h-16 items-center justify-center border-b border-gray-700">
+                <Image
+                  src="/images/logo.png"
+                  alt="Ascendant Academy Logo"
+                  width={50}
+                  height={50}
+                  className="rounded-full"
+                />
+                <span className="ml-2 text-lg font-bold text-white">
+                  
+                </span>
+              </div>
+
+              {/* Navigation */}
+              <DashboardNav />
+
+              {/* User Profile */}
+              <div className="border-t border-gray-700 p-4">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="h-10 w-10 rounded-full bg-gray-700" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-white">
+                      {userProfile?.firstName || 'User'}
+                    </p>
+                    <p className="text-xs text-gray-400">{user?.email}</p>
+                  </div>
+                  <button
+                    onClick={handleSignOut}
+                    className="ml-auto rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-[#ffc62d]"
+                  >
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Sidebar - Semi-transparent Background */}
+          <div className="hidden md:block fixed inset-y-0 left-auto ml-6 top-6 bottom-6 z-50 w-64 rounded-[0.3125rem] border"
           style={{
             filter: 'drop-shadow(0px 0px 10px rgba(0, 0, 0, .3))',
             backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
@@ -113,13 +168,18 @@ export default function DashboardLayout({
           </div>
 
           {/* Mobile menu button */}
-          <div className="fixed top-0 left-0 z-50 flex h-16 w-16 items-center justify-center bg-[#262729] md:hidden">
+          <div className="fixed top-0 left-0 z-50 flex h-16 w-16 items-center justify-center md:hidden bg-gradient-to-br from-[#191919] to-[#121212] border-r border-b border-gray-700 shadow-xl">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-[#ffc62d] focus:outline-none"
+              className="group relative rounded-xl p-3 transition duration-150 bg-gradient-to-tr from-[#191919] via-[#232224] to-[#121212] border border-[#2e2b23] shadow-lg hover:from-[#191919] hover:to-[#18110c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ffc62d]/70"
             >
+              <span className="absolute inset-0 z-0 rounded-xl pointer-events-none group-hover:shadow-[0_2px_12px_2px_rgba(255,198,45,0.15)] transition" />
               <svg
-                className="h-6 w-6"
+                className={`h-7 w-7 relative z-10 transition-colors duration-200 ${
+                  isMenuOpen
+                    ? 'text-[#ffc62d] drop-shadow-[0_2px_12px_rgba(255,198,45,0.45)]'
+                    : 'text-gray-200 group-hover:text-[#ffc62d]'
+                }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

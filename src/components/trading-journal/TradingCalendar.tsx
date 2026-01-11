@@ -145,57 +145,64 @@ export default function TradingCalendar({
   return (
     <div className="rounded-lg bg-[#111111] border border-white/5 shadow-[0_0_30px_rgba(17,17,17,0.7)]">
       {/* Header */}
-      <div className="p-6 border-b border-white/5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={previousMonth}
-              className="p-2 rounded-lg bg-[#1a1a1a] border border-white/10 hover:border-[#ffc62d]/50 transition-all"
-            >
-              <ChevronLeftIcon className="w-5 h-5 text-white" />
-            </button>
-            <button
-              onClick={goToToday}
-              className="px-4 py-2 rounded-lg bg-[#1a1a1a] border border-white/10 hover:border-[#ffc62d]/50 transition-all text-sm font-medium text-white"
-            >
-              TODAY
-            </button>
-            <button
-              onClick={nextMonth}
-              className="p-2 rounded-lg bg-[#1a1a1a] border border-white/10 hover:border-[#ffc62d]/50 transition-all"
-            >
-              <ChevronRightIcon className="w-5 h-5 text-white" />
-            </button>
+      <div className="p-3 md:p-6 border-b border-white/5">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-0">
+          <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto justify-between md:justify-start">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={previousMonth}
+                className="p-1.5 md:p-2 rounded-lg bg-[#1a1a1a] border border-white/10 hover:border-[#ffc62d]/50 transition-all"
+              >
+                <ChevronLeftIcon className="w-4 h-4 md:w-5 md:h-5 text-white" />
+              </button>
+              <button
+                onClick={goToToday}
+                className="px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-[#1a1a1a] border border-white/10 hover:border-[#ffc62d]/50 transition-all text-xs md:text-sm font-medium text-white"
+              >
+                TODAY
+              </button>
+              <button
+                onClick={nextMonth}
+                className="p-1.5 md:p-2 rounded-lg bg-[#1a1a1a] border border-white/10 hover:border-[#ffc62d]/50 transition-all"
+              >
+                <ChevronRightIcon className="w-4 h-4 md:w-5 md:h-5 text-white" />
+              </button>
+            </div>
+            <div className="text-left md:text-center md:hidden">
+              <h2 className="text-base font-bold text-white">
+                {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+              </h2>
+            </div>
           </div>
-          <div className="text-center">
+          <div className="hidden md:block text-center">
             <h2 className="text-xl font-bold text-white">
               {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
             </h2>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-400">Monthly stats:</span>
-            <span className={`text-lg font-bold ${monthlyStats && monthlyStats.netPnL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+          <div className="flex items-center gap-2 md:gap-3 text-xs md:text-sm">
+            <span className="text-gray-400 hidden md:inline">Monthly stats:</span>
+            <span className={`text-base md:text-lg font-bold ${monthlyStats && monthlyStats.netPnL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               {monthlyStats ? formatPnL(monthlyStats.netPnL) : '$0'}
             </span>
-            <span className="text-sm text-gray-400">{monthlyStats?.totalDays || 0} days</span>
+            <span className="text-gray-400">{monthlyStats?.totalDays || 0} days</span>
           </div>
         </div>
       </div>
 
       {/* Calendar Table */}
-      <div className="p-6">
-        <table className="w-full table-fixed">
+      <div className="p-3 md:p-6 overflow-x-auto">
+        <table className="w-full table-fixed min-w-[600px]">
           <tbody>
             {/* Day Names Row */}
             <tr>
               {daysOfWeek.map(day => (
-                <td key={day} className="p-1 w-[12.5%]">
-                  <div className="h-12 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
-                    <span className="text-sm font-bold text-gray-400">{day}</span>
+                <td key={day} className="p-0.5 md:p-1 w-[12.5%]">
+                  <div className="h-8 md:h-12 rounded-lg bg-[#1a1a1a] flex items-center justify-center">
+                    <span className="text-[10px] md:text-sm font-bold text-gray-400">{day}</span>
                   </div>
                 </td>
               ))}
-              <td className="p-1 w-[12.5%]">
+              <td className="p-0.5 md:p-1 w-[12.5%] hidden md:table-cell">
                 {/* Empty cell for alignment */}
               </td>
             </tr>
@@ -209,8 +216,8 @@ export default function TradingCalendar({
                   
                   if (!dayData) {
                     return (
-                      <td key={`empty-${weekIndex}-${dayIndex}`} className="p-1">
-                        <div className="h-24"></div>
+                      <td key={`empty-${weekIndex}-${dayIndex}`} className="p-0.5 md:p-1">
+                        <div className="h-16 md:h-24"></div>
                       </td>
                     );
                   }
@@ -220,38 +227,38 @@ export default function TradingCalendar({
                   const dayNumber = parseInt(dayData.date.split('-')[2]);
 
                   return (
-                    <td key={dayData.date} className="p-1">
+                    <td key={dayData.date} className="p-0.5 md:p-1">
                       <button
                         onClick={() => onDateSelect(dayData.date)}
                         className={`
-                          w-full h-24 p-3 rounded-lg relative transition-all
+                          w-full h-16 md:h-24 p-1 md:p-3 rounded-lg relative transition-all
                           ${dayData.hasData ? 'border-2' : 'border border-gray-700'}
                           ${getPnLColor(dayData.pnl, dayData.hasData)}
-                          ${isSelected ? 'ring-2 ring-[#ffc62d] ring-offset-2 ring-offset-black' : ''}
+                          ${isSelected ? 'ring-1 md:ring-2 ring-[#ffc62d] ring-offset-1 md:ring-offset-2 ring-offset-black' : ''}
                           ${isToday && !isSelected ? 'border-blue-500' : ''}
                           hover:scale-105
                         `}
                       >
                         {/* Day number - small, top right */}
-                        <div className="absolute top-2 right-2 text-xs text-gray-500">
+                        <div className="absolute top-1 md:top-2 right-1 md:right-2 text-[10px] md:text-xs text-gray-500">
                           {dayNumber}
                         </div>
                         
                         {dayData.hasData ? (
-                          <div className="flex flex-col items-end justify-center h-full pr-2">
+                          <div className="flex flex-col items-end justify-center h-full pr-1 md:pr-2">
                             {/* P&L - bold, middle right */}
-                            <div className={`text-lg font-bold ${getPnLTextColor(dayData.pnl, dayData.hasData)}`}>
+                            <div className={`text-sm md:text-lg font-bold ${getPnLTextColor(dayData.pnl, dayData.hasData)}`}>
                               {formatPnL(dayData.pnl)}
                             </div>
                             
                             {/* Trade count - below P&L */}
-                            <div className="text-[10px] text-gray-500 mt-1">
+                            <div className="text-[8px] md:text-[10px] text-gray-500 mt-0.5 md:mt-1">
                               {dayData.tradeCount} trade{dayData.tradeCount !== 1 ? 's' : ''}
                             </div>
                           </div>
                         ) : (
                           <div className="flex items-center justify-center h-full">
-                            <span className={`text-lg ${isToday ? 'text-blue-500 font-medium' : 'text-gray-600'}`}>
+                            <span className={`text-sm md:text-lg ${isToday ? 'text-blue-500 font-medium' : 'text-gray-600'}`}>
                               {dayNumber}
                             </span>
                           </div>
@@ -261,15 +268,15 @@ export default function TradingCalendar({
                   );
                 })}
                 
-                {/* Weekly Breakdown Card */}
-                <td className="p-1">
-                  <div className="w-full h-24 p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
+                {/* Weekly Breakdown Card - Hidden on mobile */}
+                <td className="p-0.5 md:p-1 hidden md:table-cell">
+                  <div className="w-full h-16 md:h-24 p-2 md:p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
                     <div className="flex flex-col justify-center h-full">
-                      <div className="text-xs font-medium text-gray-400">Week {weeklyStats[weekIndex].weekNum}</div>
-                      <div className={`text-lg font-bold ${weeklyStats[weekIndex].totalPnL >= 0 ? 'text-green-500' : weeklyStats[weekIndex].totalPnL < 0 ? 'text-red-500' : 'text-gray-600'}`}>
+                      <div className="text-[10px] md:text-xs font-medium text-gray-400">Week {weeklyStats[weekIndex].weekNum}</div>
+                      <div className={`text-base md:text-lg font-bold ${weeklyStats[weekIndex].totalPnL >= 0 ? 'text-green-500' : weeklyStats[weekIndex].totalPnL < 0 ? 'text-red-500' : 'text-gray-600'}`}>
                         {weeklyStats[weekIndex].totalPnL !== 0 ? formatPnL(weeklyStats[weekIndex].totalPnL) : '$0.00'}
                       </div>
-                      <div className="text-[10px] text-gray-500">
+                      <div className="text-[8px] md:text-[10px] text-gray-500">
                         {weeklyStats[weekIndex].days} {weeklyStats[weekIndex].days === 1 ? 'day' : 'days'}
                       </div>
                     </div>
