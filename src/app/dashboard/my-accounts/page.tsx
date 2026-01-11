@@ -520,7 +520,10 @@ export default function MyAccountsPage() {
 
       {/* Blur Overlay */}
       <div className="absolute inset-0 backdrop-blur-md bg-black/50 flex flex-col items-center justify-start md:justify-center px-4 text-center z-20 pt-4 md:pt-0 overflow-y-auto">
-        <div className="bg-[#111111] p-6 md:p-8 rounded-xl border border-gray-800 max-w-md w-full flex flex-col items-center my-4 md:my-0">
+        <div className="p-6 md:p-8 rounded-xl border max-w-md w-full flex flex-col items-center my-4 md:my-0" style={{
+          backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+          borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+        }}>
           <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4">
             <LockClosedIcon className="h-8 w-8 text-gray-400" />
           </div>

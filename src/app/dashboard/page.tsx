@@ -60,7 +60,10 @@ export default function DashboardPage() {
       </div>
 
       {/* Welcome Section */}
-      <div className="relative backdrop-blur-sm bg-black/20 rounded-xl p-6 border border-white/5">
+      <div className="relative backdrop-blur-sm rounded-xl p-6 border" style={{
+        backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+        borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+      }}>
         <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-b from-[#ffc62d]/20 to-transparent blur-2xl"></div>
         <h1 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
           Welcome back, <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#ffc62d] to-[#ff9500]">{userProfile?.firstName || 'Trader'}</span>
@@ -74,7 +77,9 @@ export default function DashboardPage() {
       {/* Main Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* ACI Challenge Card */}
-        <div className="relative rounded-xl border border-[#ffc62d]/30 bg-gradient-to-br from-[#111111] to-[#0a0a0a] p-8 md:p-10 min-h-[480px] shadow-[0_0_45px_rgba(255,198,45,0.15)] flex flex-col justify-between overflow-hidden group order-first md:order-last">
+        <div className="relative rounded-xl border border-[#ffc62d]/30 p-8 md:p-10 min-h-[480px] shadow-[0_0_45px_rgba(255,198,45,0.15)] flex flex-col justify-between overflow-hidden group order-first md:order-last" style={{
+          backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)'
+        }}>
           {/* Card decorative elements */}
           <div className="absolute top-0 right-0 w-40 h-40 bg-[#ffc62d]/5 blur-3xl group-hover:bg-[#ffc62d]/10 transition-all duration-700"></div>
           <div className="absolute -bottom-24 -left-24 w-40 h-40 rounded-full bg-[#ffc62d]/5 group-hover:bg-[#ffc62d]/10 transition-all duration-700"></div>
@@ -127,7 +132,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Training & Signals Card */}
-        <div className="relative rounded-xl border border-gray-800/80 bg-gradient-to-br from-[#111111] to-[#0a0a0a] p-8 md:p-10 min-h-[480px] shadow-[0_0_30px_rgba(17,17,17,0.7)] flex flex-col justify-between overflow-hidden group order-last md:order-first">
+        <div className="relative rounded-xl border p-8 md:p-10 min-h-[480px] shadow-[0_0_30px_rgba(17,17,17,0.7)] flex flex-col justify-between overflow-hidden group order-last md:order-first" style={{
+          backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+          borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+        }}>
           {/* Card decorative elements */}
           <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/5 blur-3xl group-hover:bg-blue-500/10 transition-all duration-700"></div>
           <div className="absolute -bottom-24 -left-24 w-40 h-40 rounded-full bg-blue-500/5 group-hover:bg-blue-500/10 transition-all duration-700"></div>
@@ -181,7 +189,9 @@ export default function DashboardPage() {
       </div>
 
       {/* Trading Arena Card - Full width */}
-      <div className="relative rounded-xl border border-[#8B0000]/30 bg-gradient-to-br from-[#111111] to-[#0a0a0a] p-8 md:p-10 min-h-[400px] shadow-[0_0_45px_rgba(139,0,0,0.2)] overflow-hidden group">
+      <div className="relative rounded-xl border border-[#8B0000]/30 p-8 md:p-10 min-h-[400px] shadow-[0_0_45px_rgba(139,0,0,0.2)] overflow-hidden group" style={{
+        backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)'
+      }}>
         {/* Card decorative elements */}
         <div className="absolute top-0 right-0 w-60 h-60 bg-[#8B0000]/5 blur-3xl group-hover:bg-[#8B0000]/10 transition-all duration-700"></div>
         <div className="absolute bottom-0 left-0 w-60 h-60 bg-[#8B0000]/5 blur-3xl group-hover:bg-[#8B0000]/10 transition-all duration-700"></div>
@@ -309,7 +319,10 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Section */}
-      <div className="rounded-xl bg-gradient-to-br from-[#111111] to-[#0a0a0a] p-8 border border-white/5 shadow-lg relative overflow-hidden">
+      <div className="rounded-xl p-8 border shadow-lg relative overflow-hidden hidden" style={{
+        backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+        borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+      }}>
         {/* Background effects */}
         <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-[0.03] mix-blend-overlay pointer-events-none"></div>
         

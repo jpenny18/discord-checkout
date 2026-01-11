@@ -56,7 +56,10 @@ export default function PostCard({ post }: PostCardProps) {
   };
 
   return (
-    <div className="rounded-lg bg-[#111111] p-6">
+    <div className="rounded-lg p-6 border" style={{
+      backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+      borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+    }}>
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-lg font-semibold text-white">{post.title}</h2>

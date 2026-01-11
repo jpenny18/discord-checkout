@@ -108,7 +108,10 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="rounded-lg bg-[#111111] p-6">
+      <div className="rounded-lg p-6 border" style={{
+        backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+        borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+      }}>
         <h1 className="text-2xl font-bold text-white">Settings</h1>
         <p className="mt-2 text-gray-400">
           Manage your account settings and preferences
@@ -121,51 +124,71 @@ export default function SettingsPage() {
         <div className="space-y-2">
           <button
             onClick={() => setActiveTab('profile')}
-            className={`w-full rounded-lg px-4 py-2 text-left text-sm font-medium transition-colors ${
+            className={`w-full rounded-lg px-4 py-2 text-left text-sm font-medium transition-colors border ${
               activeTab === 'profile'
-                ? 'bg-[#ffc62d] text-black'
-                : 'bg-[#111111] text-white hover:bg-gray-800'
+                ? 'bg-[#ffc62d] text-black border-[#ffc62d]'
+                : 'text-white hover:opacity-80'
             }`}
+            style={activeTab !== 'profile' ? {
+              backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+              borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+            } : undefined}
           >
             Profile
           </button>
           <button
             onClick={() => setActiveTab('notifications')}
-            className={`w-full rounded-lg px-4 py-2 text-left text-sm font-medium transition-colors ${
+            className={`w-full rounded-lg px-4 py-2 text-left text-sm font-medium transition-colors border ${
               activeTab === 'notifications'
-                ? 'bg-[#ffc62d] text-black'
-                : 'bg-[#111111] text-white hover:bg-gray-800'
+                ? 'bg-[#ffc62d] text-black border-[#ffc62d]'
+                : 'text-white hover:opacity-80'
             }`}
+            style={activeTab !== 'notifications' ? {
+              backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+              borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+            } : undefined}
           >
             Notifications
           </button>
           <button
             onClick={() => setActiveTab('preferences')}
-            className={`w-full rounded-lg px-4 py-2 text-left text-sm font-medium transition-colors ${
+            className={`w-full rounded-lg px-4 py-2 text-left text-sm font-medium transition-colors border ${
               activeTab === 'preferences'
-                ? 'bg-[#ffc62d] text-black'
-                : 'bg-[#111111] text-white hover:bg-gray-800'
+                ? 'bg-[#ffc62d] text-black border-[#ffc62d]'
+                : 'text-white hover:opacity-80'
             }`}
+            style={activeTab !== 'preferences' ? {
+              backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+              borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+            } : undefined}
           >
             Preferences
           </button>
           <button
             onClick={() => setActiveTab('privacy')}
-            className={`w-full rounded-lg px-4 py-2 text-left text-sm font-medium transition-colors ${
+            className={`w-full rounded-lg px-4 py-2 text-left text-sm font-medium transition-colors border ${
               activeTab === 'privacy'
-                ? 'bg-[#ffc62d] text-black'
-                : 'bg-[#111111] text-white hover:bg-gray-800'
+                ? 'bg-[#ffc62d] text-black border-[#ffc62d]'
+                : 'text-white hover:opacity-80'
             }`}
+            style={activeTab !== 'privacy' ? {
+              backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+              borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+            } : undefined}
           >
             Privacy
           </button>
           <button
             onClick={() => setActiveTab('subscription')}
-            className={`w-full rounded-lg px-4 py-2 text-left text-sm font-medium transition-colors ${
+            className={`w-full rounded-lg px-4 py-2 text-left text-sm font-medium transition-colors border ${
               activeTab === 'subscription'
-                ? 'bg-[#ffc62d] text-black'
-                : 'bg-[#111111] text-white hover:bg-gray-800'
+                ? 'bg-[#ffc62d] text-black border-[#ffc62d]'
+                : 'text-white hover:opacity-80'
             }`}
+            style={activeTab !== 'subscription' ? {
+              backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+              borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+            } : undefined}
           >
             Subscription
           </button>
@@ -173,7 +196,10 @@ export default function SettingsPage() {
 
         {/* Content */}
         <div className="lg:col-span-3">
-          <div className="rounded-lg bg-[#111111] p-6">
+          <div className="rounded-lg p-6 border" style={{
+            backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+            borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+          }}>
             {activeTab === 'profile' && (
               <div className="space-y-6">
                 <div className="flex items-center space-x-4">

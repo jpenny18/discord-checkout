@@ -5,13 +5,18 @@ import { cn } from "@/lib/utils"
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+>(({ className, style, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      "rounded-lg border border-gray-800 bg-[#111111] text-card-foreground shadow-sm",
+      "rounded-lg border text-card-foreground shadow-sm",
       className
     )}
+    style={{
+      backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+      borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)',
+      ...style
+    }}
     {...props}
   />
 ))

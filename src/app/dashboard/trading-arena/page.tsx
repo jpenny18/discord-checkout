@@ -362,7 +362,9 @@ export default function TradingArenaPage() {
               <div className="w-[80%] md:w-3/4 overflow-x-auto snap-x snap-mandatory scrollbar-hide md:overflow-visible">
                 <div className="flex gap-2 md:gap-4 min-w-max md:grid md:grid-cols-2 md:min-w-0">
                   {/* The Flip Arena Card */}
-                  <div className="snap-center w-[55vw] md:w-auto shrink-0 relative bg-[#111111] rounded-xl overflow-hidden border border-[#8B0000]">
+                  <div className="snap-center w-[55vw] md:w-auto shrink-0 relative rounded-xl overflow-hidden border border-[#8B0000]" style={{
+                    backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)'
+                  }}>
                     <div className="p-3 md:p-4 border-b border-[#1A1A1A]">
                       <div className="text-lg md:text-2xl font-bold text-[#8B0000] mb-1">The Flip Arena</div>
                       <div className="text-[10px] md:text-xs text-gray-400">No Rules. Just Flip.</div>
@@ -375,7 +377,7 @@ export default function TradingArenaPage() {
                       </div>
                     </div>
                     
-                    <div className="p-3 md:p-4 bg-[#111111]">
+                    <div className="p-3 md:p-4" style={{backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)'}}>
                       <div className="text-left text-[12px] md:text-base">Funded Account + Cash Prizes</div>
                     </div>
                     
@@ -383,7 +385,7 @@ export default function TradingArenaPage() {
                       <div className="text-left text-[12px] md:text-base">30 Days</div>
                     </div>
                     
-                    <div className="p-3 md:p-4 bg-[#111111]">
+                    <div className="p-3 md:p-4" style={{backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)'}}>
                       <div className="text-left text-[12px] md:text-base">$5,000</div>
                     </div>
 
@@ -394,9 +396,12 @@ export default function TradingArenaPage() {
                     </div>
                   </div>
 
-                  {/* Prize Cards Container */}
+                    {/* Prize Cards Container */}
                   <div className="snap-center w-[55vw] md:w-auto shrink-0 space-y-2">
-                    <div className="bg-[#111111] p-4 md:p-6 flex items-center rounded-lg relative overflow-hidden transform hover:scale-[1.02] transition-all duration-300 shadow-[0_0_15px_rgba(139,0,0,0.3)]">
+                    <div className="p-4 md:p-6 flex items-center rounded-lg relative overflow-hidden transform hover:scale-[1.02] transition-all duration-300 shadow-[0_0_15px_rgba(139,0,0,0.3)] border" style={{
+                      backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+                      borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+                    }}>
                       <div className="absolute inset-0 bg-gradient-to-r from-[#8B0000]/20 to-transparent"></div>
                       <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#FFD700] via-[#8B0000] to-[#FFD700] animate-pulse"></div>
                       <div className="absolute 
@@ -431,7 +436,10 @@ export default function TradingArenaPage() {
                     </div>
                     
                     {/* Other prize cards remain the same */}
-                    <div className="bg-[#111111] p-4 flex items-center rounded-lg relative overflow-hidden">
+                    <div className="p-4 flex items-center rounded-lg relative overflow-hidden border" style={{
+                      backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+                      borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+                    }}>
                       <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#C0C0C0]"></div>
                       <div className="pl-3 flex items-center justify-between w-full">
                         <div className="flex items-center gap-2">
@@ -442,7 +450,10 @@ export default function TradingArenaPage() {
                       </div>
                     </div>
                     
-                    <div className="bg-[#111111] p-4 flex items-center rounded-lg relative overflow-hidden">
+                    <div className="p-4 flex items-center rounded-lg relative overflow-hidden border" style={{
+                      backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+                      borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+                    }}>
                       <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#CD7F32]"></div>
                       <div className="pl-3 flex items-center justify-between w-full">
                         <div className="flex items-center gap-2">
@@ -453,7 +464,10 @@ export default function TradingArenaPage() {
                       </div>
                     </div>
                     
-                    <div className="bg-[#111111] p-4 flex items-center rounded-lg relative overflow-hidden">
+                    <div className="p-4 flex items-center rounded-lg relative overflow-hidden border" style={{
+                      backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+                      borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+                    }}>
                       <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#2A2A2A]"></div>
                       <div className="pl-3 flex items-center justify-between w-full">
                         <div className="flex items-center gap-2">
@@ -464,7 +478,10 @@ export default function TradingArenaPage() {
                       </div>
                     </div>
                     
-                    <div className="bg-[#111111] p-4 flex items-center rounded-lg relative overflow-hidden">
+                    <div className="p-4 flex items-center rounded-lg relative overflow-hidden border" style={{
+                      backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+                      borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+                    }}>
                       <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#2A2A2A]"></div>
                       <div className="pl-3 flex items-center justify-between w-full">
                         <div className="flex items-center gap-2">
@@ -675,7 +692,10 @@ export default function TradingArenaPage() {
                       loss: '$12,000'
                     }
                   ].map((tier, index) => (
-                    <div key={index} className="snap-center w-[55vw] md:w-auto shrink-0 relative bg-[#111111] rounded-xl overflow-hidden">
+                    <div key={index} className="snap-center w-[55vw] md:w-auto shrink-0 relative rounded-xl overflow-hidden border" style={{
+                      backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+                      borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+                    }}>
                       {tier.isPopular && (
                         <div className="absolute top-0 right-0 bg-[#8B0000] text-white text-xs font-bold px-3 py-1">
                           POPULAR
@@ -694,7 +714,7 @@ export default function TradingArenaPage() {
                         </div>
                       </div>
                       
-                      <div className="p-4 bg-[#111111]">
+                      <div className="p-4" style={{backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)'}}>
                         <div className="text-left text-[12px] md:text-base">{tier.profit}</div>
                       </div>
                       
@@ -702,7 +722,7 @@ export default function TradingArenaPage() {
                         <div className="text-left text-[12px] md:text-base">{tier.lots}</div>
                       </div>
                       
-                      <div className="p-4 bg-[#111111]">
+                      <div className="p-4" style={{backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)'}}>
                         <div className="text-left text-[12px] md:text-base">{tier.loss}</div>
                       </div>
 

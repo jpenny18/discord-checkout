@@ -97,7 +97,11 @@ export default function AlertsPage() {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative overflow-hidden rounded-xl bg-[#111111] p-4 md:p-6 border border-gray-800 space-y-6"
+        className="relative overflow-hidden rounded-xl p-4 md:p-6 border space-y-6"
+        style={{
+          backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+          borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+        }}
       >
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
@@ -151,7 +155,10 @@ export default function AlertsPage() {
               transition={{ delay: idx * 0.05 }}
               className="group relative"
             >
-              <div className="relative bg-[#111111] rounded-2xl overflow-hidden border border-gray-800 hover:border-[#ffc62d]/50 transition-all duration-300 shadow-lg shadow-black/50">
+              <div className="relative rounded-2xl overflow-hidden border hover:border-[#ffc62d]/50 transition-all duration-300 shadow-lg shadow-black/50" style={{
+                backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+                borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+              }}>
                 {/* Blur overlay for non-paying members */}
                 {!canAccessSignals && alert.status === 'active' && (
                   <div className="absolute inset-0 backdrop-blur-xl bg-black/70 z-10 flex flex-col items-center justify-center p-6 text-center rounded-2xl">

@@ -31,7 +31,7 @@ export default function DashboardNav() {
       
 
       {/* New ACI Challenge Button */}
-      <div className="py-2">
+      <div className="py-2 hidden">
         <Link
           href="/dashboard/challenge"
           className="flex items-center justify-center gap-2 bg-[#ffc62d] text-black px-4 py-3 rounded-lg font-semibold hover:bg-[#e5b228] transition-colors shadow-[0_0_25px_rgba(255,198,45,0.25)] hover:shadow-[0_0_25px_rgba(255,198,45,0.4)]"
@@ -68,8 +68,8 @@ export default function DashboardNav() {
                   href={item.href}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-[#111111] text-[#ffc62d] shadow-[0_0_20px_rgba(17,17,17,0.5)]'
-                      : 'text-gray-300 hover:bg-[#111111] hover:text-white'
+                      ? 'bg-[#1e1e1e] text-[#ffc62d] shadow-[0_0_20px_rgba(17,17,17,0.5)]'
+                      : 'text-gray-300 hover:bg-[#1e1e1e] hover:text-white'
                   }`}
                 >
                   <item.icon

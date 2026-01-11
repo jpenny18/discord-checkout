@@ -483,19 +483,19 @@ export default function RegisterForm({ onSubmit, loading, error }: RegisterFormP
     }
   };
 
-  const inputClasses = "w-full bg-[#111111] border border-gray-700 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-[#ffc62d] focus:ring-1 focus:ring-[#ffc62d] transition-all duration-200 hover:border-gray-600";
-  const labelClasses = "block text-sm font-medium text-gray-400 mb-1.5";
+  const inputClasses = "w-full bg-black/40 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#ffc62d] focus:ring-1 focus:ring-[#ffc62d] transition-all duration-200 hover:border-white/20";
+  const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
   const selectClasses = `${inputClasses} appearance-none bg-[url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E")] bg-no-repeat bg-right-4 bg-[length:20px_20px]`;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="bg-red-900/50 text-red-400 p-3.5 rounded-lg text-sm border border-red-900/50 animate-fadeIn">
+        <div className="bg-red-500/10 backdrop-blur-sm text-red-400 p-4 rounded-lg text-sm border border-red-500/20 animate-fadeIn">
           {error}
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
           <label htmlFor="firstName" className={labelClasses}>
             First name
@@ -624,13 +624,13 @@ export default function RegisterForm({ onSubmit, loading, error }: RegisterFormP
             required
             value={formData.password}
             onChange={handleInput}
-            className={`${inputClasses} ${validationErrors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
+            className={`${inputClasses} pr-12 ${validationErrors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
             placeholder="Enter your password"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1"
           >
             {showPassword ? (
               <EyeSlashIcon className="h-5 w-5" />
@@ -644,14 +644,14 @@ export default function RegisterForm({ onSubmit, loading, error }: RegisterFormP
         )}
       </div>
 
-      <div className="text-sm text-gray-400 bg-[#111111] p-4 rounded-lg border border-gray-800/50">
+      <div className="text-sm text-gray-400 bg-black/20 backdrop-blur-sm p-4 rounded-lg border border-white/10">
         Note that only one registration is allowed per client. Multiple registrations or registrations with invalid data may lead to the termination of the services.
       </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-[#ffc62d] text-black py-2.5 rounded-lg font-medium hover:bg-[#ffd65c] transition-all duration-200 disabled:opacity-50 disabled:hover:bg-[#ffc62d] transform hover:scale-[1.02] active:scale-[0.98]"
+        className="w-full bg-gradient-to-r from-[#ffc62d] to-[#ffb700] text-black py-3.5 rounded-lg font-semibold hover:shadow-[0_0_30px_rgba(255,198,45,0.4)] transition-all duration-200 disabled:opacity-50 disabled:hover:shadow-none transform hover:scale-[1.02] active:scale-[0.98]"
       >
         {loading ? (
           <div className="flex items-center justify-center">

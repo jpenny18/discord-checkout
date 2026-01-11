@@ -99,7 +99,10 @@ export default function CommunityPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="rounded-lg bg-[#111111] p-6">
+      <div className="rounded-lg p-6 border" style={{
+        backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+        borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+      }}>
         <h1 className="text-2xl font-bold text-white">Community</h1>
         <p className="mt-2 text-gray-400">
           Join discussions and stay updated with the latest announcements
@@ -111,31 +114,43 @@ export default function CommunityPage() {
         <div className="flex space-x-2">
           <button
             onClick={() => setFilter('all')}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors border ${
               filter === 'all'
-                ? 'bg-[#ffc62d] text-black'
-                : 'bg-[#111111] text-white hover:bg-gray-800'
+                ? 'bg-[#ffc62d] text-black border-[#ffc62d]'
+                : 'text-white hover:opacity-80'
             }`}
+            style={filter !== 'all' ? {
+              backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+              borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+            } : undefined}
           >
             All Posts
           </button>
           <button
             onClick={() => setFilter('announcements')}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors border ${
               filter === 'announcements'
-                ? 'bg-[#ffc62d] text-black'
-                : 'bg-[#111111] text-white hover:bg-gray-800'
+                ? 'bg-[#ffc62d] text-black border-[#ffc62d]'
+                : 'text-white hover:opacity-80'
             }`}
+            style={filter !== 'announcements' ? {
+              backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+              borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+            } : undefined}
           >
             Announcements
           </button>
           <button
             onClick={() => setFilter('discussions')}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors border ${
               filter === 'discussions'
-                ? 'bg-[#ffc62d] text-black'
-                : 'bg-[#111111] text-white hover:bg-gray-800'
+                ? 'bg-[#ffc62d] text-black border-[#ffc62d]'
+                : 'text-white hover:opacity-80'
             }`}
+            style={filter !== 'discussions' ? {
+              backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+              borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+            } : undefined}
           >
             Discussions
           </button>
@@ -151,7 +166,10 @@ export default function CommunityPage() {
 
       {/* New Post Form */}
       {showNewPostForm && (
-        <div className="rounded-lg bg-[#111111] p-6">
+        <div className="rounded-lg p-6 border" style={{
+          backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+          borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+        }}>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-400">
@@ -205,7 +223,10 @@ export default function CommunityPage() {
         ))}
 
         {filteredPosts.length === 0 && (
-          <div className="rounded-lg bg-[#111111] p-8 text-center">
+          <div className="rounded-lg p-8 text-center border" style={{
+            backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+            borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+          }}>
             <p className="text-gray-400">No posts found matching your filter.</p>
           </div>
         )}

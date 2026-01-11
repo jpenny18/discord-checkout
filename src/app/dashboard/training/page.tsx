@@ -95,7 +95,10 @@ export default function TrainingPage() {
       {/* Pricing Cards Section */}
       <div className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Beginners Education */}
-        <div className="bg-[#111111] rounded-2xl p-5 flex flex-col">
+        <div className="rounded-2xl p-5 flex flex-col border" style={{
+          backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+          borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+        }}>
           <h2 className="text-xl font-bold mb-1">Beginners Education</h2>
           <p className="text-gray-400 text-sm mb-3">Video/Text Course</p>
           <div className="text-3xl font-bold mb-4">$297</div>
@@ -135,7 +138,10 @@ export default function TrainingPage() {
         </div>
 
         {/* Intermediate Education */}
-        <div className="bg-[#111111] rounded-2xl p-5 flex flex-col">
+        <div className="rounded-2xl p-5 flex flex-col border" style={{
+          backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+          borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+        }}>
           <h2 className="text-xl font-bold mb-1">Intermediate Education</h2>
           <p className="text-gray-400 text-sm mb-3">Video/Text Course</p>
           <div className="text-3xl font-bold mb-4">$499</div>
@@ -175,7 +181,10 @@ export default function TrainingPage() {
         </div>
 
         {/* Advanced Education */}
-        <div className="bg-[#111111] rounded-2xl p-5 flex flex-col">
+        <div className="rounded-2xl p-5 flex flex-col border" style={{
+          backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+          borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+        }}>
           <h2 className="text-xl font-bold mb-1">Advanced Education</h2>
           <p className="text-gray-400 text-sm mb-3">Video/Text Course</p>
           <div className="text-3xl font-bold mb-4">$999</div>
@@ -217,7 +226,10 @@ export default function TrainingPage() {
 
       {/* Mentorship Section */}
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-[#111111] rounded-2xl p-5">
+        <div className="rounded-2xl p-5 border" style={{
+          backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+          borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+        }}>
           <h2 className="text-xl font-bold mb-1">Ascendant Mentorship</h2>
           <p className="text-gray-400 text-sm mb-3">Live Daily Support</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

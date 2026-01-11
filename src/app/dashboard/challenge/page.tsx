@@ -145,7 +145,10 @@ export default function ChallengePage() {
         {/* Main Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* First Card - Challenge Selection */}
-          <div className="lg:col-span-3 bg-[#111111] rounded-2xl p-6 border border-gray-800">
+          <div className="lg:col-span-3 rounded-2xl p-6 border" style={{
+            backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+            borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+          }}>
             <div className="transform scale-[1] origin-top">
             {/* Challenge Type Selection */}
               <div className="mb-12">
@@ -293,7 +296,10 @@ export default function ChallengePage() {
           </div>
 
           {/* Second Card - Personal Details */}
-          <div className="lg:col-span-2 bg-[#111111] rounded-2xl p-6 border border-gray-800">
+          <div className="lg:col-span-2 rounded-2xl p-6 border" style={{
+            backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
+            borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
+          }}>
             <div className="transform scale-[1] origin-top">
               <h2 className="text-2xl font-semibold mb-8">Personal Details</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
