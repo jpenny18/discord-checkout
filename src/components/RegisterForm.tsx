@@ -483,19 +483,19 @@ export default function RegisterForm({ onSubmit, loading, error }: RegisterFormP
     }
   };
 
-  const inputClasses = "w-full bg-black/40 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#ffc62d] focus:ring-1 focus:ring-[#ffc62d] transition-all duration-200 hover:border-white/20";
-  const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
-  const selectClasses = `${inputClasses} appearance-none bg-[url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E")] bg-no-repeat bg-right-4 bg-[length:20px_20px]`;
+  const inputClasses = "w-full bg-black/40 backdrop-blur-sm border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-400 focus:outline-none focus:border-[#ffc62d] focus:ring-1 focus:ring-[#ffc62d] transition-all duration-200 hover:border-white/20";
+  const labelClasses = "block text-xs font-medium text-gray-300 mb-1.5";
+  const selectClasses = `${inputClasses} appearance-none bg-[url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E")] bg-no-repeat bg-right-3 bg-[length:16px_16px]`;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-3">
       {error && (
-        <div className="bg-red-500/10 backdrop-blur-sm text-red-400 p-4 rounded-lg text-sm border border-red-500/20 animate-fadeIn">
+        <div className="bg-red-500/10 backdrop-blur-sm text-red-400 p-3 rounded-lg text-xs border border-red-500/20 animate-fadeIn">
           {error}
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label htmlFor="firstName" className={labelClasses}>
             First name
@@ -511,7 +511,7 @@ export default function RegisterForm({ onSubmit, loading, error }: RegisterFormP
             placeholder="John"
           />
           {validationErrors.firstName && (
-            <p className="mt-1 text-sm text-red-400">{validationErrors.firstName}</p>
+            <p className="mt-1 text-xs text-red-400">{validationErrors.firstName}</p>
           )}
         </div>
         <div>
@@ -529,7 +529,7 @@ export default function RegisterForm({ onSubmit, loading, error }: RegisterFormP
             placeholder="Doe"
           />
           {validationErrors.lastName && (
-            <p className="mt-1 text-sm text-red-400">{validationErrors.lastName}</p>
+            <p className="mt-1 text-xs text-red-400">{validationErrors.lastName}</p>
           )}
         </div>
       </div>
@@ -549,7 +549,7 @@ export default function RegisterForm({ onSubmit, loading, error }: RegisterFormP
           placeholder="example@gmail.com"
         />
         {validationErrors.email && (
-          <p className="mt-1 text-sm text-red-400">{validationErrors.email}</p>
+          <p className="mt-1 text-xs text-red-400">{validationErrors.email}</p>
         )}
       </div>
 
@@ -557,7 +557,7 @@ export default function RegisterForm({ onSubmit, loading, error }: RegisterFormP
         <label htmlFor="phone" className={labelClasses}>
           Phone
         </label>
-        <div className="grid grid-cols-[100px_1fr] gap-2">
+        <div className="grid grid-cols-[90px_1fr] gap-2">
           <select
             id="countryCode"
             name="countryCode"
@@ -584,13 +584,13 @@ export default function RegisterForm({ onSubmit, loading, error }: RegisterFormP
           />
         </div>
         {validationErrors.phone && (
-          <p className="mt-1 text-sm text-red-400">{validationErrors.phone}</p>
+          <p className="mt-1 text-xs text-red-400">{validationErrors.phone}</p>
         )}
       </div>
 
       <div>
         <label htmlFor="country" className={labelClasses}>
-          Country of residence
+          Country
         </label>
         <select
           id="country"
@@ -608,7 +608,7 @@ export default function RegisterForm({ onSubmit, loading, error }: RegisterFormP
           ))}
         </select>
         {validationErrors.country && (
-          <p className="mt-1 text-sm text-red-400">{validationErrors.country}</p>
+          <p className="mt-1 text-xs text-red-400">{validationErrors.country}</p>
         )}
       </div>
 
@@ -640,18 +640,18 @@ export default function RegisterForm({ onSubmit, loading, error }: RegisterFormP
           </button>
         </div>
         {validationErrors.password && (
-          <p className="mt-1 text-sm text-red-400">{validationErrors.password}</p>
+          <p className="mt-1 text-xs text-red-400">{validationErrors.password}</p>
         )}
       </div>
 
-      <div className="text-sm text-gray-400 bg-black/20 backdrop-blur-sm p-4 rounded-lg border border-white/10">
-        Note that only one registration is allowed per client. Multiple registrations or registrations with invalid data may lead to the termination of the services.
+      <div className="text-xs text-gray-400 bg-black/20 backdrop-blur-sm p-2.5 rounded-lg border border-white/10">
+        Only one registration per client. Multiple or invalid registrations may result in service termination.
       </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-gradient-to-r from-[#ffc62d] to-[#ffb700] text-black py-3.5 rounded-lg font-semibold hover:shadow-[0_0_30px_rgba(255,198,45,0.4)] transition-all duration-200 disabled:opacity-50 disabled:hover:shadow-none transform hover:scale-[1.02] active:scale-[0.98]"
+        className="w-full bg-gradient-to-r from-[#ffc62d] to-[#ffb700] text-black py-2.5 rounded-lg font-semibold text-sm hover:shadow-[0_0_30px_rgba(255,198,45,0.4)] transition-all duration-200 disabled:opacity-50 disabled:hover:shadow-none transform hover:scale-[1.02] active:scale-[0.98]"
       >
         {loading ? (
           <div className="flex items-center justify-center">

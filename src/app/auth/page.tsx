@@ -94,8 +94,8 @@ function AuthContent() {
     }
   };
 
-  const inputClasses = "w-full bg-black/40 backdrop-blur-sm border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#ffc62d] focus:ring-1 focus:ring-[#ffc62d] transition-all duration-200 hover:border-white/20";
-  const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
+  const inputClasses = "w-full bg-black/40 backdrop-blur-sm border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-400 focus:outline-none focus:border-[#ffc62d] focus:ring-1 focus:ring-[#ffc62d] transition-all duration-200 hover:border-white/20";
+  const labelClasses = "block text-xs font-medium text-gray-300 mb-1.5";
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
@@ -130,18 +130,18 @@ function AuthContent() {
             </div>
 
             {/* Auth Card */}
-            <div className="backdrop-blur-xl rounded-2xl p-6 lg:p-8 shadow-2xl border" style={{
+            <div className="backdrop-blur-xl rounded-2xl p-5 lg:p-6 shadow-2xl border" style={{
               backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)',
               borderColor: 'color-mix(in oklab, var(--color-white) 8%, transparent)'
             }}>
               {/* Tabs */}
-              <div className="flex mb-8 p-1 rounded-lg border" style={{
+              <div className="flex mb-6 p-1 rounded-lg border" style={{
                 backgroundColor: 'color-mix(in oklab, var(--color-white) 2%, transparent)',
                 borderColor: 'color-mix(in oklab, var(--color-white) 5%, transparent)'
               }}>
                 <button
                   onClick={() => setActiveTab('signin')}
-                  className={`flex-1 py-3 text-center rounded-md transition-all duration-200 font-medium ${
+                  className={`flex-1 py-2.5 text-center rounded-md transition-all duration-200 font-medium text-sm ${
                     activeTab === 'signin'
                       ? 'bg-[#ffc62d] text-black shadow-lg'
                       : 'text-gray-400 hover:text-white'
@@ -151,7 +151,7 @@ function AuthContent() {
                 </button>
                 <button
                   onClick={() => setActiveTab('register')}
-                  className={`flex-1 py-3 text-center rounded-md transition-all duration-200 font-medium ${
+                  className={`flex-1 py-2.5 text-center rounded-md transition-all duration-200 font-medium text-sm ${
                     activeTab === 'register'
                       ? 'bg-[#ffc62d] text-black shadow-lg'
                       : 'text-gray-400 hover:text-white'
@@ -162,9 +162,9 @@ function AuthContent() {
               </div>
 
               {activeTab === 'signin' ? (
-                <form onSubmit={handleSignIn} className="space-y-5">
+                <form onSubmit={handleSignIn} className="space-y-4">
                   {error && (
-                    <div className="bg-red-500/10 backdrop-blur-sm text-red-400 p-4 rounded-lg text-sm border border-red-500/20 animate-fadeIn">
+                    <div className="bg-red-500/10 backdrop-blur-sm text-red-400 p-3 rounded-lg text-xs border border-red-500/20 animate-fadeIn">
                       {error}
                     </div>
                   )}
@@ -188,7 +188,7 @@ function AuthContent() {
                       placeholder="you@example.com"
                     />
                     {validationErrors.email && (
-                      <p className="mt-2 text-sm text-red-400">{validationErrors.email}</p>
+                      <p className="mt-1 text-xs text-red-400">{validationErrors.email}</p>
                     )}
                   </div>
 
@@ -224,25 +224,25 @@ function AuthContent() {
                       </button>
                     </div>
                     {validationErrors.password && (
-                      <p className="mt-2 text-sm text-red-400">{validationErrors.password}</p>
+                      <p className="mt-1 text-xs text-red-400">{validationErrors.password}</p>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between pt-1">
                     <label className="flex items-center cursor-pointer group">
                       <input
                         type="checkbox"
                         checked={rememberMe}
                         onChange={(e) => setRememberMe(e.target.checked)}
-                        className="h-4 w-4 rounded border-gray-600 bg-black/40 text-[#ffc62d] focus:ring-[#ffc62d] focus:ring-offset-0 transition-colors"
+                        className="h-3.5 w-3.5 rounded border-gray-600 bg-black/40 text-[#ffc62d] focus:ring-[#ffc62d] focus:ring-offset-0 transition-colors"
                       />
-                      <span className="ml-2 text-sm text-gray-300 group-hover:text-white transition-colors">
+                      <span className="ml-2 text-xs text-gray-300 group-hover:text-white transition-colors">
                         Remember me
                       </span>
                     </label>
                     <button
                       type="button"
-                      className="text-sm text-gray-400 hover:text-[#ffc62d] transition-colors"
+                      className="text-xs text-gray-400 hover:text-[#ffc62d] transition-colors"
                     >
                       Forgot Password?
                     </button>
@@ -251,7 +251,7 @@ function AuthContent() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-[#ffc62d] to-[#ffb700] text-black py-3.5 rounded-lg font-semibold hover:shadow-[0_0_30px_rgba(255,198,45,0.4)] transition-all duration-200 disabled:opacity-50 disabled:hover:shadow-none transform hover:scale-[1.02] active:scale-[0.98]"
+                    className="w-full bg-gradient-to-r from-[#ffc62d] to-[#ffb700] text-black py-2.5 rounded-lg font-semibold text-sm hover:shadow-[0_0_30px_rgba(255,198,45,0.4)] transition-all duration-200 disabled:opacity-50 disabled:hover:shadow-none transform hover:scale-[1.02] active:scale-[0.98]"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center">

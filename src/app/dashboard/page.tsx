@@ -76,8 +76,63 @@ export default function DashboardPage() {
 
       {/* Main Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* ACI Challenge Card */}
+        {/* PennyPips Strategy Card */}
         <div className="relative rounded-xl border border-[#ffc62d]/30 p-8 md:p-10 min-h-[480px] shadow-[0_0_45px_rgba(255,198,45,0.15)] flex flex-col justify-between overflow-hidden group order-first md:order-last" style={{
+          backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)'
+        }}>
+          {/* Card decorative elements */}
+          <div className="absolute top-0 right-0 w-40 h-40 bg-[#ffc62d]/5 blur-3xl group-hover:bg-[#ffc62d]/10 transition-all duration-700"></div>
+          <div className="absolute -bottom-24 -left-24 w-40 h-40 rounded-full bg-[#ffc62d]/5 group-hover:bg-[#ffc62d]/10 transition-all duration-700"></div>
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#ffc62d]/40 to-transparent"></div>
+          
+          <div className="relative z-10">
+            <div className="mb-10 flex justify-center">
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#252525] to-[#1a1a1a] flex items-center justify-center shadow-lg relative">
+                <AcademicCapIcon className="h-8 w-8 text-[#ffc62d]" />
+                <div className="absolute inset-0 rounded-xl border border-[#ffc62d]/20"></div>
+              </div>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 text-center">PennyPips Strategy</h2>
+            <p className="text-gray-400 mb-8 text-center text-lg">Master my proven trading strategies for FREE</p>
+            <div className="space-y-5">
+              <div className="flex items-center gap-3 group/item p-3 rounded-lg hover:bg-black/30 transition-all">
+                <div className="w-8 h-8 rounded-full bg-[#ffc62d]/10 flex items-center justify-center flex-shrink-0 group-hover/item:bg-[#ffc62d]/20 transition-all">
+                  <svg className="h-4 w-4 text-[#ffc62d]" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                </div>
+                <span className="text-gray-300 text-base">KCZ Strategy</span>
+              </div>
+              <div className="flex items-center gap-3 group/item p-3 rounded-lg hover:bg-black/30 transition-all">
+                <div className="w-8 h-8 rounded-full bg-[#ffc62d]/10 flex items-center justify-center flex-shrink-0 group-hover/item:bg-[#ffc62d]/20 transition-all">
+                  <svg className="h-4 w-4 text-[#ffc62d]" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                </div>
+                <span className="text-gray-300 text-base">Support/Resistance Strategy</span>
+              </div>
+              <div className="flex items-center gap-3 group/item p-3 rounded-lg hover:bg-black/30 transition-all">
+                <div className="w-8 h-8 rounded-full bg-[#ffc62d]/10 flex items-center justify-center flex-shrink-0 group-hover/item:bg-[#ffc62d]/20 transition-all">
+                  <svg className="h-4 w-4 text-[#ffc62d]" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                </div>
+                <span className="text-gray-300 text-base">Step-by-step entry guides</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-center relative z-10 mt-8">
+            <Link
+              href="/dashboard/pennypips-strategy"
+              className="inline-block rounded-xl bg-gradient-to-r from-[#ffc62d] to-[#ff9500] px-8 py-4 text-base font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(255,198,45,0.4)] active:scale-95"
+            >
+              Learn NOW
+            </Link>
+          </div>
+        </div>
+
+        {/* ACI Challenge Card - HIDDEN */}
+        <div className="relative rounded-xl border border-[#ffc62d]/30 p-8 md:p-10 min-h-[480px] shadow-[0_0_45px_rgba(255,198,45,0.15)] flex flex-col justify-between overflow-hidden group order-first md:order-last hidden" style={{
           backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)'
         }}>
           {/* Card decorative elements */}
@@ -188,8 +243,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Trading Arena Card - Full width */}
-      <div className="relative rounded-xl border border-[#8B0000]/30 p-8 md:p-10 min-h-[400px] shadow-[0_0_45px_rgba(139,0,0,0.2)] overflow-hidden group" style={{
+      {/* Trading Arena Card - Full width - HIDDEN */}
+      <div className="relative rounded-xl border border-[#8B0000]/30 p-8 md:p-10 min-h-[400px] shadow-[0_0_45px_rgba(139,0,0,0.2)] overflow-hidden group hidden" style={{
         backgroundColor: 'color-mix(in oklab, var(--color-white) 3%, transparent)'
       }}>
         {/* Card decorative elements */}

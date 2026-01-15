@@ -11,6 +11,7 @@ import {
   ChartBarIcon,
   BuildingLibraryIcon,
   ShieldCheckIcon,
+  DocumentTextIcon,
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 
@@ -19,6 +20,7 @@ const navigation = [
   { name: 'My Accounts', href: '/dashboard/my-accounts', icon: ChartBarIcon },
   { name: 'Signals', href: '/dashboard/signals', icon: SignalIcon },
   { name: 'Training', href: '/dashboard/training', icon: AcademicCapIcon },
+  { name: 'PennyPips Strategy', href: '/dashboard/pennypips-strategy', icon: DocumentTextIcon },
   { name: 'Trading Tools', href: '/dashboard/trading-tools', icon: ChartBarIcon },
   { name: 'Partners', href: '/dashboard/partners', icon: ShieldCheckIcon },
   { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon },
