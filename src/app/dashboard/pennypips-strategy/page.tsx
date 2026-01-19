@@ -515,7 +515,7 @@ export default function PennyPipsStrategyPage() {
                 {!pdfError ? (
                   <div className="rounded-xl overflow-hidden border" style={{ borderColor: 'color-mix(in oklab, var(--color-white) 5%, transparent)' }}>
                     <iframe
-                      src="/PennyPips KCZ Strategy - Entries.pdf"
+                      src={encodeURI("/PennyPips KCZ Strategy - Entries.pdf")}
                       className="w-full h-[800px] md:h-[1000px]"
                       title="PennyPips KCZ Strategy PDF"
                       onError={() => setPdfError(true)}
@@ -532,7 +532,7 @@ export default function PennyPipsStrategyPage() {
                       public/PennyPips KCZ Strategy - Entries.pdf
                     </code>
                     <p className="text-gray-500 text-sm mt-4">
-                      Contact support if the issue persists.
+                      Try renaming the file without spaces (e.g., pennypips-kcz-strategy-entries.pdf) if the issue persists.
                     </p>
                   </div>
                 )}
