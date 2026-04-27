@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 interface Question {
@@ -133,7 +133,7 @@ const questions: Question[] = [
   },
   {
     id: 11,
-    text: 'The mentorship program requires a one-time investment of $5,000 USD. Are you prepared to make this investment in your trading career?',
+    text: 'The mentorship program requires a one-time investment of $2,500 USD. Are you prepared to make this investment in your trading career?',
     type: 'radio',
     options: [
       'Yes, I\'m ready to invest in my future',
@@ -153,6 +153,32 @@ const questions: Question[] = [
   },
 ];
 
+const TIME_SLOTS = [
+  '9:00 AM',
+  '10:00 AM',
+  '11:00 AM',
+  '1:00 PM',
+  '2:00 PM',
+  '3:00 PM',
+  '4:00 PM',
+];
+
+const getAvailableDates = (): Date[] => {
+  const dates: Date[] = [];
+  const current = new Date();
+  current.setDate(current.getDate() + 1);
+  current.setHours(0, 0, 0, 0);
+
+  while (dates.length < 10) {
+    const day = current.getDay();
+    if (day !== 0 && day !== 6) {
+      dates.push(new Date(current));
+    }
+    current.setDate(current.getDate() + 1);
+  }
+  return dates;
+};
+
 export default function ApplicationForm() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: any }>({});
@@ -160,6 +186,14 @@ export default function ApplicationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [score, setScore] = useState(0);
+
+  // Booking states
+  const [applicationId, setApplicationId] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [isBookingSubmitting, setIsBookingSubmitting] = useState(false);
+  const [bookingComplete, setBookingComplete] = useState(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
 
   const calculateScore = (newAnswers: { [key: number]: any }) => {
     let totalScore = 0;
@@ -170,14 +204,12 @@ export default function ApplicationForm() {
         maxScore += question.scoringWeight;
         
         if (question.type === 'textarea') {
-          // Score based on length and quality of response
           const answer = newAnswers[question.id] || '';
           const wordCount = answer.split(/\s+/).length;
           if (wordCount >= 50) totalScore += question.scoringWeight;
           else if (wordCount >= 30) totalScore += question.scoringWeight * 0.7;
           else if (wordCount >= 15) totalScore += question.scoringWeight * 0.4;
         } else if (question.scoringAnswers) {
-          // Score based on preferred answers
           if (question.scoringAnswers.includes(newAnswers[question.id])) {
             totalScore += question.scoringWeight;
           }
@@ -225,6 +257,14 @@ export default function ApplicationForm() {
     setError(null);
   };
 
+  const qualifiesForBooking = (currentAnswers: { [key: number]: any }) => {
+    const q11 = currentAnswers[11];
+    return (
+      q11 === "Yes, I'm ready to invest in my future" ||
+      q11 === 'I need more information'
+    );
+  };
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
@@ -232,16 +272,55 @@ export default function ApplicationForm() {
       const applicationData = {
         answers,
         score: finalScore,
-        status: finalScore >= 70 ? 'qualified' : 'review',
+        status: qualifiesForBooking(answers) ? 'qualified' : 'review',
         timestamp: new Date().toISOString(),
       };
 
-      await addDoc(collection(db, 'applications'), applicationData);
+      const docRef = await addDoc(collection(db, 'applications'), applicationData);
+      setApplicationId(docRef.id);
+      setScore(finalScore);
       setIsComplete(true);
     } catch (error) {
       setError('Failed to submit application. Please try again.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleBooking = async () => {
+    if (!selectedDate || !selectedTime) return;
+
+    setIsBookingSubmitting(true);
+    setBookingError(null);
+
+    try {
+      const bookingData = {
+        applicationId,
+        applicantName: answers[1],
+        applicantEmail: answers[2],
+        applicantPhone: answers[3],
+        date: selectedDate.toISOString(),
+        time: selectedTime,
+        status: 'scheduled',
+        timestamp: new Date().toISOString(),
+      };
+
+      await addDoc(collection(db, 'bookings'), bookingData);
+
+      if (applicationId) {
+        await updateDoc(doc(db, 'applications', applicationId), {
+          bookedCall: {
+            date: selectedDate.toISOString(),
+            time: selectedTime,
+          },
+        });
+      }
+
+      setBookingComplete(true);
+    } catch (err) {
+      setBookingError('Failed to book your call. Please try again.');
+    } finally {
+      setIsBookingSubmitting(false);
     }
   };
 
@@ -331,6 +410,233 @@ export default function ApplicationForm() {
     );
   };
 
+  // ─── Booking confirmation screen ────────────────────────────────────────────
+  if (isComplete && qualifiesForBooking(answers) && bookingComplete) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="max-w-xl w-full mx-4 text-center">
+          <div className="mb-8">
+            <Image
+              src="/images/logo.png"
+              alt="Ascendant Academy Logo"
+              width={80}
+              height={80}
+              className="mx-auto rounded-full"
+            />
+          </div>
+          <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold mb-2">Your Call is Booked!</h1>
+          <p className="text-gray-400 mb-6">Get ready — Penny Pips will be on the line personally.</p>
+          <div className="p-5 bg-[#111111] border border-[#ffc62d] rounded-xl mb-6">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <svg className="w-5 h-5 text-[#ffc62d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <p className="text-[#ffc62d] font-semibold">
+                {selectedDate?.toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </p>
+            </div>
+            <p className="text-white text-lg font-medium">{selectedTime} CST</p>
+            <p className="text-gray-400 text-sm mt-1">Strategy Call with Penny Pips</p>
+          </div>
+          <p className="text-gray-500 text-sm">
+            A confirmation will be sent to <span className="text-gray-300">{answers[2]}</span>. We look forward to speaking with you!
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Booking calendar screen (qualified) ────────────────────────────────────
+  if (isComplete && qualifiesForBooking(answers)) {
+    const availableDates = getAvailableDates();
+
+    return (
+      <div className="min-h-screen bg-black text-white">
+        <div className="max-w-2xl mx-auto px-4 py-12">
+          {/* Header */}
+          <div className="text-center mb-10">
+            <Image
+              src="/images/logo.png"
+              alt="Ascendant Academy Logo"
+              width={64}
+              height={64}
+              className="mx-auto rounded-full mb-5"
+            />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-green-500/10 border border-green-500/30 rounded-full text-green-400 text-sm font-medium mb-4">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Application Approved
+            </div>
+            <h1 className="text-2xl font-bold mb-2">Book Your Strategy Call</h1>
+            <p className="text-gray-400">
+              Schedule a personal 1-on-1 call directly with <span className="text-[#ffc62d] font-medium">Penny Pips</span> — not a sales rep.
+            </p>
+          </div>
+
+          {/* Date Selection */}
+          <div className="bg-[#0A0A0A] border border-gray-800 rounded-xl p-6 mb-4">
+            <h2 className="text-base font-semibold text-[#ffc62d] mb-4 flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Select a Date
+            </h2>
+            <div className="grid grid-cols-5 gap-2">
+              {availableDates.map((date, i) => {
+                const isSelected = selectedDate?.toDateString() === date.toDateString();
+                return (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      setSelectedDate(date);
+                      setSelectedTime(null);
+                    }}
+                    className={`p-3 rounded-xl text-center transition-all border ${
+                      isSelected
+                        ? 'bg-[#ffc62d] border-[#ffc62d] text-black'
+                        : 'bg-[#111111] border-gray-700 hover:border-[#ffc62d]/60 text-gray-300'
+                    }`}
+                  >
+                    <div className={`text-xs font-medium mb-0.5 ${isSelected ? 'text-black/70' : 'text-gray-500'}`}>
+                      {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                    </div>
+                    <div className="text-sm font-bold">
+                      {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Time Slot Selection */}
+          <AnimatePresence>
+            {selectedDate && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="bg-[#0A0A0A] border border-gray-800 rounded-xl p-6 mb-4"
+              >
+                <h2 className="text-base font-semibold text-[#ffc62d] mb-1 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Select a Time
+                </h2>
+                <p className="text-gray-500 text-xs mb-4">
+                  {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                </p>
+                <div className="grid grid-cols-4 gap-2">
+                  {TIME_SLOTS.map((time) => {
+                    const isSelected = selectedTime === time;
+                    return (
+                      <button
+                        key={time}
+                        onClick={() => setSelectedTime(time)}
+                        className={`py-3 px-2 rounded-xl text-sm font-medium text-center transition-all border ${
+                          isSelected
+                            ? 'bg-[#ffc62d] border-[#ffc62d] text-black'
+                            : 'bg-[#111111] border-gray-700 hover:border-[#ffc62d]/60 text-gray-300'
+                        }`}
+                      >
+                        {time}
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Booking Summary + Confirm */}
+          <AnimatePresence>
+            {selectedDate && selectedTime && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="bg-[#0A0A0A] border border-[#ffc62d]/40 rounded-xl p-6"
+              >
+                <h2 className="text-base font-semibold mb-4">Confirm Your Booking</h2>
+
+                <div className="flex items-start gap-4 p-4 bg-[#111111] rounded-lg mb-5">
+                  <div className="w-10 h-10 rounded-full bg-[#ffc62d]/10 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-[#ffc62d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-white font-medium">Penny Pips</p>
+                    <p className="text-gray-400 text-sm">Ascendant Academy — Strategy Call</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2 mb-5">
+                  <div className="flex items-center gap-3 text-sm">
+                    <svg className="w-4 h-4 text-[#ffc62d] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-gray-300">
+                      {selectedDate.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <svg className="w-4 h-4 text-[#ffc62d] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-gray-300">{selectedTime} CST</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <svg className="w-4 h-4 text-[#ffc62d] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-gray-300">{answers[2]}</span>
+                  </div>
+                </div>
+
+                {bookingError && (
+                  <p className="text-red-500 text-sm mb-4">{bookingError}</p>
+                )}
+
+                <button
+                  onClick={handleBooking}
+                  disabled={isBookingSubmitting}
+                  className="w-full py-3 bg-[#ffc62d] text-black font-semibold rounded-xl hover:bg-[#ffd700] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isBookingSubmitting ? 'Booking...' : 'Confirm Booking'}
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <p className="text-center text-gray-600 text-xs mt-6">
+            All times are in Mountain Standard Time (MST)
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Under review screen ────────────────────────────────────────────────────
   if (isComplete) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -345,29 +651,21 @@ export default function ApplicationForm() {
             />
           </div>
           <h1 className="text-2xl font-bold mb-4">Application Submitted!</h1>
-          {score >= 70 ? (
-            <>
-              <p className="text-gray-300 mb-8">
-                Congratulations! Based on your responses, you qualify for a personal interview.
-                Our team will contact you shortly to schedule a Zoom call.
-              </p>
-              <div className="p-4 bg-[#111111] border border-[#ffc62d] rounded-lg">
-                <p className="text-[#ffc62d] font-semibold">
-                  Next Steps: Watch for an email with your interview details
-                </p>
-              </div>
-            </>
-          ) : (
-            <p className="text-gray-300 mb-8">
-              Thank you for your interest in Ascendant ELITE. Our team will review your application
-              and contact you within 2-3 business days.
+          <p className="text-gray-300 mb-8">
+            Thank you for your interest in Ascendant ELITE. Penny Pips will review your application
+            and contact you within 24 hours.
+          </p>
+          <div className="p-4 bg-[#111111] border border-gray-700 rounded-lg">
+            <p className="text-gray-400">
+              Watch your email at <span className="text-white">{answers[2]}</span> for updates.
             </p>
-          )}
+          </div>
         </div>
       </div>
     );
   }
 
+  // ─── Application form ────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="max-w-4xl mx-auto px-4 py-12">
@@ -380,7 +678,16 @@ export default function ApplicationForm() {
             className="mx-auto rounded-full"
           />
           <h1 className="text-3xl font-bold mt-6 mb-2">Ascendant ELITE Application</h1>
-          <p className="text-gray-400">Join our exclusive mentorship program</p>
+          <div className="flex flex-col md:flex-row justify-center items-center gap-6 mt-4 mb-4">
+            <div className="bg-[#111111] border border-[#ffc62d] rounded-xl p-4 w-full md:w-1/2 shadow">
+              <h2 className="text-xl font-semibold text-[#ffc62d] mb-2 flex items-center justify-center">
+                <span className="mr-2">1on1 Coaching</span>
+                <span className="text-base text-white ml-2">with Penny Pips</span>
+              </h2>
+          
+            </div>
+          </div>
+          <p className="text-gray-400">Fill out the form below to apply for this exclusive mentorship experience.</p>
         </div>
 
         <div className="max-w-xl mx-auto">
@@ -440,4 +747,4 @@ export default function ApplicationForm() {
       </div>
     </div>
   );
-} 
+}

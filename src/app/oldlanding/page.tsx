@@ -1,34 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import Script from 'next/script';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, CheckCircle, TrendingUp, Shield, Users, BarChart3, BookOpen, Play, ArrowRight, Menu, X, DollarSign, Calculator, Bell, GraduationCap } from 'lucide-react';
 import Footer from '@/components/Footer';
-
-// ============================================
-// PAGE DISABLED - REDIRECT TO MAIN LANDING PAGE
-// Remove this block to re-enable the page
-// ============================================
-export default function DisabledPage() {
-  const router = useRouter();
-  
-  useEffect(() => {
-    router.replace('/');
-  }, [router]);
-
-  return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="text-white text-center">
-        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-gray-400">Redirecting...</p>
-      </div>
-    </div>
-  );
-}
 
 // ============================================
 // ORIGINAL PAGE CODE BELOW (PRESERVED)
@@ -108,8 +86,7 @@ const CountUpStat: React.FC<CountUpStatProps> = ({ targetValue, prefix = "", suf
   );
 };
 
-// Original export - renamed while page is disabled
-function _OriginalHomePage() {
+export default function _OriginalHomePage() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeCaseStudy, setActiveCaseStudy] = useState('500-flip');
   const [caseStudyImageIndex, setCaseStudyImageIndex] = useState(0);

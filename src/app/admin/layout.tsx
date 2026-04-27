@@ -11,11 +11,13 @@ const adminNavigation = [
   { name: 'Users', href: '/admin/users' },
   { name: 'Orders', href: '/admin/orders' },
   { name: 'Applications', href: '/admin/applications' },
+  { name: 'Bookings', href: '/admin/bookings' },
   { name: 'Trading Accounts', href: '/admin/trading-accounts' },
   { name: 'Trading Arenas', href: '/admin/trading-arenas' },
   { name: 'Signals', href: '/admin/signals' },
   { name: 'Content', href: '/admin/content' },
   { name: 'Analytics', href: '/admin/analytics' },
+  { name: 'All Emails', href: '/admin/all-emails' },
   { name: 'Free Course Emails', href: '/admin/free-course-emails' }
 ];
 

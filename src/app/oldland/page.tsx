@@ -1,6 +1,5 @@
 'use client';
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
@@ -18,27 +17,6 @@ import PlatinumToggle from '@/components/PlatinumToggle';
 import DottedGlobe from '@/components/DottedGlobe';
 import styles from '@/styles/home.module.css';
 import { PlanFeature } from '@/types/index';
-
-// ============================================
-// PAGE DISABLED - REDIRECT TO MAIN LANDING PAGE
-// Remove this block to re-enable the page
-// ============================================
-export default function DisabledPage() {
-  const router = useRouter();
-  
-  useEffect(() => {
-    router.replace('/');
-  }, [router]);
-
-  return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="text-white text-center">
-        <div className="w-8 h-8 border-2 border-[#ffc62d] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-gray-400">Redirecting...</p>
-      </div>
-    </div>
-  );
-}
 
 // ============================================
 // ORIGINAL PAGE CODE BELOW (PRESERVED)
@@ -1310,11 +1288,10 @@ function HomeContent() {
   );
 }
 
-// Original export - commented out while page is disabled
-// export default function HomePage() {
-//   return (
-//     <ParallaxWrapper>
-//       <HomeContent />
-//     </ParallaxWrapper>
-//   );
-// } 
+export default function HomePage() {
+  return (
+    <ParallaxWrapper>
+      <HomeContent />
+    </ParallaxWrapper>
+  );
+}
