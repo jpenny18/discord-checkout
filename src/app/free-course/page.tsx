@@ -1073,7 +1073,7 @@ export default function HomePage() {
 
               {/* CTA Button */}
               <a
-                href="https://whop.com/ascendant-academy/ascendantplatinum"
+                href="https://whop.com/ascendant-trading/ascendant-plat/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 text-center mb-8 hover:scale-[1.02]"
@@ -1086,6 +1086,14 @@ export default function HomePage() {
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
                   <span className="text-white text-sm">Live Futures/Forex trading with Penny Pips at 9AM MST</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-white text-sm">Free $50K Challenge Account included</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-white text-sm">7 Day Free Trial (cancel anytime)</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
@@ -1112,6 +1120,8 @@ export default function HomePage() {
                   <span className="text-white text-sm">Verified results backed by broker statements</span>
                 </div>
               </div>
+         
+         
             </div>
           </motion.div>
 
