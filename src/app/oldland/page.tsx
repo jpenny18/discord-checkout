@@ -553,12 +553,12 @@ function HomeContent() {
                 transition={{ delay: 0.8, duration: 0.5 }}
                 className="flex justify-center gap-4"
               >
-                <Link 
-                  href="/checkout"
+                <button
+                  onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
                   className="bg-[#ffc62d] text-black px-4 md:px-8 py-2 md:py-3 rounded-lg text-xs md:text-base font-semibold hover:bg-[#ffd700] transition-all duration-300 hover:scale-105 inline-block"
                 >
                   JOIN THE COMMUNITY
-                </Link>
+                </button>
                 {/* EARN FUNDING button hidden */}
                 <Link 
                   href="/funding"
