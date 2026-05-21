@@ -53,7 +53,17 @@ export default function CheckoutPage() {
   const handlePlanSelect = (plan: typeof plans[0]) => {
     // If it's an application-only plan, redirect to application form
     if (plan.allowedPaymentMethods.includes('application')) {
-      window.location.href = '/apply'; // You'll need to create this page
+      window.location.href = '/apply';
+      return;
+    }
+    // Redirect Lite plan to Whop checkout
+    if (plan.id === 'lite') {
+      window.location.href = 'https://whop.com/checkout/plan_U1HxA9cOloCNd';
+      return;
+    }
+    // Redirect Platinum plan to Whop checkout
+    if (plan.id === 'platinum') {
+      window.location.href = 'https://whop.com/checkout/plan_MTglRtUwDHP86';
       return;
     }
     setSelectedPlan(plan);
@@ -479,7 +489,8 @@ export default function CheckoutPage() {
           </div>
         )}
 
-        <div className="max-w-xl mx-auto mb-12">
+        {/* Personal Information section hidden - preserved for future use */}
+        <div className="hidden max-w-xl mx-auto mb-12">
           <h2 className="text-xl font-bold mb-6">PERSONAL INFORMATION</h2>
           <div className="space-y-4">
             <div>
@@ -548,7 +559,8 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <div className="max-w-xl mx-auto">
+        {/* Select Payment section hidden - preserved for future use */}
+        <div className="hidden max-w-xl mx-auto">
           <h2 className="text-xl font-bold mb-2">SELECT PAYMENT</h2>
           {isCryptoAllowed && (
             <p className="text-[#ffc62d] text-sm font-bold mb-4">50% discount when paid in crypto!</p>

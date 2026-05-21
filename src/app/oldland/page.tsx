@@ -295,12 +295,6 @@ function HomeContent() {
               >
                 ABOUT
               </button>
-              <Link 
-                href="/flip-blueprint"
-                className="text-gray-300 hover:text-[#ffc62d] transition-colors text-sm"
-              >
-                FLIP BLUEPRINT
-              </Link>
               <button 
                 onClick={() => document.getElementById('bento')?.scrollIntoView({ behavior: 'smooth' })}
                 className="text-gray-300 hover:text-white transition-colors text-sm"
@@ -330,16 +324,16 @@ function HomeContent() {
             {/* Action Buttons */}
             <div className="flex items-center space-x-2 md:relative md:right-0 absolute right-1/2 transform translate-x-1/2">
               <Link 
-                href="/funding" 
+                href="/auth" 
                 className="bg-white/10 text-white px-3 py-1 rounded-lg text-xs font-semibold hover:bg-white/20 transition-colors inline-flex items-center"
               >
-                EARN FUNDING
+                LOG IN
               </Link>
               <Link 
                 href="/checkout" 
                 className="bg-[#ffc62d] text-black px-3 py-1 rounded-lg text-xs font-semibold hover:bg-[#ffd700] transition-colors inline-flex items-center"
               >
-                SIGN UP
+                JOIN
                 <Image
                   src="/images/logo.png"
                   alt="Logo"
@@ -385,13 +379,6 @@ function HomeContent() {
                   >
                     ABOUT
                   </button>
-                  <Link 
-                    href="/flip-blueprint"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-gray-300 hover:text-[#ffc62d] transition-colors text-sm"
-                  >
-                    FLIP BLUEPRINT
-                  </Link>
                   <button 
                     onClick={() => {
                       const element = document.getElementById('bento');
@@ -572,9 +559,10 @@ function HomeContent() {
                 >
                   JOIN THE COMMUNITY
                 </Link>
+                {/* EARN FUNDING button hidden */}
                 <Link 
                   href="/funding"
-                  className="border border-[#ffc62d] text-[#ffc62d] px-4 md:px-8 py-2 md:py-3 rounded-lg text-xs md:text-base font-semibold hover:bg-[#ffc62d]/10 transition-all duration-300 hover:scale-105 inline-block"
+                  className="hidden border border-[#ffc62d] text-[#ffc62d] px-4 md:px-8 py-2 md:py-3 rounded-lg text-xs md:text-base font-semibold hover:bg-[#ffc62d]/10 transition-all duration-300 hover:scale-105"
                 >
                   EARN FUNDING
                 </Link>
