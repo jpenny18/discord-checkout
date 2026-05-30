@@ -34,8 +34,8 @@ export const plans: Plan[] = [
   {
     id: 'platinum',
     name: 'Ascendant PLATINUM',
-    price: 199,
-    priceDisplay: createPriceDisplay('$199', 'per month'),
+    price: 10,
+    priceDisplay: createPriceDisplay('$10', 'per month'),
     duration: 'monthly',
     features: [
       { name: '20 chat channels', included: true },

@@ -63,7 +63,7 @@ export default function CheckoutPage() {
     }
     // Redirect Platinum plan to Whop checkout
     if (plan.id === 'platinum') {
-      window.location.href = 'https://whop.com/checkout/plan_MTglRtUwDHP86';
+      window.location.href = 'https://whop.com/checkout/plan_X57SKXKdVY250';
       return;
     }
     setSelectedPlan(plan);
@@ -295,7 +295,7 @@ export default function CheckoutPage() {
       case 'weekly':
         return 'I understand this is a recurring weekly payment of $7.';
       case 'monthly':
-        return 'I understand this is a recurring monthly payment of $199.';
+        return 'I understand this is a recurring monthly payment of $10.';
       default:
         return '';
     }
@@ -402,7 +402,7 @@ export default function CheckoutPage() {
                     : plan.popular 
                       ? 'border-2 border-[#ffc62d] platinum-card' 
                       : 'border-gray-700'
-                } ${plan.popular ? 'md:scale-110' : ''}`}
+                } ${plan.popular ? 'md:scale-110' : ''} ${plan.id === 'lite' ? 'hidden' : ''}`}
                 style={{ 
                   transform: selectedPlan?.id === plan.id ? 'scale(1.05)' : 'scale(1)',
                   ...(plan.popular ? {

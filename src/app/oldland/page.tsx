@@ -1002,6 +1002,7 @@ function HomeContent() {
                     ${plan.popular ? 'md:scale-110 z-10 platinum-card' : ''}
                     ${plan.popular ? 'bg-gradient-to-b from-[#111111] to-[#111111] border-2 border-[#ffc62d]' : 'bg-black border border-[#232323]'}
                     ${plan.popular ? styles.popularCard : ''}
+                    ${plan.id === 'lite' ? 'hidden' : ''}
                   `}
                   style={plan.popular ? {
                     background: 'linear-gradient(180deg, rgba(255, 198, 45, 0.05) 0%, rgba(17, 17, 17, 1) 100%)'
@@ -1057,7 +1058,7 @@ function HomeContent() {
                     </ul>
 
                     <Link
-                      href="/checkout"
+                      href={plan.popular ? 'https://whop.com/checkout/plan_X57SKXKdVY250' : '/checkout'}
                       className={`
                         block text-center py-1.5 px-4 rounded-lg font-semibold transition-all duration-300 text-xs
                         ${plan.popular
