@@ -73,4 +73,59 @@ input[type="range"].slider:hover::-moz-range-thumb {
 
 .scrollbar-hidden::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Landing page ticker animation */
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-ticker {
+  animation: ticker 20s linear infinite;
+}
+
+/* Landing page phone float animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-16px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Landing page gold glow pulse */
+@keyframes goldGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 198, 45, 0.3), 0 0 40px rgba(255, 198, 45, 0.1); }
+  50% { box-shadow: 0 0 40px rgba(255, 198, 45, 0.6), 0 0 80px rgba(255, 198, 45, 0.2); }
+}
+
+.animate-gold-glow {
+  animation: goldGlow 3s ease-in-out infinite;
+}
+
+/* Smooth scroll for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Landing page fade-in-up */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.7s ease forwards;
+}
+
+/* Landing page arrow bounce */
+@keyframes arrowBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+.animate-arrow-bounce {
+  animation: arrowBounce 1.5s ease-in-out infinite;
 } 
