@@ -9,7 +9,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "node scripts/patch-buffer-equal-constant-time.js"
   },
   "dependencies": {
     "@fontsource/inter-tight": "^5.1.1",
