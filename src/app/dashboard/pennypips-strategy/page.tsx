@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DocumentTextIcon, ChevronDownIcon, PlayIcon, ChartBarIcon, SpeakerWaveIcon, PauseIcon } from '@heroicons/react/24/outline';
 import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import LockedFeatureOverlay from '@/components/LockedFeatureOverlay';
 
 type CaseStudy = {
   title: string;
@@ -66,7 +67,14 @@ export default function PennyPipsStrategyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b]" style={{ '--color-white': '#ffffff' } as React.CSSProperties}>
+    <div className="relative min-h-screen bg-[#09090b]" style={{ '--color-white': '#ffffff' } as React.CSSProperties}>
+      <div
+        className="pointer-events-none select-none"
+        aria-hidden="true"
+        ref={(node) => {
+          if (node) node.inert = true;
+        }}
+      >
       {/* Wistia Player Scripts */}
       <Script 
         src="https://fast.wistia.com/assets/external/E-v1.js" 
@@ -704,6 +712,8 @@ export default function PennyPipsStrategyPage() {
           )}
         </div>
       </div>
+      </div>
+      <LockedFeatureOverlay align="start" />
     </div>
   );
 }

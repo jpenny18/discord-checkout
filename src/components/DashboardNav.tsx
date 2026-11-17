@@ -12,18 +12,19 @@ import {
   BuildingLibraryIcon,
   ShieldCheckIcon,
   DocumentTextIcon,
+  LockClosedIcon,
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 
 const navigation = [
-  { name: 'Overview', href: '/dashboard', icon: HomeIcon },
-  { name: 'My Accounts', href: '/dashboard/my-accounts', icon: ChartBarIcon },
-  { name: 'Signals', href: '/dashboard/signals', icon: SignalIcon },
-  { name: 'Training', href: '/dashboard/training', icon: AcademicCapIcon },
-  { name: 'PennyPips Strategy', href: '/dashboard/pennypips-strategy', icon: DocumentTextIcon },
-  { name: 'Trading Tools', href: '/dashboard/trading-tools', icon: ChartBarIcon },
-  { name: 'Partners', href: '/dashboard/partners', icon: ShieldCheckIcon },
-  { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon },
+  { name: 'Overview', href: '/dashboard', icon: HomeIcon, locked: false },
+  { name: 'My Accounts', href: '/dashboard/my-accounts', icon: ChartBarIcon, locked: false },
+  { name: 'Signals', href: '/dashboard/signals', icon: SignalIcon, locked: false },
+  { name: 'Training', href: '/dashboard/training', icon: AcademicCapIcon, locked: true },
+  { name: 'PennyPips Strategy', href: '/dashboard/pennypips-strategy', icon: DocumentTextIcon, locked: true },
+  { name: 'Trading Tools', href: '/dashboard/trading-tools', icon: ChartBarIcon, locked: false },
+  { name: 'Partners', href: '/dashboard/partners', icon: ShieldCheckIcon, locked: false },
+  { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon, locked: false },
 ];
 
 export default function DashboardNav() {
@@ -70,6 +71,7 @@ export default function DashboardNav() {
               <li key={item.name}>
                 <Link
                   href={item.href}
+                  aria-disabled={item.locked || undefined}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     isActive
                       ? 'bg-[#1e1e1e] text-[#ffc62d] shadow-[0_0_20px_rgba(17,17,17,0.5)]'
@@ -81,7 +83,10 @@ export default function DashboardNav() {
                       isActive ? 'text-[#ffc62d]' : 'text-gray-400'
                     }`}
                   />
-                  {item.name}
+                  <span className="flex-1">{item.name}</span>
+                  {item.locked && (
+                    <LockClosedIcon className="h-4 w-4 text-[#ffc62d]" aria-hidden="true" />
+                  )}
                 </Link>
               </li>
             );

@@ -6,6 +6,7 @@ import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { AcademicCapIcon, TrophyIcon, BuildingLibraryIcon } from '@heroicons/react/24/outline';
+import LockedFeatureOverlay from '@/components/LockedFeatureOverlay';
 
 interface Stats {
   totalLessonsCompleted: number;
@@ -124,11 +125,15 @@ export default function DashboardPage() {
           <div className="flex justify-center relative z-10 mt-8">
             <Link
               href="/dashboard/pennypips-strategy"
+              tabIndex={-1}
+              aria-hidden="true"
+              onClick={(event) => event.preventDefault()}
               className="inline-block rounded-xl bg-gradient-to-r from-[#ffc62d] to-[#ff9500] px-8 py-4 text-base font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(255,198,45,0.4)] active:scale-95"
             >
               Learn NOW
             </Link>
           </div>
+          <LockedFeatureOverlay />
         </div>
 
         {/* ACI Challenge Card - HIDDEN */}
@@ -235,11 +240,15 @@ export default function DashboardPage() {
           <div className="flex justify-center relative z-10 mt-8">
             <Link
               href="/dashboard/training"
+              tabIndex={-1}
+              aria-hidden="true"
+              onClick={(event) => event.preventDefault()}
               className="inline-block rounded-xl bg-gradient-to-r from-[#2a2a2a] to-[#1a1a1a] border border-white/10 px-8 py-4 text-base font-semibold text-white transition-all duration-300 hover:scale-105 hover:border-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] active:scale-95"
             >
               Start Learning
             </Link>
           </div>
+          <LockedFeatureOverlay />
         </div>
       </div>
 
